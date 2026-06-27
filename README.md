@@ -1,5 +1,5 @@
 # CallingIn_new
-CallingIn
+# CallingIn
 
 Helping people begin the conversations that matter most.
 
@@ -48,18 +48,18 @@ However, CallingIn owns the complete communication experience.
 
 CallingIn guides the entire process:
 
-Choose the person you want to reach.
-Explain why you are reaching out.
-AI helps you write a thoughtful message.
-The recipient receives an intentional invitation—not just another text.
-They decide whether they are ready to have that conversation.
-If they accept, the conversation happens in a private space designed for meaningful communication.
+- Choose the person you want to reach.
+- Explain why you are reaching out.
+- AI helps you write a thoughtful message.
+- The recipient receives an intentional invitation—not just another text.
+- They decide whether they are ready to have that conversation.
+- If they accept, the conversation happens in a private space designed for meaningful communication.
 
 ChatGPT only helps with step 3.
 
 CallingIn owns steps 1 through 6.
 
-Core Features
+## Core Features
 Intentional Conversation Requests
 
 Users intentionally choose who they would like to reach and explain why they want to reconnect.
