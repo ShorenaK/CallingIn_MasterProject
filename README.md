@@ -351,31 +351,31 @@ Those conversations deserve more than another chat window.
 --- Temp Images ---
 >** my fav THE 1 option **
 
-![tem](logo1.png)
+![tem](public/images/logo1.png)
 
 >** THE 2 option **
 
-![tem](logo2.png)
+![tem](public/images/logo2.png)
 
 
 >** my fav THE 1 option **
 
-![tem](tempalte3.png)
+![tem](public/images/tempalte3.png)
 
 >** THE 2 option **
 
-![tem](template.png)
+![tem](public/images/template.png)
 
-![tem](template2.png)
+![tem](public/images/template2.png)
 
-![tem](templaye.png)
+![tem](public/images/templaye.png)
 
-![tem](thebesttempalte.png)
+![tem](public/images/thebesttempalte.png)
 
 -----------
 new feture added 
 
-![tem](newcallinInwiht_trustedCircle.png)
+![tem](public/images/callingin_concept.png)
 
 
 === Previous Projects To Use ===

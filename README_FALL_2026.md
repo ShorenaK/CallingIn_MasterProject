@@ -207,3 +207,21 @@ The original proposal places the reflection deadline on the Friday before finals
 This document is a companion to the original README. It records the expanded Fall 2026 plan and draws on the *CS 8674 Project Course – Proposal & Semester Plan* and the subsequent Trusted Circle design discussions. The original README remains the record of the initial CallingIn concept. Additional course materials and confirmed advisor requirements will be incorporated as they become available.
 
 CallingIn begins with a simple belief: sometimes a thoughtful message, a willing listener, or a small moment of encouragement can make reaching out feel possible. This project is an opportunity to explore how software can make room for those human moments.
+
+## Design Preview
+
+The CallingIn concept shows two ways to connect: the AI Communication
+Coach and the Trusted Circle, where friends and family can offer
+personal support without AI involvement.
+
+![CallingIn design concept](public/images/callingin_concept.png)
+
+## Application Wireframe
+
+The wireframe outlines the planned pages and both user journeys,
+including accounts, the AI Coach, trusted connections, mood and
+availability sharing, invitations, and private conversations.
+
+![CallingIn application wireframe](public/images/figma_wire_frame.png)
+
+These visuals represent the planned design and may change during development.
