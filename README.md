@@ -371,3 +371,16 @@ Those conversations deserve more than another chat window.
 ![tem](templaye.png)
 
 ![tem](thebesttempalte.png)
+
+
+
+
+=== Previous Projects To Use ===
+
+https://github.com/ShorenaK/GeoGoHub
+
+
+https://github.com/ShorenaK/GeoGoHub/tree/final-project-iteration
+
+
+https://github.com/ShorenaK/GeoWellHub
