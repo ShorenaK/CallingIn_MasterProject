@@ -80,6 +80,19 @@ Configure these practices during development:
 
 Exact hook and testing tools remain to be selected.
 
+## Sprint Branches
+
+| Sprint | Branch |
+| --- | --- |
+| 1 | `sprint-01-planning` |
+| 2 | `sprint-02-authentication` |
+| 3 | `sprint-03-invitations` |
+| 4 | `sprint-04-conversations` |
+| 5 | `sprint-05-ai-coach` |
+| 6 | `sprint-06-evaluation` |
+
+Create each branch when its sprint begins, from the updated main branch.
+
 ## Sprint Completion Checklist
 
 - [ ] Planned functionality can be demonstrated.
