@@ -88,4 +88,4 @@ approximately December 11.
 - [ ] Set up the React and Express foundation.
 - [ ] Configure initial code-quality checks.
 
-See the [Sprint plan](sprint-plan.md)for deliverables.
+See the [Sprint plan](sprint-plan.md) for deliverables.
