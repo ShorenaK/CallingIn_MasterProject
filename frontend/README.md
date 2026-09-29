@@ -72,4 +72,35 @@ They verify the health endpoint’s HTTP status, JSON content type and body,
 and that an unknown API route returns 404. No database or AI service is needed.
 
 Lint, formatting checks, both backend tests, and the frontend production
-build should pass before review. Pre-commit hooks are not configured yet.
+build should pass before review.
+
+## Pre-commit checks
+
+From the repository root, install the hook tools:
+
+```bash
+npm ci
+```
+
+The root `prepare` script activates Husky locally. Install dependencies in
+both `frontend/` and `backend/` as shown above as well. Each collaborator
+must install the tools after cloning; Git does not activate hooks by itself.
+
+When you run `git commit`, Husky runs `npm run precommit`. lint-staged runs
+ESLint on staged frontend/backend JavaScript and Prettier checks on staged
+JavaScript, JSON, CSS, HTML, Markdown, and YAML. Lockfiles and generated
+output are excluded from formatting checks. Images are not checked.
+
+Checks do not auto-format your files. A failure stops the commit: fix the
+reported issue, review your changes, stage them yourself, and try again.
+For formatting, use `npm run format` inside the appropriate application,
+or `npx --no-install prettier --write path/to/file` from the root for a
+specific documentation or configuration file.
+
+lint-staged temporarily hides unstaged edits in partially staged files and
+uses a backup stash by default. This allows it to check the staged version;
+let the command finish before editing or staging more files.
+
+Builds and endpoint tests remain separate commands to keep the hook fast.
+You can run `npm run precommit` from the root to check files you have staged
+without creating a commit. With no staged files, it skips checks.

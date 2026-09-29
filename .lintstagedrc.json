@@ -1,0 +1,5 @@
+{
+  "frontend/**/*.{js,jsx}": "node frontend/node_modules/eslint/bin/eslint.js --max-warnings 0",
+  "backend/**/*.js": "node backend/node_modules/eslint/bin/eslint.js --max-warnings 0",
+  "*.{js,jsx,json,css,html,md,yml,yaml}": "prettier --check"
+}
