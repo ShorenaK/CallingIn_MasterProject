@@ -1,16 +1,51 @@
-# React + Vite
+# CallingIn Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React with JavaScript and Vite. See the [project README](../README.md)
+for CallingIn’s scope and semester plan.
 
-Currently, two official plugins are available:
+## Install and run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+From the repository root, install the frontend dependencies and start Vite:
 
-## React Compiler
+```bash
+cd frontend
+npm ci
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+In a second terminal, from the repository root, start Express:
 
-## Expanding the Oxlint configuration
+```bash
+cd backend
+npm ci
+npm start
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Open http://127.0.0.1:5173/. The welcome page checks `/api/health` through
+Vite’s development proxy, which forwards `/api` requests to Express at
+http://127.0.0.1:3001. Use the default backend port for this configuration.
+Stop each server with Ctrl+C in its terminal.
+
+The page uses the existing logo at `../public/images/logo1.png`.
+Accounts, AI assistance, invitations, and messaging are not implemented.
+
+## Verification commands
+
+With both servers running, check the backend through the frontend proxy:
+
+```bash
+curl http://127.0.0.1:5173/api/health
+```
+
+Expected JSON: `{"status":"ok"}`.
+
+From `frontend/`, create a production build:
+
+```bash
+npm run build
+```
+
+The build writes to `frontend/dist/`. These commands are instructions,
+not a record of completed verification. The production build and automated
+endpoint test are pending the quality-check step. The current template lint
+command still uses Oxlint; ESLint and Prettier setup is also pending.

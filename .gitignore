@@ -1,0 +1,15 @@
+# Installed dependencies and generated output
+node_modules/
+dist/
+dist-ssr/
+coverage/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs and macOS metadata
+*.log
+.DS_Store
