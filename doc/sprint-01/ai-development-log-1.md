@@ -7,7 +7,7 @@
 **Branch:** sprint-01-planning
 **Purpose:** Set up the React and Express foundation
 
-### Prompt ***
+### Prompt. ***
 
 Help me set up Sprint 1 for CallingIn, my CS 8674 Fall 2026 project.
 
@@ -57,7 +57,7 @@ Important:
 - Report what actually passed verification and anything still incomplete.
 - Do not deploy the application.
 
-### Result ***
+### Result. ***
 
 Built the JavaScript application foundation, with a branded welcome page,
 an Express health endpoint, a Vite proxy, quality tools, tests, and setup
