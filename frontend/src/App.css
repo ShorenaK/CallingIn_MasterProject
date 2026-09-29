@@ -1,33 +1,153 @@
-.page { max-width: 1200px; margin: auto; padding: 0 40px; }
-.header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 28px 0; border-bottom: 1px solid #d9e4df; }
-.wordmark { font-size: 28px; font-weight: 800; letter-spacing: -1px; text-decoration: none; }
-.wordmark span { color: #b7440d; }
-.project-label { font-size: 14px; }
-.welcome { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 40px; padding: 72px 0; }
-.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: #28736d; }
-h1 { font-size: clamp(36px, 4.5vw, 60px); line-height: 1.08; letter-spacing: -2px; margin-bottom: 24px; }
-.intro { font-size: 21px; line-height: 1.55; }
-.description { color: #46646a; max-width: 52ch; }
-.brand-image { display: block; width: 100%; height: auto; border-radius: 36px; }
-.learn-link { display: inline-block; margin-top: 12px; font-weight: 700; text-underline-offset: 6px; }
-.learn-link span { margin-left: 12px; color: #b7440d; }
-.project-status { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; background: #e6f3ef; border-radius: 24px; padding: 36px; }
-h2 { font-size: 27px; line-height: 1.25; }
-.project-status p:last-child { margin-bottom: 0; }
-.connection-panel { padding-left: 32px; border-left: 1px solid #b8d6cf; }
-h3 { font-size: 16px; margin-bottom: 10px; }
-.connection { min-height: 3.2em; }
-.connection.error { color: #953d18; }
-button { border: 0; border-radius: 10px; padding: 10px 20px; background: #076573; color: white; cursor: pointer; font-weight: 650; }
-button:hover:enabled { background: #064c59; }
-button:disabled { opacity: 0.65; cursor: wait; }
-footer { display: flex; justify-content: space-between; gap: 16px; padding: 32px 0; font-size: 13px; color: #46646a; }
+.page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 40px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px 0;
+  border-bottom: 1px solid #d9e4df;
+}
+.wordmark {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-decoration: none;
+}
+.wordmark span {
+  color: #b7440d;
+}
+.project-label {
+  font-size: 14px;
+}
+.welcome {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+  gap: 40px;
+  padding: 72px 0;
+}
+.eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #28736d;
+}
+h1 {
+  font-size: clamp(36px, 4.5vw, 60px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+}
+.intro {
+  font-size: 21px;
+  line-height: 1.55;
+}
+.description {
+  color: #46646a;
+  max-width: 52ch;
+}
+.brand-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 36px;
+}
+.learn-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-weight: 700;
+  text-underline-offset: 6px;
+}
+.learn-link span {
+  margin-left: 12px;
+  color: #b7440d;
+}
+.project-status {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
+  background: #e6f3ef;
+  border-radius: 24px;
+  padding: 36px;
+}
+h2 {
+  font-size: 27px;
+  line-height: 1.25;
+}
+.project-status p:last-child {
+  margin-bottom: 0;
+}
+.connection-panel {
+  padding-left: 32px;
+  border-left: 1px solid #b8d6cf;
+}
+h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.connection {
+  min-height: 3.2em;
+}
+.connection.error {
+  color: #953d18;
+}
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background: #076573;
+  color: white;
+  cursor: pointer;
+  font-weight: 650;
+}
+button:hover:enabled {
+  background: #064c59;
+}
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 32px 0;
+  font-size: 13px;
+  color: #46646a;
+}
 @media (max-width: 700px) {
-  .page { padding: 0 22px; }
-  .header { flex-wrap: wrap; }
-  .welcome { grid-template-columns: 1fr; padding: 44px 0; gap: 28px; }
-  .brand-image { max-width: 320px; margin: auto; }
-  .project-status { grid-template-columns: 1fr; padding: 24px; gap: 24px; }
-  .connection-panel { padding: 24px 0 0; border-left: 0; border-top: 1px solid #b8d6cf; }
-  footer { flex-direction: column; gap: 4px; }
+  .page {
+    padding: 0 22px;
+  }
+  .header {
+    flex-wrap: wrap;
+  }
+  .welcome {
+    grid-template-columns: 1fr;
+    padding: 44px 0;
+    gap: 28px;
+  }
+  .brand-image {
+    max-width: 320px;
+    margin: auto;
+  }
+  .project-status {
+    grid-template-columns: 1fr;
+    padding: 24px;
+    gap: 24px;
+  }
+  .connection-panel {
+    padding: 24px 0 0;
+    border-left: 0;
+    border-top: 1px solid #b8d6cf;
+  }
+  footer {
+    flex-direction: column;
+    gap: 4px;
+  }
 }

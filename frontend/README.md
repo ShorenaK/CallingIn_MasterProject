@@ -45,7 +45,31 @@ From `frontend/`, create a production build:
 npm run build
 ```
 
-The build writes to `frontend/dist/`. These commands are instructions,
-not a record of completed verification. The production build and automated
-endpoint test are pending the quality-check step. The current template lint
-command still uses Oxlint; ESLint and Prettier setup is also pending.
+The build writes to `frontend/dist/`.
+
+## Code quality
+
+Run these commands inside either `frontend/` or `backend/`:
+
+```bash
+npm run lint
+npm run format:check
+```
+
+ESLint checks JavaScript, including a function complexity limit of 10.
+The frontend also checks React hooks and Fast Refresh exports. Prettier
+checks formatting; use `npm run format` to apply formatting changes.
+The shared formatting settings live in `../.prettierrc.json`.
+
+From `backend/`, run the HTTP endpoint tests:
+
+```bash
+npm test
+```
+
+Tests use Node’s built-in test runner and temporary localhost ports.
+They verify the health endpoint’s HTTP status, JSON content type and body,
+and that an unknown API route returns 404. No database or AI service is needed.
+
+Lint, formatting checks, both backend tests, and the frontend production
+build should pass before review. Pre-commit hooks are not configured yet.
