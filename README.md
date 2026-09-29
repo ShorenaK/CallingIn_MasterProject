@@ -325,3 +325,5 @@ Application setup is in progress.
 Installation commands, environment-variable instructions,
 and frontend/backend run commands will be added once the
 starter applications are configured and verified.
+
+© 2026 Shorena K. Anzhilov. All rights reserved. This source code is publicly available for viewing purposes only. No permission is granted to copy, modify, distribute, or use this code without prior written permission.
