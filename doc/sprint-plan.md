@@ -33,15 +33,15 @@ semester MVP because of the available development time.
 These are planned targets, not a record of completed work.
 Meeting dates may change.
 
-| Sprint | Dates | Planned deliverables | Advisor review |
-| --- | --- | --- | --- |
-| 1 — Foundation | Sep 15–28 | Updated scope, meeting notes, sprint plan, initial wireframe, React and Express starters, welcome page, health endpoint, initial quality checks | Sep 29 |
-| 2 — Accounts | Sep 29–Oct 12 | Remaining foundation work, MongoDB connection, registration, login, logout, profiles, protected endpoints, authentication tests | Oct 13 |
-| 3 — Invitations | Oct 13–26 | User lookup, invitation creation, incoming and outgoing lists, response handling, access checks, tests | Oct 27 |
-| 4 — Conversations | Oct 27–Nov 9 | Private messaging, participant-only access, basic Social Battery, invitation-to-conversation tests | Nov 10 |
-| 5 — AI Coach | Nov 10–23 | AI drafting, editable suggestions, tone refinement, failure handling, integrated MVP | Nov 24 |
-| 6 — Evaluation | Nov 24–Dec 7 | Evaluation, bug fixes, final checks, setup documentation, report and presentation drafts | Dec 8 |
-| Final preparation | Dec 8–11 | Advisor feedback, final corrections, demonstration, and submissions according to confirmed deadlines | As needed |
+| Sprint            | Dates         | Planned deliverables                                                                                                                            | Advisor review |
+| ----------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 1 — Foundation    | Sep 15–28     | Updated scope, meeting notes, sprint plan, initial wireframe, React and Express starters, welcome page, health endpoint, initial quality checks | Sep 29         |
+| 2 — Accounts      | Sep 29–Oct 12 | Remaining foundation work, MongoDB connection, registration, login, logout, profiles, protected endpoints, authentication tests                 | Oct 13         |
+| 3 — Invitations   | Oct 13–26     | User lookup, invitation creation, incoming and outgoing lists, response handling, access checks, tests                                          | Oct 27         |
+| 4 — Conversations | Oct 27–Nov 9  | Private messaging, participant-only access, basic Social Battery, invitation-to-conversation tests                                              | Nov 10         |
+| 5 — AI Coach      | Nov 10–23     | AI drafting, editable suggestions, tone refinement, failure handling, integrated MVP                                                            | Nov 24         |
+| 6 — Evaluation    | Nov 24–Dec 7  | Evaluation, bug fixes, final checks, setup documentation, report and presentation drafts                                                        | Dec 8          |
+| Final preparation | Dec 8–11      | Advisor feedback, final corrections, demonstration, and submissions according to confirmed deadlines                                            | As needed      |
 
 ### Planning Update — September 28
 
@@ -82,14 +82,14 @@ Exact hook and testing tools remain to be selected.
 
 ## Sprint Branches
 
-| Sprint | Branch |
-| --- | --- |
-| 1 | `sprint-01-planning` |
-| 2 | `sprint-02-authentication` |
-| 3 | `sprint-03-invitations` |
-| 4 | `sprint-04-conversations` |
-| 5 | `sprint-05-ai-coach` |
-| 6 | `sprint-06-evaluation` |
+| Sprint | Branch                     |
+| ------ | -------------------------- |
+| 1      | `sprint-01-planning`       |
+| 2      | `sprint-02-authentication` |
+| 3      | `sprint-03-invitations`    |
+| 4      | `sprint-04-conversations`  |
+| 5      | `sprint-05-ai-coach`       |
+| 6      | `sprint-06-evaluation`     |
 
 Create each branch when its sprint begins, from the updated main branch.
 

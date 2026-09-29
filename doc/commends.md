@@ -28,6 +28,14 @@ press **Ctrl+C** in each to stop the servers.
 If you prefer to stay in the root folder, use these commands in separate
 terminals instead:
 
+# Prettier
+
+npx prettier --write .
+
+# ESLint
+
+npx eslint . --fix
+
 ```bash
 npm --prefix backend run dev
 ```

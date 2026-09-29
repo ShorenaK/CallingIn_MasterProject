@@ -70,10 +70,10 @@ How someone feels and whether they want contact are different things. A person c
 
 CallingIn will provide two separate choices:
 
-| Setting | Planned choices | Purpose |
-| --- | --- | --- |
-| How I feel | Low, Okay, Good | An optional description of the user's current mood |
-| What I welcome | Encouragement, Open to talking, Busy, Personal space | The user's current preference for contact |
+| Setting        | Planned choices                                      | Purpose                                            |
+| -------------- | ---------------------------------------------------- | -------------------------------------------------- |
+| How I feel     | Low, Okay, Good                                      | An optional description of the user's current mood |
+| What I welcome | Encouragement, Open to talking, Busy, Personal space | The user's current preference for contact          |
 
 Users may add a short note and choose whether to share the update with their accepted trusted connections. Sharing is voluntary, and users can clear their status. Statuses will include an update time so people can see how recent they are.
 
@@ -114,14 +114,14 @@ Real-time delivery, typing indicators, read receipts, conversation summaries, na
 
 ## Planned technology stack
 
-| Area | Planned tools |
-| --- | --- |
-| Frontend | React, React Hooks, JavaScript, HTML, CSS, Fetch API |
-| Backend | Node.js and Express.js |
-| Database | MongoDB with the native MongoDB Node.js driver |
-| Authentication | Passport.js, Express Session, and password hashing |
-| AI integration | OpenAI API or another faculty-approved language model API |
-| Development | Git, GitHub, Visual Studio Code, API testing tools, ESLint, and Prettier |
+| Area           | Planned tools                                                            |
+| -------------- | ------------------------------------------------------------------------ |
+| Frontend       | React, React Hooks, JavaScript, HTML, CSS, Fetch API                     |
+| Backend        | Node.js and Express.js                                                   |
+| Database       | MongoDB with the native MongoDB Node.js driver                           |
+| Authentication | Passport.js, Express Session, and password hashing                       |
+| AI integration | OpenAI API or another faculty-approved language model API                |
+| Development    | Git, GitHub, Visual Studio Code, API testing tools, ESLint, and Prettier |
 
 AI credentials will remain on the backend. The Trusted Circle flow will work independently of the AI integration.
 
@@ -131,33 +131,33 @@ The schedule below is a working plan, with target completion dates rather than g
 
 The build will start with the shared foundation, followed by the non-AI connection flow and then the AI Coach. Research and writing will continue throughout the semester so the paper develops alongside the application.
 
-| Week | Dates in 2026 | Development target by the end of the period | Research and writing target |
-| --- | --- | --- | --- |
-| 1 | Sep 15–21 | Confirm the two user paths, define the MVP, and organize the repository and task list | Review the proposal with the advisor; confirm the added Trusted Circle scope and paper expectations |
-| 2 | Sep 22–28 | Draft wireframes, user flows, database records, and invitation states | Begin the literature review and maintain an annotated source list |
-| 3 | Sep 29–Oct 5 | Establish the React and Express foundation, connect MongoDB, and verify frontend-to-backend communication | Draft the project background, problem statement, and system architecture section |
-| 4 | Oct 6–12 | Complete registration, login, logout, protected pages, and basic profiles | Record authentication and privacy design choices; continue the literature review |
-| 5 | Oct 13–19 | Complete trusted-connection invitations, acceptance, member listing, and removal | Draft the Trusted Circle rationale and consent model |
-| 6 | Oct 20–26 | Complete mood and contact-preference sharing, status clearing, and circle visibility checks | Draft the evaluation plan and review any participant-research requirements with the advisor |
-| 7 | Oct 27–Nov 2 | Complete conversation invitations and Accept / Maybe Later / Decline behavior | Document both user journeys and invitation-state decisions |
-| 8 | Nov 3–9 | Complete stored private messages and verify the full non-AI support flow with test accounts | Draft the implementation section and prepare evaluation tasks |
-| 9 | Nov 10–16 | Integrate AI drafting through the backend, including editable suggestions and failure handling | Document prompt design and how authenticity will be evaluated |
-| 10 | Nov 17–23 | Complete AI refinement and test both user paths together; aim for a feature-complete beta | Complete the evaluation materials and bring the paper draft up to date |
-| 11 | Nov 24–30 | Run usability sessions if approved, fix priority issues, and check mobile layouts; allow for holiday availability | Collect permitted feedback and summarize observations without claiming clinical effects |
-| 12 | Dec 1–7 | Finish regression checks, setup instructions, and the demonstration flow | Complete the report draft, evaluation findings, limitations, slides, and reflection draft |
-| 13 | Dec 8–11 | Resolve final issues and prepare the final MVP demonstration and repository | Revise and submit the report, presentation, and reflection according to confirmed course deadlines |
+| Week | Dates in 2026 | Development target by the end of the period                                                                       | Research and writing target                                                                         |
+| ---- | ------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 1    | Sep 15–21     | Confirm the two user paths, define the MVP, and organize the repository and task list                             | Review the proposal with the advisor; confirm the added Trusted Circle scope and paper expectations |
+| 2    | Sep 22–28     | Draft wireframes, user flows, database records, and invitation states                                             | Begin the literature review and maintain an annotated source list                                   |
+| 3    | Sep 29–Oct 5  | Establish the React and Express foundation, connect MongoDB, and verify frontend-to-backend communication         | Draft the project background, problem statement, and system architecture section                    |
+| 4    | Oct 6–12      | Complete registration, login, logout, protected pages, and basic profiles                                         | Record authentication and privacy design choices; continue the literature review                    |
+| 5    | Oct 13–19     | Complete trusted-connection invitations, acceptance, member listing, and removal                                  | Draft the Trusted Circle rationale and consent model                                                |
+| 6    | Oct 20–26     | Complete mood and contact-preference sharing, status clearing, and circle visibility checks                       | Draft the evaluation plan and review any participant-research requirements with the advisor         |
+| 7    | Oct 27–Nov 2  | Complete conversation invitations and Accept / Maybe Later / Decline behavior                                     | Document both user journeys and invitation-state decisions                                          |
+| 8    | Nov 3–9       | Complete stored private messages and verify the full non-AI support flow with test accounts                       | Draft the implementation section and prepare evaluation tasks                                       |
+| 9    | Nov 10–16     | Integrate AI drafting through the backend, including editable suggestions and failure handling                    | Document prompt design and how authenticity will be evaluated                                       |
+| 10   | Nov 17–23     | Complete AI refinement and test both user paths together; aim for a feature-complete beta                         | Complete the evaluation materials and bring the paper draft up to date                              |
+| 11   | Nov 24–30     | Run usability sessions if approved, fix priority issues, and check mobile layouts; allow for holiday availability | Collect permitted feedback and summarize observations without claiming clinical effects             |
+| 12   | Dec 1–7       | Finish regression checks, setup instructions, and the demonstration flow                                          | Complete the report draft, evaluation findings, limitations, slides, and reflection draft           |
+| 13   | Dec 8–11      | Resolve final issues and prepare the final MVP demonstration and repository                                       | Revise and submit the report, presentation, and reflection according to confirmed course deadlines  |
 
 ### Proposed advisor checkpoints
 
-| Meeting | Main review topic |
-| --- | --- |
-| September 15 | Scope, project goals, and semester expectations |
-| September 29 | Wireframes, database design, and architecture |
-| October 13 | Accounts, profiles, and progress toward the Trusted Circle |
-| October 27 | Circle membership, shared statuses, and conversation invitation design |
-| November 10 | Complete non-AI flow and readiness for AI integration |
-| November 24 | Both paths working and evaluation readiness |
-| December 8 | Final MVP, findings, report, and presentation |
+| Meeting      | Main review topic                                                      |
+| ------------ | ---------------------------------------------------------------------- |
+| September 15 | Scope, project goals, and semester expectations                        |
+| September 29 | Wireframes, database design, and architecture                          |
+| October 13   | Accounts, profiles, and progress toward the Trusted Circle             |
+| October 27   | Circle membership, shared statuses, and conversation invitation design |
+| November 10  | Complete non-AI flow and readiness for AI integration                  |
+| November 24  | Both paths working and evaluation readiness                            |
+| December 8   | Final MVP, findings, report, and presentation                          |
 
 Weekly progress notes will record what was completed, what changed, and what needs attention. If the schedule becomes tight, optional enhancements will be deferred so the core flows, access controls, evaluation, and final writing receive enough time.
 
@@ -204,7 +204,7 @@ The original proposal places the reflection deadline on the Friday before finals
 
 ## Project documentation
 
-This document is a companion to the original README. It records the expanded Fall 2026 plan and draws on the *CS 8674 Project Course – Proposal & Semester Plan* and the subsequent Trusted Circle design discussions. The original README remains the record of the initial CallingIn concept. Additional course materials and confirmed advisor requirements will be incorporated as they become available.
+This document is a companion to the original README. It records the expanded Fall 2026 plan and draws on the _CS 8674 Project Course – Proposal & Semester Plan_ and the subsequent Trusted Circle design discussions. The original README remains the record of the initial CallingIn concept. Additional course materials and confirmed advisor requirements will be incorporated as they become available.
 
 CallingIn begins with a simple belief: sometimes a thoughtful message, a willing listener, or a small moment of encouragement can make reaching out feel possible. This project is an opportunity to explore how software can make room for those human moments.
 
