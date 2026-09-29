@@ -1,0 +1,14 @@
+{
+  "name": "callingin-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CallingIn Express backend",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
