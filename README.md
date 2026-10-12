@@ -131,6 +131,7 @@ before sending it.
 The semester MVP will not include:
 
 - Trusted Circle membership or shared mood updates.
+- Gratitude List and Life Reflections.
 - In-app voice or video calls.
 - Group messaging or public social feeds.
 - Automatic mood detection.
@@ -146,20 +147,57 @@ or treat mental health conditions or replace professional care.
 
 ## Future Improvements
 
+The following features are possibilities for later development and are
+outside the Fall 2026 MVP.
+
 ### Trusted Circle — Human Support Without AI
 
 A future version may introduce a private, invitation-only circle
 of trusted friends and family.
 
-Users could voluntarily share how they feel and what kind of contact
-they welcome. Someone in their circle could then offer encouragement
-or invite them to talk using their own words, without AI involvement.
+Users could voluntarily share personal experiences, how they feel,
+and what kind of contact they welcome. Someone in their circle could
+then offer encouragement or invite them to talk using their own words,
+without AI involvement.
 
 The idea is grounded in humans supporting humans while respecting
 each person's privacy, availability, and boundaries.
 
-Trusted Circle is outside the Fall 2026 MVP because of the available
-development time.
+### Gratitude List
+
+A personal list of people who positively influenced the user's life,
+believed in them, gave them opportunities, or helped change their
+life's direction.
+
+Users would be able to:
+
+- Add, edit, and remove names.
+- Keep their Gratitude List private by default.
+- Optionally share the list with their Trusted Circle.
+
+### Life Reflections
+
+A personal space for preserving philosophical thoughts, observations,
+questions, and realizations about life.
+
+Topics might include:
+
+- The meaning of life and happiness.
+- Personal growth and lessons learned.
+- Relationships, kindness, and human connection.
+- Experiences that changed the user's perspective.
+- Original philosophical thoughts the user wants to remember.
+
+Users would be able to:
+
+- Create, edit, and save personal reflections.
+- Keep reflections private by default.
+- Optionally share selected reflections with their Trusted Circle.
+- Choose what to share and with whom.
+- Edit or remove previously shared reflections.
+
+Life Reflections would focus on authentic human expression.
+AI assistance would not be required.
 
 ### Other Possible Enhancements
 
@@ -229,7 +267,9 @@ after review.
 | 6 | `sprint-06-evaluation` | Evaluation, fixes, and final deliverables |
 
 Future branches will be created when their sprint begins.
-This table describes the plan, not branches already created.
+This table describes the planned workflow. As of October 12, the local
+`sprint-01-planning` branch contains the React and Express starter code;
+that source code is not yet present on the local `main` branch.
 
 See the [Sprint Plan](doc/sprint-plan.md) for dates and deliverables.
 
@@ -245,7 +285,25 @@ The project will use:
 - **Automated tests:** Verify important behavior and failure paths.
 - **Dependency scanning:** Review known vulnerabilities in packages.
 
-Exact testing and hook-management tools will be selected during setup.
+### Configuration Status — October 12, 2026
+
+Inspection of the local `sprint-01-planning` branch found:
+
+- `frontend/eslint.config.js` and `backend/eslint.config.js` both
+  configure ESLint's complexity rule as an error with a limit of 10.
+- Each application has its own lint command.
+- Husky and lint-staged configure pre-commit checks for staged files.
+- The backend uses Node.js's built-in test runner and includes
+  `backend/test/health.test.js`.
+
+A root command for checking both applications together is still needed.
+The pre-commit commands also need verification that they load the
+correct ESLint configuration from each application's directory.
+
+These findings record configuration inspection, not successful execution
+of the checks. Follow-up work should verify linting and complexity checks
+across both applications, review edge cases and test coverage, and
+record the results before declaring the quality checks complete.
 
 The professor's Rust checklist is retained as reference material.
 Its Rust commands do not apply to this JavaScript application.
@@ -290,7 +348,8 @@ editable Figma project.
 ## Project Documentation
 
 - [Sprint Plan](doc/sprint-plan.md)
-- [Advisor Meeting 01 — September 15, 2026](doc/meeting-01.md)
+- [Advisor Meeting 01 — September 15, 2026](doc/meetings/meeting-01_2026-09-15.md)
+- [Advisor Meeting 02 — September 29, 2026](doc/meetings/meeting-02_2026-09-29.md)
 - [Original Project Proposal](doc/CS8674_Project_Proposal_and_Semester_Plan_Shorena_Anzhilov.pdf)
 - [Code Quality Tools Chart](materials/code-quality-tools.png)
 - [Professor's Rust Quality Checklist](materials/check-rs.md)
@@ -320,7 +379,8 @@ Friday before finals week.
 
 ## Running the Project
 
-Application setup is in progress.
+Application setup is in progress on `sprint-01-planning`. The local
+`main` branch does not yet contain the starter source or package files.
 
 Installation commands, environment-variable instructions,
 and frontend/backend run commands will be added once the

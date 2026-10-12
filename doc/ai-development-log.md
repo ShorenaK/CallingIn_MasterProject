@@ -2,7 +2,7 @@
 
 ## Entry 01 — Starter Application
 
-**Date:** YYYY-MM-DD
+**Date:** 2026-Septmber-28
 **Tool and model:** Record what was used
 **Branch:** sprint-01-planning
 **Purpose:** Set up the React and Express foundation
