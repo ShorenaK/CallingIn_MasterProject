@@ -50,7 +50,6 @@ features are not represented as working functionality.
 ## Records
 
 - [Testing and quality-gate notes](Notes_testing_qualitygate.md)
-- [Original starter prompt](ai-development-log.md)
 
 - [Detailed AI development log and learning notes](ai-development-log-1.md)
 - [Semester sprint plan](../sprint-plan.md)
