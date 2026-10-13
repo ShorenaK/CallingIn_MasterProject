@@ -1,14 +1,21 @@
 # CallingIn — Project Journey
 
-A first-person record of my work, feelings, confusion, and learning while
-building CallingIn with generative AI and LLM agents. I plan to use these
-entries later for a memoir-style account and a research paper about how these
-tools can help developers create applications. These are my personal
-observations, not general research findings. I will record measured time and
-token usage only when I have evidence; otherwise, I will describe my experience
-without inventing numbers.
-Keep this file on `main`. Add a dated entry each week and after each sprint merge.
-Record completed actions separately from plans; include only confirmed results.
+## My essential process for working with AI agents
+
+I will ask **WHAT, WHY, and HOW** so I understand each step:
+
+- **WHAT:** What action will the agent take, and which files will it affect?
+- **WHY:** Why is the action needed?
+- **HOW:** How will it work, and how will we check the result?
+
+Before changing or submitting anything, the agent must explain the proposed
+step, ask my permission, and wait for my approval. This includes file edits,
+installations, staging, commits, pushes, and merges. Approval for one step does
+not automatically approve a new step outside that scope.
+
+I want to learn as I build. The agent should guide me with clear explanations
+and commands, and let me run the commands myself unless I explicitly ask it
+to run them.
 
 ## October 13, 2026 — Sprint 01 documentation organization
 
