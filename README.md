@@ -332,7 +332,7 @@ editable Figma project.
 ## Project Documentation
 
 - [Sprint Plan](doc/sprint-plan.md)
-- [Daily Commands](doc/commends.md)
+- [Daily Commands](doc/daily-commands.md)
 - [Sprint 1 Progress](doc/sprint-01/sprint-01-progress.md)
 - [Sprint 1 AI Development Log](doc/sprint-01/ai-development-log-1.md)
 - [Sprint 1 Testing and Quality Gates](doc/sprint-01/Notes_testing_qualitygate.md)
@@ -482,3 +482,8 @@ let it finish before making further edits. See the
 [frontend instructions](frontend/README.md) for additional details.
 
 © 2026 Shorena K. Anzhilov. All rights reserved. This source code is publicly available for viewing purposes only. No permission is granted to copy, modify, distribute, or use this code without prior written permission.
+
+## Daily workflow and weekly progress
+
+- [Daily commands and sprint completion](doc/daily-commands.md)
+- [Project journey](doc/project-journey.md)
