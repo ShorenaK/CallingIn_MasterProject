@@ -1,4 +1,4 @@
-# CallingIn — Testing and Quality Gates
+# CallingIn — Sprint 01 Testing and Quality Gates
 
 **Course:** CS 8674 — Project Course, Fall 2026  
 **Project:** CallingIn — AI Communication Coach MVP  
@@ -28,7 +28,7 @@ CallingIn/                         ← project root; run commands here
 │   └── package.json               ← backend commands
 └── doc/
     └── sprint-01/
-        └── Notes_testing_qualitygate.md
+        └── notes_testing_qualitygate_sprint-01.md
 ```
 
 The root `package.json` is **not a replacement** for either application's `package.json`. It coordinates their existing scripts. The root command observed was:

@@ -49,7 +49,7 @@ features are not represented as working functionality.
 
 ## Records
 
-- [Testing and quality-gate notes](Notes_testing_qualitygate.md)
+- [Testing and quality-gate notes](notes_testing_qualitygate_sprint-01.md)
 
 - [Detailed AI development log and learning notes](ai-development-log-1.md)
 - [Semester sprint plan](../sprint-plan.md)

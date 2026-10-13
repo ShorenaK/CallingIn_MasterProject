@@ -333,9 +333,10 @@ editable Figma project.
 
 - [Sprint Plan](doc/sprint-plan.md)
 - [Daily Commands](doc/daily-commands.md)
+- [Sprint 01 Commands](doc/sprint-01/commands_sprint-01.md)
 - [Sprint 1 Progress](doc/sprint-01/sprint-01-progress.md)
 - [Sprint 1 AI Development Log](doc/sprint-01/ai-development-log-1.md)
-- [Sprint 1 Testing and Quality Gates](doc/sprint-01/Notes_testing_qualitygate.md)
+- [Sprint 1 Testing and Quality Gates](doc/sprint-01/notes_testing_qualitygate_sprint-01.md)
 - [Advisor Meeting 01 — September 15, 2026](doc/meetings/meeting-01_2026-09-15.md)
 - [Advisor Meeting 02 — September 29, 2026](doc/meetings/meeting-02_2026-09-29.md)
 - [Original Project Proposal](doc/CS8674_Project_Proposal_and_Semester_Plan_Shorena_Anzhilov.pdf)

@@ -22,6 +22,15 @@ Record completed actions separately from plans; include only confirmed results.
 - **Next:** Review the documents, run checks, commit and push the approved work,
   then finish the sprint merge while preserving shared records on main.
 
+## October 13, 2026 — Sprint 01 merge review
+
+- **Work:** Resolved documentation rename and content conflicts, retained shared
+  main records, and added Prettier and ESLint fix commands to the daily guide.
+- **Learning:** Formatting a file does not resolve Git conflict markers; choose
+  the intended content first, then format and stage the resolution.
+- **Git status:** Merge is being reviewed; its final commit and push remain pending.
+- **Next:** Record final check results, then commit and push the reviewed merge.
+
 ## Weekly entry template
 
 Copy this section for each update and replace the placeholders.

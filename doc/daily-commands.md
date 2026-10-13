@@ -131,6 +131,47 @@ For other documents, replace the paths. Fix ESLint or test failures in the
 reported files, review `git diff`, and rerun `npm run check`. Do not bypass hooks
 to hide failures.
 
+### Commands when formatting or lint checks fail
+
+For Prettier failures across the project, run from the checkout root:
+
+```bash
+npx --no-install prettier --write .
+npm run format:check
+```
+
+This formats supported, non-ignored files. Review the changes with `git diff`.
+To change only a reported file instead:
+
+```bash
+npx --no-install prettier --write README.md
+```
+
+For ESLint failures, try the available automatic fixes:
+
+```bash
+npm --prefix frontend run lint -- --fix
+npm --prefix backend run lint -- --fix
+npm run lint
+```
+
+Some lint errors require manual code changes. If errors remain, fix the reported
+lines before continuing. An automated test failure requires fixing its cause;
+formatting commands do not fix test behavior. Rerun tests with `npm test`.
+
+After fixing failures, review, stage the intended corrections, and verify:
+
+```bash
+git diff
+npm run check
+git add .
+npm run precommit
+git diff --cached --check
+```
+
+Stop on any failure. A passing Prettier check alone does not mean tests or lint
+passed. During a merge, resolve all conflicts before formatting or staging.
+
 ## 4. Stage, check the hook, commit, and push on main
 
 Continue only when your terminal or IDE shows `main` and the changes
@@ -286,7 +327,7 @@ CallingIn/
 └── doc/
 ```
 
-`main` documentation in the separate checkout, before the Sprint 01 merge:
+`main` documentation after resolving the Sprint 01 merge:
 
 ```text
 doc/
@@ -304,7 +345,8 @@ doc/
 └── sprint-01/
     ├── ai-development-log-1.md
     ├── sprint-01-progress.md
-    ├── Notes_testing_qualitygate.md
+    ├── commands_sprint-01.md
+    ├── notes_testing_qualitygate_sprint-01.md
     └── images/
         └── smoke-test-2026-10-12.png
 ```

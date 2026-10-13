@@ -263,4 +263,4 @@ User Git activity outside the conversation is not inferred from these notes.
 - [lint-staged documentation](https://github.com/lint-staged/lint-staged): staged-file tasks and stash behavior.
 
 For current installation and run commands, use the
-[daily commands](../daily-commands.md). See also the [frontend instructions](../../frontend/README.md).
+[daily commands](../daily-commands.md) and [Sprint 01 commands](commands_sprint-01.md). See also the [frontend instructions](../../frontend/README.md).
