@@ -59,6 +59,6 @@ features are not represented as working functionality.
 ## Records
 
 - [Detailed AI development log and learning notes](ai-development-log-1.md)
-- [Semester sprint plan](../sprint-plan.md)
-- [September 29 advisor meeting notes](../meeting-01_2026-09-29.md)
+- [Semester sprint plan](https://github.com/ShorenaK/CallingIn_new/blob/main/doc/sprint-plan.md)
+- [September 29 advisor meeting notes](https://github.com/ShorenaK/CallingIn_new/blob/main/doc/meetings/meeting-02_2026-09-29.md)
 - [Project README and commands](../../README.md)

@@ -185,7 +185,7 @@ Checked local links, npm script references, formatting, and whitespace.
 
 Moved this log into `doc/sprint-01/` and created the
 [Sprint 1 progress record](sprint-01-progress.md). Semester-wide planning
-and advisor notes remain directly under `doc/`.
+and advisor notes are maintained on `main` in `doc/` and `doc/meetings/`.
 
 ### Important files and their roles
 
@@ -263,4 +263,5 @@ User Git activity outside the conversation is not inferred from these notes.
 - [lint-staged documentation](https://github.com/lint-staged/lint-staged): staged-file tasks and stash behavior.
 
 For current installation and run commands, use the
-[main README](../../README.md) and [frontend instructions](../../frontend/README.md).
+[Sprint 01 commands](commands_sprint-01.md), [project README](../../README.md),
+and [frontend instructions](../../frontend/README.md).
