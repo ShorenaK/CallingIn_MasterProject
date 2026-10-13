@@ -231,7 +231,7 @@ after review.
 Future branches will be created when their sprint begins.
 This table describes the plan, not branches already created.
 
-See the [Sprint Plan](doc/sprint-plan.md) for dates and deliverables.
+See the [Sprint Plan](https://github.com/ShorenaK/CallingIn_new/blob/main/doc/sprint-plan.md) for dates and deliverables.
 
 ## Code Quality
 
@@ -292,11 +292,18 @@ editable Figma project.
 
 ## Project Documentation
 
-- [Sprint Plan](doc/sprint-plan.md)
+This branch keeps Sprint 01 documents in `doc/sprint-01/`. Shared meeting
+notes, semester planning, the proposal, and archives are maintained on `main`.
+When integrating this branch into `main`, retain those shared documents there;
+do not apply their sprint-branch deletions to `main`.
+
+- [Sprint Plan](https://github.com/ShorenaK/CallingIn_new/blob/main/doc/sprint-plan.md)
 - [Sprint 1 Progress](doc/sprint-01/sprint-01-progress.md)
 - [Sprint 1 AI Development Log](doc/sprint-01/ai-development-log-1.md)
-- [Advisor Meeting 01 — September 15, 2026](doc/meeting-01_2026-09-15.md)
-- [Original Project Proposal](doc/CS8674_Project_Proposal_and_Semester_Plan_Shorena_Anzhilov.pdf)
+- [Sprint 01 Commands](doc/sprint-01/commands_sprint-01.md)
+- [Sprint 01 Testing and Quality Gates](doc/sprint-01/notes_testing_qualitygate_sprint-01.md)
+- [Advisor Meeting 01 — September 15, 2026](https://github.com/ShorenaK/CallingIn_new/blob/main/doc/meetings/meeting-01_2026-09-15.md)
+- [Original Project Proposal](https://github.com/ShorenaK/CallingIn_new/blob/main/doc/CS8674_Project_Proposal_and_Semester_Plan_Shorena_Anzhilov.pdf)
 - [Code Quality Tools Chart](materials/code-quality-tools.png)
 - [Professor's Rust Quality Checklist](materials/check-rs.md)
 
