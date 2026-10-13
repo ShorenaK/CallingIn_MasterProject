@@ -1,0 +1,19 @@
+{
+  "name": "callingin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "precommit": "lint-staged",
+    "lint": "npm --prefix frontend run lint && npm --prefix backend run lint",
+    "format:check": "prettier --check .",
+    "test": "npm --prefix backend test",
+    "build": "npm --prefix frontend run build",
+    "check": "npm run lint && npm run format:check && npm test && npm run build"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "3.9.9"
+  }
+}

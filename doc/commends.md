@@ -3,11 +3,6 @@
 Unless stated otherwise, run commands from the project root (`CallingIn/`).
 Use `pwd` to see your current folder and `cd ..` to move up one folder.
 
-The application and npm scripts described here are on `sprint-01-planning`.
-As of this documentation update, local `main` contains the documentation
-but not the starter source or root `package.json`. Run these npm commands
-from a checkout containing the starter code.
-
 ## Start the application
 
 Open two terminals, both starting in the project root.
@@ -176,6 +171,4 @@ npm --prefix backend ci
 `npm ci` installs the locked dependency versions. The root installation also
 activates Husky for this clone.
 
-See the README on `sprint-01-planning` for the complete starter setup
-instructions. The [main README](../README.md) describes the project and
-where its implementation currently lives.
+See the [main README](../README.md) for the complete starter setup instructions.

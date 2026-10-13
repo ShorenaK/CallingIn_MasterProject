@@ -347,22 +347,21 @@ Those conversations deserve more than another chat window.
 
 ## CallingIn helps people begin the conversations that matter most.
 
-
 --- Temp Images ---
->** my fav THE 1 option **
+
+> ** my fav THE 1 option **
 
 ![tem](public/images/logo1.png)
 
->** THE 2 option **
+> ** THE 2 option **
 
 ![tem](public/images/logo2.png)
 
-
->** my fav THE 1 option **
+> ** my fav THE 1 option **
 
 ![tem](public/images/tempalte3.png)
 
->** THE 2 option **
+> ** THE 2 option **
 
 ![tem](public/images/template.png)
 
@@ -372,18 +371,16 @@ Those conversations deserve more than another chat window.
 
 ![tem](public/images/thebesttempalte.png)
 
------------
-new feture added 
+---
+
+new feture added
 
 ![tem](public/images/callingin_concept.png)
-
 
 === Previous Projects To Use ===
 
 https://github.com/ShorenaK/GeoGoHub
 
-
 https://github.com/ShorenaK/GeoGoHub/tree/final-project-iteration
-
 
 https://github.com/ShorenaK/GeoWellHub

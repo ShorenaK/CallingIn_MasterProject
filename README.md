@@ -73,11 +73,11 @@ invitation to connect.
 
 The planned responses are:
 
-| Response | Behavior |
-| --- | --- |
-| Accept | Opens a private conversation |
-| Maybe Later | Keeps the invitation available for later consideration |
-| I need some space | Closes the invitation without opening a conversation |
+| Response          | Behavior                                               |
+| ----------------- | ------------------------------------------------------ |
+| Accept            | Opens a private conversation                           |
+| Maybe Later       | Keeps the invitation available for later consideration |
+| I need some space | Closes the invitation without opening a conversation   |
 
 The final wording will be reviewed during interface design.
 Choosing not to connect does not create an obligation to respond later.
@@ -213,15 +213,15 @@ These are possibilities for later development, not semester commitments.
 
 ## Planned Technology Stack
 
-| Area | Technology |
-| --- | --- |
-| Language | JavaScript |
-| Frontend | React, HTML, and CSS |
-| Backend | Node.js and Express |
-| Database | MongoDB with the native Node.js driver |
-| Authentication | Passport.js, server-side sessions, and password hashing |
-| AI integration | OpenAI API or another approved language model API |
-| Version control | Git and GitHub |
+| Area            | Technology                                              |
+| --------------- | ------------------------------------------------------- |
+| Language        | JavaScript                                              |
+| Frontend        | React, HTML, and CSS                                    |
+| Backend         | Node.js and Express                                     |
+| Database        | MongoDB with the native Node.js driver                  |
+| Authentication  | Passport.js, server-side sessions, and password hashing |
+| AI integration  | OpenAI API or another approved language model API       |
+| Version control | Git and GitHub                                          |
 
 AI API credentials will remain on the backend and will not be
 included in frontend code or committed to the repository.
@@ -257,19 +257,18 @@ after review.
 
 ### Planned Branches
 
-| Sprint | Branch | Focus |
-| --- | --- | --- |
-| 1 | `sprint-01-planning` | Documentation and application foundation |
-| 2 | `sprint-02-authentication` | Accounts, profiles, and database integration |
-| 3 | `sprint-03-invitations` | Invitation creation and response workflow |
-| 4 | `sprint-04-conversations` | Private messaging and Social Battery |
-| 5 | `sprint-05-ai-coach` | AI drafting and refinement |
-| 6 | `sprint-06-evaluation` | Evaluation, fixes, and final deliverables |
+| Sprint | Branch                     | Focus                                        |
+| ------ | -------------------------- | -------------------------------------------- |
+| 1      | `sprint-01-planning`       | Documentation and application foundation     |
+| 2      | `sprint-02-authentication` | Accounts, profiles, and database integration |
+| 3      | `sprint-03-invitations`    | Invitation creation and response workflow    |
+| 4      | `sprint-04-conversations`  | Private messaging and Social Battery         |
+| 5      | `sprint-05-ai-coach`       | AI drafting and refinement                   |
+| 6      | `sprint-06-evaluation`     | Evaluation, fixes, and final deliverables    |
 
 Future branches will be created when their sprint begins.
-This table describes the planned workflow. As of October 12, the local
-`sprint-01-planning` branch contains the React and Express starter code;
-that source code is not yet present on the local `main` branch.
+This table describes the planned workflow. The Sprint 1 React and Express
+starter is included in this repository.
 
 See the [Sprint Plan](doc/sprint-plan.md) for dates and deliverables.
 
@@ -285,25 +284,10 @@ The project will use:
 - **Automated tests:** Verify important behavior and failure paths.
 - **Dependency scanning:** Review known vulnerabilities in packages.
 
-### Configuration Status — October 12, 2026
-
-Inspection of the local `sprint-01-planning` branch found:
-
-- `frontend/eslint.config.js` and `backend/eslint.config.js` both
-  configure ESLint's complexity rule as an error with a limit of 10.
-- Each application has its own lint command.
-- Husky and lint-staged configure pre-commit checks for staged files.
-- The backend uses Node.js's built-in test runner and includes
-  `backend/test/health.test.js`.
-
-A root command for checking both applications together is still needed.
-The pre-commit commands also need verification that they load the
-correct ESLint configuration from each application's directory.
-
-These findings record configuration inspection, not successful execution
-of the checks. Follow-up work should verify linting and complexity checks
-across both applications, review edge cases and test coverage, and
-record the results before declaring the quality checks complete.
+The starter uses ESLint (including a complexity limit of 10), Prettier,
+Node’s built-in test runner, and Husky with lint-staged. The current tests
+cover the health endpoint and unknown API routes. Tests for the planned
+semester features will be added as those features are implemented.
 
 The professor's Rust checklist is retained as reference material.
 Its Rust commands do not apply to this JavaScript application.
@@ -354,15 +338,14 @@ editable Figma project.
 - [Sprint 1 Testing and Quality Gates](doc/sprint-01/Notes_testing_qualitygate.md)
 - [Advisor Meeting 01 — September 15, 2026](doc/meetings/meeting-01_2026-09-15.md)
 - [Advisor Meeting 02 — September 29, 2026](doc/meetings/meeting-02_2026-09-29.md)
-- [Meeting 02 Preparation Questions](doc/meetings/meeting-02-preparation_2026-09-29.md)
 - [Original Project Proposal](doc/CS8674_Project_Proposal_and_Semester_Plan_Shorena_Anzhilov.pdf)
 - [Code Quality Tools Chart](materials/code-quality-tools.png)
 - [Professor's Rust Quality Checklist](materials/check-rs.md)
 
 Semester-wide documents are in `doc/`, meeting files are in
 `doc/meetings/`, and Sprint 1 records are in `doc/sprint-01/`.
-The command guide and Sprint 1 verification records describe the starter
-on `sprint-01-planning`; the application source has not been merged into `main`.
+The command guide and Sprint 1 verification records describe the included
+React and Express starter.
 
 The original proposal records the initial semester plan.
 This README and the sprint plan describe the revised MVP scope.
@@ -389,11 +372,113 @@ Friday before finals week.
 
 ## Running the Project
 
-Application setup is in progress on `sprint-01-planning`. The local
-`main` branch does not yet contain the starter source or package files.
+The current starter includes a React welcome page, an Express health
+endpoint, and a Vite development proxy. It does not implement accounts,
+MongoDB, AI requests, invitations, or private messaging. Trusted Circle
+remains future work.
 
-Installation commands, environment-variable instructions,
-and frontend/backend run commands will be added once the
-starter applications are configured and verified.
+### Prerequisites and installation
+
+Use Node.js and npm. This starter was verified with Node.js `26.0.0` and
+npm `9.4.0`. Older Node releases may not support the installed tools or
+the optional environment-file startup flag.
+
+From the repository root, install the three sets of dependencies:
+
+```bash
+npm ci
+npm --prefix frontend ci
+npm --prefix backend ci
+```
+
+The root package contains shared pre-commit tools. Its `prepare` script
+activates Husky for this local clone. The frontend and backend each have
+their own application dependencies and lockfile.
+
+### Optional backend environment file
+
+No credentials are required. The backend defaults to port `3001`.
+To create an optional local configuration, run this once from the root,
+only if `backend/.env` does not already exist:
+
+```bash
+cp -n backend/.env.example backend/.env
+```
+
+The backend startup commands load `.env` when present. Keep `PORT=3001`
+to match the target in `frontend/vite.config.js`; if you change the port,
+update that proxy target too. Real `.env` files are ignored by Git; the
+example contains no secrets. The frontend needs no environment file.
+
+### Start the application
+
+In one terminal, from the repository root:
+
+```bash
+npm --prefix backend run dev
+```
+
+In a second terminal, from the repository root:
+
+```bash
+npm --prefix frontend run dev
+```
+
+Open <http://127.0.0.1:5173/>. The page checks `/api/health` through Vite,
+which forwards the request to Express at <http://127.0.0.1:3001>.
+Both servers must be running for a connected status. Stop each server
+with Ctrl+C in its terminal. The backend also supports
+`npm --prefix backend start` without automatic restart.
+
+### Verify the starter
+
+Run from the repository root:
+
+```bash
+npm run check
+```
+
+The combined check runs frontend and backend linting, repository formatting
+checks, backend tests, and the frontend build. It stops if a step fails.
+
+The backend tests start temporary localhost servers and check the health
+response’s status, JSON content type and body, plus an unknown-route 404.
+The build writes generated files to `frontend/dist/`, which Git ignores.
+A successful build does not deploy or start the application.
+
+With both development servers running, check the proxy:
+
+```bash
+curl --fail http://127.0.0.1:5173/api/health
+```
+
+Expected response: `{"status":"ok"}`.
+
+### Formatting and pre-commit checks
+
+Use `npm --prefix frontend run format` or
+`npm --prefix backend run format` to format application files.
+For a specific root document, use the locally installed formatter:
+
+```bash
+npx --no-install prettier --write README.md
+```
+
+When you commit, Husky runs ESLint on staged application JavaScript and
+Prettier on supported staged text files. It blocks a commit on failure
+without automatically formatting the files. Fix and review the reported
+issues, then stage the corrections yourself. Builds and tests remain
+separate commands so the hook stays fast.
+
+To check files you have staged without committing:
+
+```bash
+npm run precommit
+```
+
+With no staged files, this command skips checks. lint-staged temporarily
+hides unstaged portions of partially staged files and uses a backup stash;
+let it finish before making further edits. See the
+[frontend instructions](frontend/README.md) for additional details.
 
 © 2026 Shorena K. Anzhilov. All rights reserved. This source code is publicly available for viewing purposes only. No permission is granted to copy, modify, distribute, or use this code without prior written permission.
