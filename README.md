@@ -348,11 +348,21 @@ editable Figma project.
 ## Project Documentation
 
 - [Sprint Plan](doc/sprint-plan.md)
+- [Daily Commands](doc/commends.md)
+- [Sprint 1 Progress](doc/sprint-01/sprint-01-progress.md)
+- [Sprint 1 AI Development Log](doc/sprint-01/ai-development-log-1.md)
+- [Sprint 1 Testing and Quality Gates](doc/sprint-01/Notes_testing_qualitygate.md)
 - [Advisor Meeting 01 — September 15, 2026](doc/meetings/meeting-01_2026-09-15.md)
 - [Advisor Meeting 02 — September 29, 2026](doc/meetings/meeting-02_2026-09-29.md)
+- [Meeting 02 Preparation Questions](doc/meetings/meeting-02-preparation_2026-09-29.md)
 - [Original Project Proposal](doc/CS8674_Project_Proposal_and_Semester_Plan_Shorena_Anzhilov.pdf)
 - [Code Quality Tools Chart](materials/code-quality-tools.png)
 - [Professor's Rust Quality Checklist](materials/check-rs.md)
+
+Semester-wide documents are in `doc/`, meeting files are in
+`doc/meetings/`, and Sprint 1 records are in `doc/sprint-01/`.
+The command guide and Sprint 1 verification records describe the starter
+on `sprint-01-planning`; the application source has not been merged into `main`.
 
 The original proposal records the initial semester plan.
 This README and the sprint plan describe the revised MVP scope.
