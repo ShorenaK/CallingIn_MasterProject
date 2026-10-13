@@ -1,6 +1,6 @@
 # Sprint 1 Progress — CallingIn
 
-**Updated:** September 29, 2026  
+**Updated:** October 12, 2026\
 **Branch:** `sprint-01-planning`  
 **Status:** Starter implemented; final review remains open.
 
@@ -37,6 +37,18 @@ The initial plan targeted September 15–28 for Sprint 1, with review on
 September 29. Foundation work documented here occurred on September 29.
 Record any remaining carryover during review rather than marking the
 whole sprint complete prematurely.
+
+## Smoke Test — October 12, 2026
+
+Shorena confirmed that the starter smoke test passed: the frontend and
+backend started, the welcome page connected to the backend, and the
+connection check recovered after stopping and restarting the backend.
+These results were verified by the student.
+
+The supplied screenshot shows the welcome page with the status
+“Backend connected. The application foundation is ready.”
+
+![CallingIn welcome page showing a successful backend connection](images/smoke-test-2026-10-12.png)
 
 ## Scope boundaries
 
