@@ -116,10 +116,54 @@ npx --no-install prettier --write doc/sprint-02/commands_sprint-02.md
 npm run check
 ```
 
-### Next step
+### 7. Verify the live Atlas connection
 
-Reset the exposed Atlas password, save the updated connection string in private
-`backend/.env`, and verify the live connection. Registration, login, and other
-account features have not been implemented yet.
+The student confirmed resetting the exposed password. The agent connected and
+pinged Atlas successfully, then closed the connection without creating records.
+The student ran the same check and reported success.
 
-Add future commands and short explanations here as each step is completed.
+From `backend/`, run:
+
+```bash
+node --env-file=.env --input-type=module -e 'import { connectDatabase } from "./src/database.js"; try { const connection = await connectDatabase(); console.log("Atlas connection and ping passed."); await connection.close(); } catch (error) { console.error(error.message); process.exitCode = 1; }'
+```
+
+Use `-e` for this one-shot command; `--input-type=module` cannot be used with
+Node's interactive REPL. Credentials remain in private `.env`.
+
+### 8. Implement backend registration
+
+Added `POST /api/auth/register` with display name, email, and password input.
+Display names are trimmed and limited to 1–80 characters; emails are trimmed,
+lowercased, and validated; passwords must be 15–128 characters.
+
+- `backend/src/registration.js` validates requests, hashes passwords with a
+  random salt and Node's built-in `scrypt`, and inserts accounts into MongoDB.
+- `backend/src/app.js` adds JSON parsing, the registration route, and safe
+  error responses for malformed or oversized requests.
+- `backend/src/server.js` prepares a unique email index before listening.
+- `backend/test/registration.test.js` adds seven tests covering successful
+  registration, validation, duplicate emails, unavailable storage, safe error
+  responses, salted hashes, and unique-index setup.
+
+Registration returns public account fields only, with HTTP 201 on success,
+400 for invalid input, 409 for duplicate email, and 503 for unavailable storage.
+The test for oversized requests checks HTTP 413. No new packages were installed.
+
+```bash
+npm run check
+```
+
+After implementation, the complete check passed: ESLint, Prettier, all 13
+backend tests, and the frontend build. Registration tests used simulated
+storage; registration against Atlas and real unique-index enforcement have not
+been verified. No Atlas accounts were created during these tests.
+
+### Next step — review professor feedback
+
+The student has new professor feedback to share. Further implementation will
+wait while we review that feedback and agree on a revised plan. Login, logout,
+sessions, protected profile endpoints, and frontend account forms remain pending.
+
+The student handles staging, commits, pushes, and the eventual sprint merge.
+Add future commands and short explanations as each step is completed.

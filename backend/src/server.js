@@ -1,10 +1,19 @@
 import app from './app.js';
 import { connectDatabase } from './database.js';
+import { prepareUsers } from './registration.js';
 
 const port = process.env.PORT || 3001;
 
 async function start() {
   const database = await connectDatabase();
+  try {
+    await prepareUsers(database.db);
+  } catch {
+    await database.close().catch(() => {});
+    throw new Error(
+      'Account storage setup failed. Check database permissions and existing accounts.',
+    );
+  }
   app.locals.db = database.db;
   console.log('MongoDB connected and ping verified.');
 

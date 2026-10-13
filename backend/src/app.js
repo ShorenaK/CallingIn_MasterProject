@@ -1,9 +1,31 @@
 import express from 'express';
+import { register } from './registration.js';
 
-const app = express();
+export function createApp(db) {
+  const app = express();
+  app.locals.db = db;
+  app.use(express.json({ limit: '16kb' }));
 
-app.get('/api/health', (_request, response) => {
-  response.json({ status: 'ok' });
-});
+  app.get('/api/health', (_request, response) => {
+    response.json({ status: 'ok' });
+  });
+  app.post('/api/auth/register', register);
 
-export default app;
+  app.use((error, _request, response, next) => {
+    if (response.headersSent) return next(error);
+    if (error.type === 'entity.too.large') {
+      return response.status(413).json({ error: 'Request body is too large.' });
+    }
+    if (error.type === 'entity.parse.failed') {
+      return response
+        .status(400)
+        .json({ error: 'Request body must be valid JSON.' });
+    }
+    return response
+      .status(500)
+      .json({ error: 'An unexpected error occurred.' });
+  });
+  return app;
+}
+
+export default createApp();

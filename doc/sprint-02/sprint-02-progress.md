@@ -3,7 +3,8 @@
 **Actual start:** October 13, 2026  
 **Branch:** `sprint-02-authentication`  
 **Starting commit:** `dc21195` on `main`  
-**Status:** Planning only; authentication and database integration not implemented.
+**Status:** Atlas connection verified; backend registration implemented and tested
+with simulated storage. Further implementation awaits professor feedback.
 
 ## Goal
 
@@ -37,8 +38,8 @@ the actual start date; revised milestones and advisor review remain to be agreed
 
 ## Decisions still needed
 
-- Database environment: local MongoDB or hosted service.
-- Required registration and profile fields.
+- Review new professor feedback and revise priorities.
+- Profile fields beyond the approved registration display name, email, and password.
 - Session persistence and logout behavior.
 - Validation rules, error messages, and frontend layout.
 - Test database setup that stays separate from real user data.
@@ -47,8 +48,13 @@ the actual start date; revised milestones and advisor review remain to be agreed
 
 - [x] Create Sprint 02 branch from clean main.
 - [x] Create planning checklist and AI development log.
-- [ ] Approve database and authentication design.
-- [ ] Implement database and account endpoints.
+- [x] Select Atlas and install the MongoDB driver.
+- [x] Verify live database connection and ping.
+- [x] Implement backend registration and salted password hashing.
+- [x] Run registration tests using simulated storage.
+- [ ] Verify registration and unique-email enforcement against a test database.
+- [ ] Review professor feedback and approve the next implementation step.
+- [ ] Agree on sessions and implement login, logout, and protected endpoints.
 - [ ] Implement frontend account flows.
 - [ ] Complete relevant tests and browser verification.
 - [ ] Student reviews, stages, commits, pushes, and merges completed work.
@@ -62,11 +68,14 @@ approved step and a plan to preserve main's shared records during integration.
 
 ## Verification
 
-This setup changes documentation only. Formatting and whitespace will be checked;
-no new application behavior or authentication test result is claimed here.
+The full project check passed after registration: lint, formatting, 13 backend
+tests, and frontend build. Live Atlas ping passed; registration tests used
+simulated storage. Browser account flows and live account creation remain
+unverified. No registration records were written to Atlas during testing.
 
 ## Records
 
 - [Sprint 02 AI development log](ai-development-log-2.md)
+- [Sprint 02 commands and step record](commands_sprint-02.md)
 - [Daily commands](../daily-commands.md)
 - [Semester sprint plan](../sprint-plan.md)
