@@ -117,6 +117,44 @@ cat .husky/pre-commit
 
 Expected hook path: `.husky/_`; hook command: `npm run precommit`.
 
+### Dependency security audits
+
+Run these after installing or updating dependencies, before finishing and
+merging a sprint, and once a week if dependencies have not changed. Run from
+the project root on the branch being checked; no folder switching is needed.
+
+```bash
+npm audit
+npm --prefix frontend audit
+npm --prefix backend audit
+```
+
+Each scans a separate package for known dependency vulnerabilities. `npm audit`
+is included with npm; no additional installation is needed. These scans are
+not included in `npm run check`. Snyk is not configured as a project dependency.
+
+If an audit reports a vulnerability, review the affected dependency and proposed
+fix before changing anything. After approving a frontend fix, for example:
+
+```bash
+npm --prefix frontend audit fix
+git diff -- frontend/package.json frontend/package-lock.json
+npm --prefix frontend audit
+npm run check
+```
+
+For the root use `npm audit fix`; for the backend use
+`npm --prefix backend audit fix`, then review that package's files and rerun
+its audit and the full checks. `audit fix` can change dependencies and lockfiles.
+Do not add `--force` without reviewing the potentially breaking changes.
+Some findings require a manual update instead of an automatic fix.
+
+On October 13, 2026, the frontend audit reported a high-severity issue in
+`source-map-js` 1.2.1. Updating it to 1.2.2 cleared the finding, and the full
+project checks passed. This records that scan, not a guarantee about future scans.
+
+Reference: [npm audit documentation](https://docs.npmjs.com/cli/v11/commands/npm-audit/).
+
 ## 3. Fix reported failures
 
 Read the error first. These commands apply formatting changes:

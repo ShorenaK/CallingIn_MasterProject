@@ -6,6 +6,22 @@
 **Documentation date:** October 12, 2026  
 **Status:** Root-level quality commands configured and exercised; staged-file checks verified manually; automatic Git hook invocation observed during a commit.
 
+## Quality tools — configuration reviewed October 13, 2026
+
+| Purpose             | Tool and current status                                              | Configuration or command                                                                        |
+| ------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Linter              | ESLint, configured for both applications                             | `frontend/eslint.config.js`, `backend/eslint.config.js`; `npm run lint`                         |
+| Formatter           | Prettier, configured                                                 | `.prettierrc.json`; `npm run format:check`                                                      |
+| Complexity analysis | ESLint complexity rule; maximum 10 per function                      | Both ESLint configurations use `complexity: ['error', 10]`                                      |
+| Type checker        | TypeScript `tsc` is not configured; application code uses JavaScript | No type-check script or TypeScript configuration; `@types/react` alone does not enable checking |
+| Build tool          | Vite frontend production build                                       | `frontend/vite.config.js`; `npm run build`                                                      |
+| Dependency scanner  | npm audit, available through npm but outside the combined check      | Run audits for root, frontend, and backend separately                                           |
+| Alternative scanner | Snyk is not configured as a project dependency                       | No Snyk project script                                                                          |
+| Commit checks       | Husky and lint-staged                                                | `.husky/pre-commit`, `.lintstagedrc.json`; `npm run precommit`                                  |
+
+See the [daily guide](../daily-commands.md) for audit timing, commands, and
+Prettier/ESLint failure fixes. No type checker or Snyk installation was added.
+
 ## Purpose and background
 
 During Sprint 01, the project was organized into a React frontend and a Node.js/Express backend. Quality tools were already configured in the individual applications. To make checks easier to run consistently, a **root `package.json`** was added or updated with commands that coordinate both applications. The goal was to verify actual behavior rather than assume that the presence of configuration files meant everything worked.
@@ -100,7 +116,7 @@ backend:  eslint . --max-warnings 0   → passed
 
 **Analogy:** A route with three turns is easier to follow than a route with twenty confusing intersections.
 
-**Verification status:** ESLint ran successfully, but the transcript does **not** establish which specific complexity rules are enabled. Inspect the ESLint configurations for rules such as `complexity`, `max-depth`, or `max-lines-per-function` before claiming complexity enforcement is verified.
+**Configuration reviewed October 13, 2026:** Both ESLint configurations contain `complexity: ['error', 10]`, limiting function complexity to 10. `npm run lint` checks both applications and passed after the dependency update. The September 29 meeting record also documents rejection of a sample with complexity 11. This does not establish other rules such as `max-depth` or `max-lines-per-function`.
 
 ## 4. Formatting — Prettier
 
@@ -347,13 +363,13 @@ git commit -m "chore: configure root quality checks"
 1. **Keep using the root checks:** Run `npm run check` before merging sprint work into `main`.
 2. **Use the normal commit workflow:** Stage reviewed files, then commit. Husky should invoke `npm run precommit` automatically; manually running it every time is unnecessary.
 3. **Verify the hook's failure behavior when convenient:** Use a safe temporary branch and a controlled failing staged file; do not disrupt current work.
-4. **Confirm complexity rules:** Review the frontend and backend ESLint configurations for the intended complexity limits.
+4. **Maintain complexity rules:** Both applications configure a limit of 10; review changes to those configurations as development continues.
 5. **Add tests alongside AI Coach development:** Include success and failure paths; do not claim coverage for features not yet implemented.
 6. **Consider frontend test coverage and CI later:** These are next improvements, not verified Sprint 01 accomplishments.
 7. **Keep a dated verification record:** Save the command, result, branch, and any fix needed after failures.
 
 ## Summary for the professor
 
-During Sprint 01, I configured or updated the root-level npm quality-check workflow for CallingIn, which has separate frontend and backend applications. I ran the combined checks and observed successful linting, formatting, and two backend tests. I also ran the frontend production build separately and confirmed that it succeeded. I inspected the Husky pre-commit hook and `lint-staged` rules, manually ran the staged-file checks on `package.json`, and observed staged-file checks during a successful commit on `sprint-01-planning`. These checks provide a repeatable quality foundation, while complexity-rule details, a deliberately failing hook test, frontend feature tests, and server-side pre-merge enforcement remain to be verified or added.
+During Sprint 01, I configured or updated the root-level npm quality-check workflow for CallingIn, which has separate frontend and backend applications. I ran the combined checks and observed successful linting, formatting, and two backend tests. I also ran the frontend production build separately and confirmed that it succeeded. I inspected the Husky pre-commit hook and `lint-staged` rules, manually ran the staged-file checks on `package.json`, and observed staged-file checks during a successful commit on `sprint-01-planning`. These checks provide a repeatable quality foundation, with a configured complexity limit of 10 in both applications. A deliberately failing hook test, frontend feature tests, and server-side pre-merge enforcement remain to be verified or added.
 
 **Bottom line:** Quality gates do not prove software is perfect. They make checks repeatable, catch certain mistakes early, and provide evidence of what was actually tested.
