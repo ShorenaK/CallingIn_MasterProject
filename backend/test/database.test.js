@@ -58,3 +58,46 @@ for (const failure of ['connect', 'ping']) {
     assert.equal(closed, true);
   });
 }
+
+test('missing database name and whitespace-only URI are rejected', async () => {
+  for (const env of [
+    { ...settings, MONGODB_DB_NAME: ' ' },
+    { ...settings, MONGODB_URI: ' ' },
+  ]) {
+    await assert.rejects(
+      connectDatabase(env, () =>
+        assert.fail('Invalid configuration must not connect'),
+      ),
+      /Set MONGODB_URI/,
+    );
+  }
+});
+
+test('client construction errors are sanitized even without a client to close', async () => {
+  await assert.rejects(
+    connectDatabase(settings, () => {
+      throw new Error('private URI');
+    }),
+    {
+      message:
+        'MongoDB connection failed. Check credentials, Atlas IP access, and network connectivity.',
+    },
+  );
+});
+
+test('cleanup errors do not replace the safe connection failure message', async () => {
+  await assert.rejects(
+    connectDatabase(settings, () => ({
+      connect: async () => {
+        throw new Error('private connection failure');
+      },
+      close: async () => {
+        throw new Error('private cleanup failure');
+      },
+    })),
+    {
+      message:
+        'MongoDB connection failed. Check credentials, Atlas IP access, and network connectivity.',
+    },
+  );
+});

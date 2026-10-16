@@ -221,3 +221,47 @@ Accessibility-plugin setup is deferred: `eslint-plugin-jsx-a11y` 6.10.2 declares
 ESLint support only through version 9. ESLint 9 is end-of-life, so the project
 keeps ESLint 10 without forcing installation or claiming accessibility linting
 is active. This compatibility finding is separate from the implemented limits.
+
+## October 16, 2026 — Backend coverage reporting and missing tests
+
+Run from the CallingIn root:
+
+```bash
+npm run test:coverage
+```
+
+Or from `backend/`:
+
+```bash
+npm run test:coverage
+```
+
+The root command delegates to the backend. Node's built-in runner uses
+`--experimental-test-coverage` with `--test-coverage-include="src/**/*.js"`.
+No Vitest migration, extra dependency, coverage threshold, or CI change was made.
+`npm run check` still runs regular tests; coverage is a separate command.
+
+The first 13-test report omitted server.js entirely, so its high total was not
+representative of all source files. Added seven tests for database configuration,
+constructor/cleanup failures, safe generic HTTP errors, and isolated startup
+failures. Extracted the existing error middleware as `handleError` so it can be
+tested directly; HTTP behavior remains unchanged.
+
+The final report includes all four source files and all 20 tests pass:
+
+| File            | Lines  | Branches | Functions |
+| --------------- | ------ | -------- | --------- |
+| app.js          | 100%   | 100%     | 100%      |
+| database.js     | 100%   | 100%     | 100%      |
+| registration.js | 100%   | 100%     | 100%      |
+| server.js       | 27.45% | 75%      | 40%       |
+| Overall         | 81.22% | 98.15%   | 84.21%    |
+
+Remaining gaps: successful server startup, index-setup failure, port-listening
+failure, and shutdown paths in server.js. These need controlled lifecycle tests;
+no real Atlas records or credentials were used for the new tests. Coverage
+means execution, not proof that every input or behavior is correct. Thresholds
+will be agreed after reviewing these gaps rather than hiding untested files.
+
+Also completed the earlier duplication refactor: health and registration tests
+share `backend/test-support/server.js` for temporary-server startup and cleanup.

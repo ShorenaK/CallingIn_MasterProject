@@ -11,21 +11,21 @@ export function createApp(db) {
   });
   app.post('/api/auth/register', register);
 
-  app.use((error, _request, response, next) => {
-    if (response.headersSent) return next(error);
-    if (error.type === 'entity.too.large') {
-      return response.status(413).json({ error: 'Request body is too large.' });
-    }
-    if (error.type === 'entity.parse.failed') {
-      return response
-        .status(400)
-        .json({ error: 'Request body must be valid JSON.' });
-    }
-    return response
-      .status(500)
-      .json({ error: 'An unexpected error occurred.' });
-  });
+  app.use(handleError);
   return app;
+}
+
+export function handleError(error, _request, response, next) {
+  if (response.headersSent) return next(error);
+  if (error.type === 'entity.too.large') {
+    return response.status(413).json({ error: 'Request body is too large.' });
+  }
+  if (error.type === 'entity.parse.failed') {
+    return response
+      .status(400)
+      .json({ error: 'Request body must be valid JSON.' });
+  }
+  return response.status(500).json({ error: 'An unexpected error occurred.' });
 }
 
 export default createApp();

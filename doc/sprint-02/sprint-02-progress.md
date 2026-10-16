@@ -79,3 +79,13 @@ unverified. No registration records were written to Atlas during testing.
 - [Sprint 02 commands and step record](commands_sprint-02.md)
 - [Daily commands](../daily-commands.md)
 - [Semester sprint plan](../sprint-plan.md)
+
+## Quality follow-up — October 16, 2026
+
+- Shared test-server helper removes repeated health/registration test setup.
+- Coverage command added: `npm run test:coverage` from the root or backend.
+- All 20 backend tests pass, including seven additional failure/error cases.
+- Coverage includes all four source files: 81.22% lines, 98.15% branches,
+  84.21% functions. Server lifecycle paths remain the largest gap.
+- Coverage thresholds, type checking, Node.js lint plugin, and GitHub CI remain
+  separate pending steps. The accessibility plugin remains compatibility-blocked.

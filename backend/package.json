@@ -10,7 +10,8 @@
     "lint": "npm --prefix .. run lint:backend --",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node --test"
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=\"src/**/*.js\""
   },
   "dependencies": {
     "express": "^5.2.1",

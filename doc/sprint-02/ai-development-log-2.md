@@ -121,3 +121,25 @@ verification commands; browser interaction verification remains separate.
 Verification: the final `npm run check` passed lint, formatting, all 13 backend
 tests, and frontend build. In-memory lint probes confirmed each new rule rejects
 an intentional violation. Browser interaction checks were not performed.
+
+## Entry 05 — Duplication audit and backend coverage
+
+**Date:** October 16, 2026
+
+With approval, extracted duplicated HTTP test setup into
+`backend/test-support/server.js`. Application duplication did not justify
+further consolidation at this stage.
+
+Added root/backend `test:coverage` commands using Node's existing test runner.
+The initial report omitted unexecuted server.js. Added seven meaningful tests
+for missing configuration, safe client construction/cleanup errors, generic HTTP
+error handling, and startup failure without real credentials. Extracted the
+existing error middleware for direct testing without changing HTTP behavior.
+
+All 20 tests passed. The report now includes every backend source file:
+81.22% lines, 98.15% branches, and 84.21% functions. server.js has 27.45% line
+coverage; successful startup, index failure, port failure, and shutdown still
+need controlled tests. No claim of full behavioral coverage is made. Coverage
+thresholds, CI, and a test-runner migration were not added.
+
+The agent did not stage, commit, push, or merge.
