@@ -386,3 +386,31 @@ into main. Source workflow and required-rule setup are separate steps.
 
 References: [GitHub required checks](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)
 and [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches).
+
+## October 16, 2026 — Claude audit items E and M
+
+**E** means fixing README drift. Updated current functionality, backend database
+configuration requirements, registration/lifecycle test scope, and type-check
+instructions. The README now acknowledges that older dist files remain tracked;
+this step does not untrack them.
+
+**M** is the audit's label for Node-version consistency, not a separate tool.
+Added `.nvmrc` with `26.0.0`, declared Node `>=26.0.0 <27` in all three packages
+and their lockfile metadata, and changed CI to read `.nvmrc` instead of a second
+hard-coded version. No dependency versions were upgraded.
+
+For users with nvm installed, run from the project root:
+
+```bash
+nvm install
+nvm use
+node --version
+```
+
+nvm selects the exact verified version; engines declarations normally warn on
+unsupported versions rather than switching or blocking Node automatically.
+The current runtime matches `.nvmrc`. Future version upgrades need explicit
+verification and a deliberate edit to that file.
+
+No coverage thresholds, dist-index changes, staging, commits, pushes, or merges
+were performed by the agent in this step.

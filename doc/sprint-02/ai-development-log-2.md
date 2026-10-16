@@ -219,3 +219,16 @@ files, installed all three lockfiles and passed lint, formatting, type checking,
 31 backend tests, build, and coverage (100% reported backend lines/branches/functions).
 All three read-only npm audits reported zero vulnerabilities. This local macOS
 check does not establish that the GitHub-hosted Ubuntu run has passed.
+
+## Entry 10 — README drift and Node-version consistency
+
+**Date:** October 16, 2026
+
+The student approved Claude audit items E and M. Updated README descriptions to
+match the implemented backend and quality checks. Added `.nvmrc` (26.0.0), matching
+Node engine ranges in all manifests/lockfile metadata, and made GitHub CI read
+the version file. Source application behavior and dependency versions are unchanged.
+
+Verified local Node matches the selected version, package/lockfile engine metadata
+agree, and CI reads `.nvmrc`. Formatting and whitespace checks passed. No coverage
+threshold, dist untracking, staging, commit, push, or merge was performed.

@@ -274,7 +274,7 @@ See the [Sprint Plan](doc/sprint-plan.md) for dates and deliverables.
 
 ## Code Quality
 
-The project will use:
+The project uses:
 
 - **ESLint:** Detect potential mistakes and enforce coding rules.
 - **Prettier:** Keep formatting consistent.
@@ -284,10 +284,16 @@ The project will use:
 - **Automated tests:** Verify important behavior and failure paths.
 - **Dependency scanning:** Review known vulnerabilities in packages.
 
-The starter uses ESLint (including a complexity limit of 10), Prettier,
-Node’s built-in test runner, and Husky with lint-staged. The current tests
-cover the health endpoint and unknown API routes. Tests for the planned
-semester features will be added as those features are implemented.
+Shared root tooling includes ESLint, Prettier, TypeScript's JavaScript checker,
+and Husky with lint-staged. ESLint limits cyclomatic complexity to 10, nesting
+depth to 4, parameters to 4, and function length to 60 lines excluding comments
+and blank lines. Accessibility linting remains deferred due to plugin compatibility.
+
+Node's built-in test suite covers health routes, registration validation and
+password hashing, database failure handling, and server startup/shutdown.
+`npm run test:coverage` reports backend source coverage; no minimum threshold
+is enforced yet. Frontend browser tests are not configured. GitHub's Quality
+workflow also runs checks and dependency audits after pushes/pull requests.
 
 The professor's Rust checklist is retained as reference material.
 Its Rust commands do not apply to this JavaScript application.
@@ -373,16 +379,31 @@ Friday before finals week.
 
 ## Running the Project
 
-The current starter includes a React welcome page, an Express health
-endpoint, and a Vite development proxy. It does not implement accounts,
-MongoDB, AI requests, invitations, or private messaging. Trusted Circle
-remains future work.
+The current application includes a React welcome page, an Express health
+endpoint, a Vite development proxy, MongoDB connectivity, and a backend
+registration endpoint with password hashing and unique email storage. Login,
+logout, sessions, profile endpoints, and frontend account forms are not yet
+implemented. AI requests, invitations, and private messaging remain planned;
+Trusted Circle remains future work.
 
 ### Prerequisites and installation
 
-Use Node.js and npm. This starter was verified with Node.js `26.0.0` and
-npm `9.4.0`. Older Node releases may not support the installed tools or
-the optional environment-file startup flag.
+Use Node.js 26.x and npm. `.nvmrc` selects the verified version `26.0.0`, and
+GitHub CI reads that same file. All three packages declare Node
+`>=26.0.0 <27`. These declarations document compatibility; they do not switch
+your installed runtime automatically, and npm normally warns on mismatches.
+
+If you use the nvm version manager, run from the repository root:
+
+```bash
+nvm install
+nvm use
+node --version
+```
+
+These select the version in `.nvmrc`. If you do not use nvm, use your Node
+version manager to select `26.0.0` before running the checks. Update `.nvmrc`
+when deliberately upgrading the tested version; CI follows that file.
 
 From the repository root, install the three sets of dependencies:
 
@@ -399,17 +420,21 @@ before running either application's lint or formatting commands. Its `prepare` s
 activates Husky for this local clone. The frontend and backend each have
 their own application dependencies and lockfile.
 
-### Optional backend environment file
+### Backend environment configuration
 
-No credentials are required. The backend defaults to port `3001`.
-To create an optional local configuration, run this once from the root,
+Starting the backend requires `MONGODB_URI` and `MONGODB_DB_NAME` for your Atlas
+or local MongoDB database. Automated tests use controlled connections and do
+not require real credentials. The backend defaults to port `3001`.
+To create the private configuration, run this once from the root,
 only if `backend/.env` does not already exist:
 
 ```bash
 cp -n backend/.env.example backend/.env
 ```
 
-The backend startup commands load `.env` when present. Keep `PORT=3001`
+Fill in the private connection settings in `backend/.env`; never place real
+credentials in `.env.example`. Backend startup loads `.env` when present and
+refuses to start if database settings are missing or the connection fails. Keep `PORT=3001`
 to match the target in `frontend/vite.config.js`; if you change the port,
 update that proxy target too. Real `.env` files are ignored by Git; the
 example contains no secrets. The frontend needs no environment file.
@@ -442,12 +467,17 @@ Run from the repository root:
 npm run check
 ```
 
-The combined check runs frontend and backend linting, repository formatting
-checks, backend tests, and the frontend build. It stops if a step fails.
+The combined check runs frontend/backend linting, repository formatting,
+JavaScript type checks, backend tests, and the frontend build. It stops if a
+step fails. Tests cover health routes, registration, database failures, and
+startup/shutdown using temporary localhost servers and controlled dependencies.
+They do not create live Atlas accounts or require private database settings.
 
-The backend tests start temporary localhost servers and check the health
-response’s status, JSON content type and body, plus an unknown-route 404.
-The build writes generated files to `frontend/dist/`, which Git ignores.
+Run `npm run test:coverage` separately for a backend coverage report. Dependency
+audits are separate from `npm run check`, but run in the GitHub Quality workflow.
+
+The build writes generated files to `frontend/dist/`; the ignore rule covers new
+untracked output, but some older build files remain tracked pending cleanup.
 A successful build does not deploy or start the application.
 
 With both development servers running, check the proxy:
