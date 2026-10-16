@@ -498,3 +498,12 @@ Run `npm run typecheck` from the root to check frontend and backend application
 source using TypeScript's JavaScript checker and JSDoc. Source stays `.js`/`.jsx`;
 `noEmit` prevents generated files. `npm run check` includes this step. Tests and
 configuration files are not yet part of the type-check scope.
+
+## GitHub quality checks
+
+`.github/workflows/quality.yml` defines a **Quality checks** job for main/sprint
+pushes and pull requests to main. It installs all three locked package sets and
+runs lint, formatting, JavaScript type checks, backend coverage tests, frontend
+build, and dependency audits without Atlas credentials. Deployment is separate.
+After pushing and obtaining a green run, configure main's required status checks
+in GitHub settings; committing the workflow alone does not enforce merge rules.

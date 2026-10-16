@@ -341,3 +341,48 @@ confirmed the checker rejects a number passed as a password; the probe was remov
 The coverage run passed 31 tests and still measured 100% backend lines, branches,
 and functions. No coverage threshold, GitHub workflow, or accessibility package
 was added. The agent did not stage, commit, push, or merge.
+
+## October 16, 2026 — GitHub continuous integration
+
+Added `.github/workflows/quality.yml`. After it is committed and pushed, GitHub
+runs the **Quality / Quality checks** job for pushes to main/sprint branches and
+pull requests targeting main. Manual runs become available once the workflow
+exists on the default branch. No deployment or automatic merge is configured.
+
+The job installs all three lockfiles with `npm ci`, then runs lint, formatting,
+JavaScript type checking, backend tests with coverage, frontend build, and all
+three dependency audits. It uses Node 26.0.0, matching local verification, and
+read-only repository permissions. Official checkout/setup-node revisions are
+pinned. Husky is disabled on the CI runner; the explicit checks still run.
+No Atlas connection, database secrets, or real account records are needed.
+
+Coverage is reported without an enforced minimum. Audits fail on reported
+vulnerabilities by npm's default policy; new advisories may fail a future run
+without source changes. Review findings rather than automatically applying fixes.
+
+### Finish setup after the student pushes
+
+1. Review and commit the workflow and related documentation on this sprint branch.
+2. Push and open the repository's **Actions** tab. Wait for **Quality checks**
+   to finish successfully; local checks do not prove the hosted run passed.
+3. In repository **Settings**, open **Rules / Rulesets** (or **Branches** for
+   classic protection). Use a rule targeting `main`; preserve existing protections.
+4. Require pull requests and passing status checks. Select the successful
+   **Quality checks** check, using GitHub Actions as its source where available.
+5. Consider requiring branches to be up to date before merging. Review bypass
+   permissions so the intended protection is actually enforced. Do not require
+   another reviewer's approval unless a reviewer is available for this project.
+6. Save/activate the rule and confirm a pull request shows the required check.
+
+Plan, visibility, and repository permissions affect available protection features.
+Required-check settings have NOT been changed by creating this workflow.
+The local GitHub CLI currently has invalid authentication; no remote settings
+were changed. Configure the rules through the browser after the first green run,
+or reauthenticate the CLI before requesting help with remote settings.
+
+I still stage, commit, and push myself. A passing push check does not undo or
+reject an existing commit; required rules prevent failing work from being merged
+into main. Source workflow and required-rule setup are separate steps.
+
+References: [GitHub required checks](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)
+and [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches).

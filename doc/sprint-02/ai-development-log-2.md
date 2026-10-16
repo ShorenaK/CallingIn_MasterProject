@@ -196,3 +196,26 @@ narrowing, and a regression test for non-Error database failures. The checker
 rejected an intentional wrong-password-argument probe, which was then removed.
 The coverage run passed 31 tests with 100% reported backend lines/branches/functions.
 No live Atlas data was used. The agent did not stage, commit, push, or merge.
+
+## Entry 09 — GitHub CI workflow prepared
+
+**Date:** October 16, 2026
+
+The student approved GitHub CI setup. Added the Quality workflow for main/sprint
+pushes and pull requests to main. It installs locked dependencies and runs lint,
+formatting, type checking, coverage tests, build, and root/frontend/backend audits.
+It uses Node 26.0.0 and pinned official actions with read-only permissions.
+No deployment, database secrets, coverage minimum, or automatic submission is added.
+
+Hosted execution and required main-branch checks remain pending the student's
+commit/push and a first successful GitHub run. The local GitHub CLI authentication
+is invalid, so remote repository settings were not changed. Documented the browser
+steps for activating required checks after a green run. The agent did not stage,
+commit, push, or merge.
+
+Verification: parsed the workflow YAML and checked triggers, permissions, and
+pinned action references. In a clean temporary copy without private environment
+files, installed all three lockfiles and passed lint, formatting, type checking,
+31 backend tests, build, and coverage (100% reported backend lines/branches/functions).
+All three read-only npm audits reported zero vulnerabilities. This local macOS
+check does not establish that the GitHub-hosted Ubuntu run has passed.

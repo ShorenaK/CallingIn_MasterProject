@@ -158,3 +158,11 @@ now part of `npm run check`. Test-file/configuration type checking remains outsi
 this initial scope. One regression test brings the backend suite to 31 tests;
 coverage still reports 100% lines, branches, and functions. No Git actions were
 performed by the agent.
+
+## GitHub CI — October 16, 2026
+
+Prepared `.github/workflows/quality.yml` to run lint, formatting, type checking,
+backend coverage tests, build, and dependency audits on GitHub's servers.
+The workflow is local until committed and pushed by the student. Hosted execution
+and main-branch required status checks are not yet verified or configured.
+See the Sprint 02 commands record for the post-push setup instructions.
