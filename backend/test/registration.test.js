@@ -133,3 +133,15 @@ test('account setup requests a unique email index', async () => {
     },
   });
 });
+
+test('non-Error storage failures still return a safe response', async (t) => {
+  const post = await start(
+    t,
+    fakeDb(async () => {
+      throw 'private non-Error failure';
+    }),
+  );
+  const response = await post();
+  assert.equal(response.status, 503);
+  assert.doesNotMatch(await response.text(), /private non-Error failure/);
+});

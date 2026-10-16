@@ -1,8 +1,12 @@
 import { randomBytes, scrypt } from 'node:crypto';
 import { promisify } from 'node:util';
 
+/** @type {(password: string, salt: string, keylen: number, options: import('node:crypto').ScryptOptions) => Promise<Buffer>} */
 const deriveKey = promisify(scrypt);
 
+/** @typedef {{displayName: string, email: string, password: string}} RegistrationInput */
+
+/** @param {string} password */
 export async function hashPassword(password) {
   const salt = randomBytes(16).toString('hex');
   const key = await deriveKey(password, salt, 64, {
@@ -14,6 +18,7 @@ export async function hashPassword(password) {
   return `scrypt$131072$8$1$${salt}$${key.toString('hex')}`;
 }
 
+/** @param {unknown} name */
 function validName(name) {
   return (
     typeof name === 'string' &&
@@ -22,6 +27,7 @@ function validName(name) {
   );
 }
 
+/** @param {unknown} email */
 function validEmail(email) {
   return (
     typeof email === 'string' &&
@@ -30,6 +36,7 @@ function validEmail(email) {
   );
 }
 
+/** @param {unknown} password */
 function validPassword(password) {
   return (
     typeof password === 'string' &&
@@ -38,6 +45,7 @@ function validPassword(password) {
   );
 }
 
+/** @param {Partial<RegistrationInput> | null | undefined} body */
 export function validateRegistration(body) {
   if (!body || !validName(body.displayName))
     return 'Display name must be 1–80 characters.';
@@ -48,13 +56,19 @@ export function validateRegistration(body) {
   return null;
 }
 
+/** @param {import('mongodb').Db} db */
 export async function prepareUsers(db) {
   await db.collection('users').createIndex({ email: 1 }, { unique: true });
 }
 
+/**
+ * @param {import('express').Request<Record<string, string>, unknown, RegistrationInput>} request
+ * @param {import('express').Response} response
+ */
 export async function register(request, response) {
   const error = validateRegistration(request.body);
   if (error) return response.status(400).json({ error });
+  /** @type {import('mongodb').Db | undefined} */
   const db = request.app.locals.db;
   if (!db)
     return response
@@ -77,7 +91,7 @@ export async function register(request, response) {
       },
     });
   } catch (failure) {
-    if (failure.code === 11000)
+    if (failure instanceof Error && 'code' in failure && failure.code === 11000)
       return response
         .status(409)
         .json({ error: 'An account with that email already exists.' });

@@ -1,6 +1,7 @@
 import express from 'express';
 import { register } from './registration.js';
 
+/** @param {import('mongodb').Db} [db] */
 export function createApp(db) {
   const app = express();
   app.locals.db = db;
@@ -15,6 +16,7 @@ export function createApp(db) {
   return app;
 }
 
+/** @type {import('express').ErrorRequestHandler} */
 export function handleError(error, _request, response, next) {
   if (response.headersSent) return next(error);
   if (error.type === 'entity.too.large') {

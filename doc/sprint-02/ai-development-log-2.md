@@ -176,3 +176,23 @@ The student chose to ask the professor before proceeding. Documented options,
 setup changes, limitations, and discussion questions in the progress record.
 No accessibility dependencies, browser binaries, configuration, or scripts were
 installed or added. No staging, commits, pushes, or merges were performed.
+
+## Entry 08 — Type checking without replacing JavaScript
+
+**Date:** October 16, 2026
+
+After explaining that TypeScript would be a development checker rather than a
+source-language migration, the student approved installation and configuration.
+Added TypeScript, Node/Express definitions, shared and app-level configurations,
+and JSDoc annotations. Source remains JavaScript. Added `npm run typecheck` and
+included it in `npm run check`.
+
+Strict checks cover frontend/backend application source only. Tests and tooling
+configuration are not yet type checked; dependency declaration internals are
+skipped. No blanket suppression or disabling of source checks was needed.
+
+Added a missing-root guard, numeric HTTP port conversion, safe caught-error
+narrowing, and a regression test for non-Error database failures. The checker
+rejected an intentional wrong-password-argument probe, which was then removed.
+The coverage run passed 31 tests with 100% reported backend lines/branches/functions.
+No live Atlas data was used. The agent did not stage, commit, push, or merge.

@@ -1,5 +1,14 @@
 import { MongoClient } from 'mongodb';
 
+/**
+ * @typedef {{db: import('mongodb').Db, close: () => Promise<void>}} DatabaseConnection
+ */
+
+/**
+ * @param {Record<string, string | undefined>} [env]
+ * @param {(uri: string) => MongoClient} [createClient]
+ * @returns {Promise<DatabaseConnection>}
+ */
 export async function connectDatabase(
   env = process.env,
   createClient = (uri) =>
@@ -11,13 +20,15 @@ export async function connectDatabase(
     throw new Error('Set MONGODB_URI and MONGODB_DB_NAME in backend/.env.');
   }
 
+  /** @type {MongoClient | undefined} */
   let client;
   try {
     client = createClient(uri);
     await client.connect();
     const db = client.db(name);
     await db.command({ ping: 1 });
-    return { db, close: () => client.close() };
+    const connectedClient = client;
+    return { db, close: () => connectedClient.close() };
   } catch {
     await client?.close().catch(() => {});
     throw new Error(

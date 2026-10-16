@@ -491,3 +491,10 @@ let it finish before making further edits. See the
 
 - [Daily commands and sprint completion](doc/daily-commands.md)
 - [Project journey](doc/project-journey.md)
+
+## JavaScript type checks
+
+Run `npm run typecheck` from the root to check frontend and backend application
+source using TypeScript's JavaScript checker and JSDoc. Source stays `.js`/`.jsx`;
+`noEmit` prevents generated files. `npm run check` includes this step. Tests and
+configuration files are not yet part of the type-check scope.

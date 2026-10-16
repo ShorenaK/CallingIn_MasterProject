@@ -2,9 +2,15 @@ import { createApp } from './app.js';
 import { connectDatabase } from './database.js';
 import { prepareUsers } from './registration.js';
 
+/**
+ * @param {import('express').Express} app
+ * @param {string | number} port
+ * @returns {Promise<import('node:http').Server>}
+ */
 function listen(app, port) {
   return new Promise((resolve, reject) => {
-    const server = app.listen(port, '127.0.0.1');
+    const server = app.listen(Number(port), '127.0.0.1');
+    /** @param {Error} error */
     function onError(error) {
       server.removeListener('listening', onListening);
       reject(error);
@@ -18,8 +24,20 @@ function listen(app, port) {
   });
 }
 
+/**
+ * @typedef {import('./database.js').DatabaseConnection} DatabaseConnection
+ * @typedef {{runtime: NodeJS.Process, timers: {setTimeout: typeof setTimeout, clearTimeout: typeof clearTimeout}, shutdownTimeoutMs: number}} ShutdownOptions
+ */
+
+/**
+ * @param {import('node:http').Server} server
+ * @param {DatabaseConnection} database
+ * @param {ShutdownOptions} options
+ * @returns {() => Promise<void>}
+ */
 export function configureShutdown(server, database, options) {
   const { runtime, timers, shutdownTimeoutMs } = options;
+  /** @type {Promise<void> | undefined} */
   let stopping;
   function stop() {
     if (stopping) return stopping;
@@ -28,14 +46,17 @@ export function configureShutdown(server, database, options) {
       shutdownTimeoutMs,
     );
     deadline.unref();
-    stopping = new Promise((resolve, reject) => {
-      server.close((error) => {
-        void database
-          .close()
-          .then(() => (error ? reject(error) : resolve()), reject);
-      });
-      server.closeIdleConnections();
-    }).finally(() => {
+    stopping = new Promise(
+      /** @param {(value?: void) => void} resolve */
+      (resolve, reject) => {
+        server.close((error) => {
+          void database
+            .close()
+            .then(() => (error ? reject(error) : resolve()), reject);
+        });
+        server.closeIdleConnections();
+      },
+    ).finally(() => {
       timers.clearTimeout(deadline);
       runtime.removeListener('SIGINT', onSignal);
       runtime.removeListener('SIGTERM', onSignal);
@@ -63,6 +84,7 @@ const defaults = {
   shutdownTimeoutMs: 10000,
 };
 
+/** @param {Partial<typeof defaults> & {port?: string | number}} [options] */
 export async function startBackend(options = {}) {
   const {
     connect,
@@ -93,7 +115,7 @@ export async function startBackend(options = {}) {
   });
   logger.log('MongoDB connected and ping verified.');
   logger.log(
-    `CallingIn backend listening at http://127.0.0.1:${server.address().port}`,
+    `CallingIn backend listening at http://127.0.0.1:${/** @type {import('node:net').AddressInfo} */ (server.address()).port}`,
   );
   return { server, stop };
 }

@@ -148,3 +148,13 @@ command-line or GitHub CI gate.
 References: [Playwright accessibility testing](https://playwright.dev/docs/accessibility-testing),
 [Playwright browser setup](https://playwright.dev/docs/browsers), and
 [axe DevTools extension](https://www.deque.com/axe/devtools/extension/).
+
+## JavaScript type checking — October 16, 2026
+
+Implemented strict `checkJs` with JSDoc for frontend/backend application source.
+TypeScript is a root development dependency; `.js`/`.jsx` files remain unchanged
+in language. `npm run typecheck` performs checks without emitting files and is
+now part of `npm run check`. Test-file/configuration type checking remains outside
+this initial scope. One regression test brings the backend suite to 31 tests;
+coverage still reports 100% lines, branches, and functions. No Git actions were
+performed by the agent.

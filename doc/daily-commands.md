@@ -67,12 +67,13 @@ npm run check
 
 `npm run check` runs these in order and stops on failure:
 
-| Command                | What it checks                    |
-| ---------------------- | --------------------------------- |
-| `npm run lint`         | Frontend and backend ESLint rules |
-| `npm run format:check` | Repository Prettier formatting    |
-| `npm test`             | Backend automated tests           |
-| `npm run build`        | Frontend production build         |
+| Command                | What it checks                                                      |
+| ---------------------- | ------------------------------------------------------------------- |
+| `npm run lint`         | Frontend and backend ESLint rules                                   |
+| `npm run format:check` | Repository Prettier formatting                                      |
+| `npm run typecheck`    | Checks frontend/backend JavaScript types with JSDoc; emits no files |
+| `npm test`             | Backend automated tests                                             |
+| `npm run build`        | Frontend production build                                           |
 
 A passing check verifies those checks, not every possible application behavior.
 Run the browser smoke test too when application behavior changes.

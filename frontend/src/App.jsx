@@ -2,8 +2,12 @@ import { useEffect, useState } from 'react';
 import logo from '../../public/images/logo1.png';
 import './App.css';
 
+/** @typedef {'loading' | 'connected' | 'error'} ConnectionStatus */
+
 function useBackendConnection() {
-  const [connection, setConnection] = useState('loading');
+  const [connection, setConnection] = useState(
+    /** @type {ConnectionStatus} */ ('loading'),
+  );
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -71,6 +75,7 @@ function Welcome() {
   );
 }
 
+/** @param {{connection: ConnectionStatus, retry: () => void}} props */
 function ProjectStatus({ connection, retry }) {
   const messages = {
     loading: 'Checking the connection…',
