@@ -80,3 +80,23 @@ No new scope or schedule is assumed until that feedback is available.
 
 Registration code and this record were not staged, committed, pushed, or merged
 by the agent. The student remains responsible for those actions.
+
+## Entry 03 — Shared lint and formatting setup
+
+**Date:** October 16, 2026
+
+The student approved consolidating existing tools before adding new rules.
+Moved ESLint, Prettier, related configuration packages, and React lint plugins
+to the repository root. Replaced both application ESLint configurations with
+`eslint.config.mjs`, preserving complexity 10 and environment-specific rules.
+Updated lint-staged and app-level commands to use the shared tools. No global
+machine installation, new lint rule, type checker, or coverage gate was added.
+
+The full project check passed: lint, formatting, all 13 tests, and build.
+Application-level lint/format commands also passed. Checked effective browser,
+Node, React hooks, and complexity settings, and confirmed invalid backend code
+is rejected through the root ESLint invocation. No staged-file hook execution
+is claimed: the agent did not stage files to run it.
+
+All three installation audits reported zero known vulnerabilities. The student
+handles staging, commits, pushes, and merges; none were performed by the agent.

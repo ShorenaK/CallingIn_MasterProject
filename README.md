@@ -392,7 +392,10 @@ npm --prefix frontend ci
 npm --prefix backend ci
 ```
 
-The root package contains shared pre-commit tools. Its `prepare` script
+The root package contains shared ESLint, Prettier, React lint plugins, and pre-commit tools.
+`eslint.config.mjs` defines common rules once and applies browser/React rules
+to the frontend and Node.js rules to the backend. Install root dependencies
+before running either application's lint or formatting commands. Its `prepare` script
 activates Husky for this local clone. The frontend and backend each have
 their own application dependencies and lockfile.
 

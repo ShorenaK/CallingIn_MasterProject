@@ -5,6 +5,13 @@ for CallingIn’s scope and semester plan.
 
 ## Install and run
 
+Shared lint and formatting tools are installed at the repository root.
+Install them once before using quality commands:
+
+```bash
+npm ci
+```
+
 From the repository root, install the frontend dependencies and start Vite:
 
 ```bash

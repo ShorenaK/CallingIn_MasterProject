@@ -5,19 +5,18 @@ import refresh from 'eslint-plugin-react-refresh';
 import prettier from 'eslint-config-prettier';
 
 export default [
-  { ignores: ['dist/**', 'coverage/**'] },
-  js.configs.recommended,
+  { ignores: ['**/node_modules/**', '**/dist/**', '**/coverage/**'] },
   {
-    files: ['**/*.{js,jsx}'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      parserOptions: { ecmaFeatures: { jsx: true } },
-    },
-    rules: { complexity: ['error', 10] },
+    files: ['frontend/**/*.{js,jsx}', 'backend/**/*.js'],
+    rules: { ...js.configs.recommended.rules, complexity: ['error', 10] },
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   },
   {
-    files: ['src/**/*.{js,jsx}'],
+    files: ['frontend/**/*.{js,jsx}'],
+    languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
+  },
+  {
+    files: ['frontend/src/**/*.{js,jsx}'],
     languageOptions: { globals: globals.browser },
     plugins: { 'react-hooks': hooks, 'react-refresh': refresh },
     rules: {
@@ -30,7 +29,7 @@ export default [
     },
   },
   {
-    files: ['vite.config.js', 'eslint.config.js'],
+    files: ['backend/**/*.js', 'frontend/vite.config.js'],
     languageOptions: { globals: globals.node },
   },
   prettier,

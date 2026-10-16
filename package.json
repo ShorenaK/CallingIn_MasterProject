@@ -5,15 +5,23 @@
   "scripts": {
     "prepare": "husky",
     "precommit": "lint-staged",
-    "lint": "npm --prefix frontend run lint && npm --prefix backend run lint",
+    "lint": "eslint frontend backend --max-warnings 0",
     "format:check": "prettier --check .",
     "test": "npm --prefix backend test",
     "build": "npm --prefix frontend run build",
-    "check": "npm run lint && npm run format:check && npm test && npm run build"
+    "check": "npm run lint && npm run format:check && npm test && npm run build",
+    "lint:frontend": "eslint frontend --max-warnings 0",
+    "lint:backend": "eslint backend --max-warnings 0"
   },
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "prettier": "3.9.9"
+    "prettier": "3.9.9",
+    "eslint": "^10.11.0",
+    "@eslint/js": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7"
   }
 }

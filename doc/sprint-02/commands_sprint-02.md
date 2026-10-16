@@ -167,3 +167,36 @@ sessions, protected profile endpoints, and frontend account forms remain pending
 
 The student handles staging, commits, pushes, and the eventual sprint merge.
 Add future commands and short explanations as each step is completed.
+
+## October 16, 2026 — Consolidate shared quality tools
+
+Moved ESLint, its shared configuration packages, React lint plugins, and Prettier
+into the root package. The frontend retains React/Vite; the backend retains
+Express/MongoDB. All three package manifests and lockfiles remain necessary.
+
+Replaced the two app-level ESLint configuration files with root
+`eslint.config.mjs`. Common rules, including complexity 10, are defined once;
+React/browser and backend Node.js rules remain scoped to the appropriate files.
+No new lint rules were added in this step. Updated lint-staged to use root ESLint.
+
+Install all packages from the project root when setting up a fresh checkout:
+
+```bash
+npm ci
+npm --prefix frontend ci
+npm --prefix backend ci
+```
+
+Root dependencies are now required for app-level lint and format commands.
+Normal commands remain available:
+
+```bash
+npm run check
+npm --prefix frontend run lint
+npm --prefix backend run lint
+npm --prefix frontend run format:check
+npm --prefix backend run format:check
+```
+
+For files the student has staged, `npm run precommit` uses the shared root tools.
+The agent did not stage, commit, push, or merge this consolidation.
