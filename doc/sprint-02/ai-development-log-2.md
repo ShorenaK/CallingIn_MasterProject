@@ -143,3 +143,36 @@ need controlled tests. No claim of full behavioral coverage is made. Coverage
 thresholds, CI, and a test-runner migration were not added.
 
 The agent did not stage, commit, push, or merge.
+
+## Entry 06 — Server startup and shutdown coverage
+
+**Date:** October 16, 2026
+
+The student approved a lifecycle refactor and tests. Extracted startup and
+shutdown into `src/lifecycle.js`, leaving `src/server.js` as the executable
+entry point. Dependencies can be controlled in tests without real Atlas access.
+Startup awaits database/index setup and HTTP listening. Failure paths clean up;
+shutdown is idempotent, closes resources, removes signal handlers, and clears
+its deadline timer. Added ten lifecycle tests including an actual port conflict.
+
+All 30 backend tests passed. Coverage measured 100% lines, branches, and
+functions across all five backend source files. This is execution coverage,
+not proof of every possible input, operating-system signal behavior, or live
+Atlas registration. No coverage gate, new package, or GitHub workflow was added.
+
+The agent did not stage, commit, push, or merge.
+
+## Entry 07 — Accessibility options documented; installation deferred
+
+**Date:** October 16, 2026
+
+Reviewed package metadata and official documentation for Playwright and axe-core
+as an accessibility-testing alternative independent of ESLint. Explained that
+`@playwright/test` runs browser tests and `@axe-core/playwright` performs the
+accessibility scans; the proposed setup needs both and a test-browser download.
+Also discussed the free axe DevTools browser extension as a manual alternative.
+
+The student chose to ask the professor before proceeding. Documented options,
+setup changes, limitations, and discussion questions in the progress record.
+No accessibility dependencies, browser binaries, configuration, or scripts were
+installed or added. No staging, commits, pushes, or merges were performed.

@@ -265,3 +265,43 @@ will be agreed after reviewing these gaps rather than hiding untested files.
 
 Also completed the earlier duplication refactor: health and registration tests
 share `backend/test-support/server.js` for temporary-server startup and cleanup.
+
+## October 16, 2026 — Server lifecycle tests
+
+Moved startup/shutdown behavior into `backend/src/lifecycle.js` so tests can
+supply a simulated database and process interface. `backend/src/server.js`
+remains the executable entry point. The application still connects and prepares
+the unique email index before listening.
+
+Added ten tests in `backend/test/lifecycle.test.js` for successful startup,
+connection/index failures, failed setup cleanup, a real occupied localhost port,
+SIGINT/SIGTERM shutdown, repeated stop calls, cleanup failures, and a stalled
+shutdown deadline. Signal/deadline tests use a controlled process interface;
+they do not terminate the test runner or prove behavior on every operating system.
+
+Startup errors close the database; normal shutdown closes HTTP and MongoDB,
+removes signal handlers, and clears the shutdown timer. Repeated stop calls share
+the same promise. Port errors are sanitized before being reported.
+
+```bash
+npm run test:coverage
+npm run check
+```
+
+The lifecycle coverage run passed all 30 tests and measured 100% lines, branches,
+and functions across all five backend source files. This supersedes the earlier
+81.22% line-coverage baseline. No coverage threshold is enforced. Tests use
+simulated database connections, not Atlas accounts or real user records;
+coverage does not establish complete behavior or live database integration.
+
+## October 16, 2026 — Accessibility setup deferred
+
+I will discuss accessibility tooling with Professor Lionelle before installing
+anything. Playwright plus axe-core was proposed as an automated alternative to
+the currently incompatible JSX accessibility lint plugin. The proposed setup
+needs both `@playwright/test` and `@axe-core/playwright`, plus a test-browser
+download. A free axe DevTools browser extension is a simpler manual alternative.
+
+No installation commands were run and no `npm run test:a11y` script exists yet.
+See the [Sprint 02 progress record](sprint-02-progress.md) for requirements,
+tradeoffs, and questions for the professor. Further setup needs my approval.

@@ -89,3 +89,62 @@ unverified. No registration records were written to Atlas during testing.
   84.21% functions. Server lifecycle paths remain the largest gap.
 - Coverage thresholds, type checking, Node.js lint plugin, and GitHub CI remain
   separate pending steps. The accessibility plugin remains compatibility-blocked.
+
+## Server lifecycle follow-up — October 16, 2026
+
+Startup/shutdown logic is independently testable in `backend/src/lifecycle.js`.
+Ten additional tests cover startup success/failure, index failures, port conflicts,
+shutdown signals, repeated cleanup, and timeout behavior. All 30 tests pass;
+coverage reports 100% lines, branches, and functions across the five backend
+source files. Earlier coverage numbers above are retained as historical baselines.
+Live Atlas account creation, browser account flows, and coverage thresholds
+remain unverified or not implemented.
+
+## Accessibility testing — awaiting professor discussion
+
+**Decision recorded:** October 16, 2026
+
+I am deferring accessibility-tool installation until I discuss the options with
+Professor Lionelle. No Playwright/axe packages, browser downloads, accessibility
+test configuration, or `test:a11y` command were added.
+
+The originally suggested `eslint-plugin-jsx-a11y` 6.10.2 declares support only
+through ESLint 9; this project keeps ESLint 10 because ESLint 9 is end-of-life.
+Accessibility linting is therefore not enabled.
+
+### Proposed automated alternative
+
+Playwright and axe-core are free, open-source tools. For the proposed browser
+accessibility tests, both packages work together:
+
+- `@playwright/test` opens the browser, runs tests, and reports results.
+- `@axe-core/playwright` integrates axe-core accessibility scans into those tests.
+- Playwright also needs a test-browser download, initially Chromium.
+
+Setup would require root development dependencies/lockfile changes, browser
+installation, configuration and test files, a proposed `npm run test:a11y`
+command, and generated-report exclusions. Tests would start Vite automatically
+and simulate backend health responses, without Atlas credentials. Any findings
+would be reviewed before approving application changes.
+
+This approach checks the rendered page independently of ESLint and could later
+run in CI. It adds test maintenance as the interface changes. Automated scans
+cannot prove complete accessibility; manual keyboard, focus, zoom, and
+screen-reader checks remain necessary.
+
+### Simpler manual alternative
+
+The free axe DevTools browser extension can scan the running application
+without adding project packages. It would not, by itself, provide a repeatable
+command-line or GitHub CI gate.
+
+### Questions for Professor Lionelle
+
+- Should I use Playwright with axe-core now, or begin with manual browser scans?
+- Is rendered-page testing an acceptable interim approach while the suggested
+  ESLint plugin does not declare support for the installed ESLint version?
+- Which pages/states, accessibility criteria, and manual checks should we prioritize?
+
+References: [Playwright accessibility testing](https://playwright.dev/docs/accessibility-testing),
+[Playwright browser setup](https://playwright.dev/docs/browsers), and
+[axe DevTools extension](https://www.deque.com/axe/devtools/extension/).
