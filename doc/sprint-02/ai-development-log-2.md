@@ -100,3 +100,24 @@ is claimed: the agent did not stage files to run it.
 
 All three installation audits reported zero known vulnerabilities. The student
 handles staging, commits, pushes, and merges; none were performed by the agent.
+
+## Entry 04 — Additional function limits
+
+**Date:** October 16, 2026
+
+After student approval, added `max-depth: 4`, `max-params: 4`, and
+`max-lines-per-function: 60` excluding blank lines/comments. Kept complexity 10.
+The frontend App exceeded the function-size limit, so it was split into a
+connection hook and smaller components without intentionally changing behavior.
+Backend functions passed the new limits without edits.
+
+The accessibility plugin was not installed: version 6.10.2 does not declare
+ESLint 10 compatibility. A read-only compatibility review found ESLint 9 is
+end-of-life; downgrading or forcing the plugin was not performed.
+
+The agent did not stage, commit, push, or merge. See the commands record for
+verification commands; browser interaction verification remains separate.
+
+Verification: the final `npm run check` passed lint, formatting, all 13 backend
+tests, and frontend build. In-memory lint probes confirmed each new rule rejects
+an intentional violation. Browser interaction checks were not performed.

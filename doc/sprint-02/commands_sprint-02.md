@@ -200,3 +200,24 @@ npm --prefix backend run format:check
 
 For files the student has staged, `npm run precommit` uses the shared root tools.
 The agent did not stage, commit, push, or merge this consolidation.
+
+## October 16, 2026 — Function complexity and size limits
+
+Kept cyclomatic complexity at 10 and added shared ESLint limits: nesting depth
+4, parameters 4, and 60 lines per function excluding comments and blank lines.
+The limits apply to frontend and backend code, including their JavaScript tests.
+
+The existing frontend `App` exceeded the line limit. Split it into a
+`useBackendConnection` hook, `Welcome` and `ProjectStatus` components, and a
+smaller `App`. The original request timeout, cancellation, retry behavior,
+page content, and styles were retained. Backend functions needed no refactoring.
+
+```bash
+npm run lint
+npm run check
+```
+
+Accessibility-plugin setup is deferred: `eslint-plugin-jsx-a11y` 6.10.2 declares
+ESLint support only through version 9. ESLint 9 is end-of-life, so the project
+keeps ESLint 10 without forcing installation or claiming accessibility linting
+is active. This compatibility finding is separate from the implemented limits.

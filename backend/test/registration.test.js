@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import { once } from 'node:events';
 import { test } from 'node:test';
 import { scrypt } from 'node:crypto';
 import { promisify } from 'node:util';
 import { createApp } from '../src/app.js';
+import { startTestServer } from '../test-support/server.js';
 import { hashPassword, prepareUsers } from '../src/registration.js';
 
 const input = {
@@ -13,17 +13,9 @@ const input = {
 };
 
 async function start(t, db) {
-  const server = createApp(db).listen(0, '127.0.0.1');
-  t.after(
-    () =>
-      new Promise((resolve) => {
-        server.close(resolve);
-        server.closeIdleConnections();
-      }),
-  );
-  await once(server, 'listening');
+  const baseUrl = await startTestServer(t, createApp(db));
   return (body = input, raw = false) =>
-    fetch(`http://127.0.0.1:${server.address().port}/api/auth/register`, {
+    fetch(`${baseUrl}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: raw ? body : JSON.stringify(body),

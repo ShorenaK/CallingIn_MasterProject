@@ -8,7 +8,20 @@ export default [
   { ignores: ['**/node_modules/**', '**/dist/**', '**/coverage/**'] },
   {
     files: ['frontend/**/*.{js,jsx}', 'backend/**/*.js'],
-    rules: { ...js.configs.recommended.rules, complexity: ['error', 10] },
+    rules: {
+      ...js.configs.recommended.rules,
+      complexity: ['error', 10],
+      'max-depth': ['error', 4],
+      'max-params': ['error', 4],
+      'max-lines-per-function': [
+        'error',
+        {
+          max: 60,
+          skipBlankLines: true,
+          skipComments: true,
+        },
+      ],
+    },
     languageOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   },
   {
