@@ -320,6 +320,61 @@ it does not mean that I personally executed every command. This note records
 that decision and the verified outcome, not a measured claim about time saved.
 The new journal entry itself has not been staged, committed, or pushed by Codex.
 
+## October 17, 2026 — Sprint 02: Preserving context beyond the chat
+
+As this conversation became longer, I asked what would happen if I closed it
+or deleted it and started a new session. I did not want important decisions,
+lessons, and unfinished tasks to depend only on one chat. I requested a
+file-based memory system so that a future session could read the project context.
+
+We created AGENTS.md for permanent project instructions and a .codex-memory
+folder with an index, current project state, decisions, a command guide, and
+numbered session records. The first session file summarizes the foundation,
+Sprint 02 progress, quality checks, agent responsibilities, and remaining work.
+It deliberately distinguishes completed work, proposals, and historical test
+results. It contains no private credentials.
+
+I also asked where the files were saved because I could not see them in my
+active Desktop folder. They were in the separate main checkout, while my
+Desktop checkout remained on Sprint 02. This was another practical reminder
+that the same repository can have different branch contents in different local
+folders. I explicitly asked Codex to stage, commit, and push these memory files
+to main. Commit `b0a16a3` was pushed successfully after its pre-commit checks
+passed. No Sprint 02 merge was performed.
+
+The commands I chose are chat prompts, not terminal commands:
+
+- **CX Save Session:** Write a new numbered session summary and update the index,
+  current state, and decisions as needed. It does not automatically authorize
+  Git submissions or a full transcript export.
+- **CX Restore Session:** Read the saved records and inspect current source/Git
+  state, explain where we stopped, and wait for approval before new changes.
+
+For the next chat, my handoff prompt is:
+
+```text
+CX Restore Session: Sprint 02 authentication.
+Read AGENTS.md and .codex-memory/ from the main checkout.
+Explain where we stopped and wait for my approval before changes.
+```
+
+I understand that these files provide saved context, not guaranteed recall of
+every detail. The initial record is a curated summary; a full conversation
+transcript was not archived. If I delete the original chat, the summary cannot
+recreate its exact wording. The next agent must also check current files rather
+than assume the saved snapshot is still accurate.
+
+For my later research, this adds another part of the experience to examine:
+maintaining context is work that needs its own process. I want to observe
+whether structured handoffs help me continue with fewer repeated explanations,
+while keeping my approvals and responsibilities clear. I have not measured
+any time or token savings, and a fresh-session restoration has not yet been
+tested. My next step is to try restoring from these files before relying on
+them as the only record of this conversation.
+
+This reflection is a new documentation edit on main. The memory files are
+already pushed, but this new journey entry is not yet staged, committed, or pushed.
+
 ## Weekly entry template
 
 Copy this section for each update and replace the placeholders.
