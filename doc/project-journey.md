@@ -293,6 +293,33 @@ The agreement is documented in README on main and in the Sprint 02 checkout.
 This reflection is recorded on main, preserving the October 16 entry. Sprint 02
 remains ongoing; this documentation update does not merge implementation work.
 
+## October 17, 2026 — One-time delegation of Git submissions
+
+After defining the team responsibilities, I explicitly asked Codex to handle
+staging, commits, and pushes for this occasion only. This was a limited exception
+to my normal practice of running Git submissions myself, not permanent permission.
+
+Codex reviewed the pending documentation, checked formatting, refreshed remote
+branch information, and committed the changes separately in the two checkouts.
+Both pre-commit checks passed:
+
+- Sprint 02: `7561929` — README team roles and Claude review guidance.
+- Main: `29fee22` — README team roles and October 16–17 journey entries.
+
+Both commits were pushed successfully. Both working trees were clean and
+synchronized with their recorded remote branches immediately afterward. No
+branches were merged, and the Sprint 02 implementation remained separate from main.
+
+For future work, I again handle staging, commits, pushes, and merges unless I
+explicitly delegate a particular action. The agents must still explain WHAT,
+WHY, and HOW and wait for approval before acting outside the approved scope.
+
+For my research record, this distinguishes who actually performed the commands
+from who approved them. Human control can include a deliberate, bounded delegation;
+it does not mean that I personally executed every command. This note records
+that decision and the verified outcome, not a measured claim about time saved.
+The new journal entry itself has not been staged, committed, or pushed by Codex.
+
 ## Weekly entry template
 
 Copy this section for each update and replace the placeholders.
