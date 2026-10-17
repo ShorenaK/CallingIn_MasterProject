@@ -22,8 +22,16 @@ duplication, documentation gaps, and test meaningfulness. It never edits files.
 
 ### When to run
 
-- Before each pull request.
-- At sprint completion. One run can cover both.
+- Before each pull request, normally use `/quality-review` to review changes
+  against `main`.
+- At sprint completion, use `/quality-review full`. One full run can cover
+  both sprint completion and its pull request.
+- Run a review after substantial changes to authentication, dependencies, or
+  shared configuration. Use `full` when the changes affect the wider project.
+- No need to run the skill after every small edit. For routine checks, run
+  `npm run check` from the CallingIn root.
+
+The skill runs only when I invoke it; it is not scheduled or automatic.
 
 ### Notes
 

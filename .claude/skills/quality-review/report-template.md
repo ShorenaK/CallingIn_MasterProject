@@ -34,8 +34,13 @@ Known gaps as of 2026-10-16:
 - Typecheck excludes tests, test-support, vite/eslint config
 - No duplication detector
 - No Dependabot, CodeQL, or secret scanning
-- No pre-push hook, CODEOWNERS, PR template, or .nvmrc/engines
+- No pre-push hook, CODEOWNERS, or PR template
 - No rate limit on /api/auth/register (scrypt is expensive)
+
+Resolved since the original list (verified October 17, 2026):
+
+- Node-version declarations: `.nvmrc` and `engines.node` exist in all three
+  package manifests. Recheck their consistency during each review.
 
 ## Manual checklist (NOT CHECKED unless verified this run)
 
