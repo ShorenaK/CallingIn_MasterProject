@@ -199,6 +199,22 @@ Users would be able to:
 Life Reflections would focus on authentic human expression.
 AI assistance would not be required.
 
+### Multilingual Interface and Message Translation
+
+A future version could support people in different countries and people who
+prefer to communicate in languages other than English.
+
+- **Interface languages:** Let users choose a preferred language for navigation,
+  buttons, forms, instructions, and other application text.
+- **Message translation:** Let users request a translation of a sentence or
+  message into a selected language, helping people communicate across languages.
+- **Original text and user control:** Keep the original message available, label
+  translated text, and let users review a translation before choosing to send it.
+
+Supported languages and translation tools would be evaluated in future planning.
+These capabilities are proposed future work, not current functionality or
+Sprint 02 commitments.
+
 ### Other Possible Enhancements
 
 - Real-time message delivery.
