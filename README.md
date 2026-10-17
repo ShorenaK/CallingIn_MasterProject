@@ -484,6 +484,39 @@ let it finish before making further edits. See the
 
 © 2026 Shorena K. Anzhilov. All rights reserved. This source code is publicly available for viewing purposes only. No permission is granted to copy, modify, distribute, or use this code without prior written permission.
 
+## Collaboration agreement — Shorena, Codex, and Claude
+
+This is a human-led team with three roles: Shorena as the developer/project
+owner, Codex as the primary implementation assistant, and Claude as an
+independent review assistant. These are agreed responsibilities, not a claim
+that either AI tool is always better at a particular task.
+
+| Team member | Responsibilities                                                                                                                                                                                                                  |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Shorena** | Sets scope and priorities; asks WHAT, WHY, and HOW; approves changes; chooses which review recommendations to adopt; performs personal/browser checks; owns staging, commits, pushes, merges, and final decisions.                |
+| **Codex**   | Inspects the project, explains proposed actions, implements approved features/refactors, debugs, runs approved checks, and documents actual results and limitations.                                                              |
+| **Claude**  | Independently reviews Codex's changes using the manually invoked quality-review skill; checks duplication, documentation, test meaningfulness, and missing guardrails; reports evidence and proposed fixes for Shorena to select. |
+
+Before edits, installations, or submissions, either assistant must explain
+**WHAT** will change, **WHY** it is needed, and **HOW** it will be implemented
+and checked, then wait for approval. Approval covers the agreed step, not an
+unlimited sequence of changes. Neither assistant handles Git submissions unless
+Shorena explicitly delegates that action. Credentials stay private.
+
+The normal flow is: Shorena defines and approves a small task; Codex implements
+and verifies it; Shorena invokes Claude's review before a PR or sprint completion;
+Shorena chooses any fixes, reviews the results, and handles Git submissions.
+If Claude implements a change, Codex can provide the independent review instead.
+Only one assistant should edit a given task at a time. Running both agents on
+every small change is unnecessary; routine checks use `npm run check`.
+
+The `/quality-review` skill is manual, not scheduled. An agent may suggest a
+review but must not start it unprompted. Measured check results, agent judgments,
+and work not checked must remain separate in reports. Agent review and coverage
+percentages support, rather than replace, executable tests and human judgment.
+GitHub CI runs separately according to its configured triggers; the review
+skill does not grant permission to change files or submit work.
+
 ## Daily workflow and weekly progress
 
 - [Daily commands and sprint completion](doc/daily-commands.md)
