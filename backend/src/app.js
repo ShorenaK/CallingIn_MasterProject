@@ -1,16 +1,49 @@
 import express from 'express';
 import { register } from './registration.js';
+import { login, logout, currentUser } from './authentication.js';
+import { createLoginRateLimiter } from './login-rate-limit.js';
 
-/** @param {import('mongodb').Db} [db] */
-export function createApp(db) {
+/**
+ * Startup prepares database-backed sessions before handing middleware to this
+ * synchronous app factory. Tests can supply controlled middleware without Atlas.
+ * Both protections are required together; partial configuration is an error.
+ * Omitting both preserves the existing registration/health-only application
+ * during this staged integration. Production startup will supply both next.
+ * @param {import('mongodb').Db} [db]
+ * @param {{sessionMiddleware: import('express').RequestHandler, requestProtection: import('express').RequestHandler}} [authentication]
+ */
+export function createApp(db, authentication) {
+  if (
+    authentication &&
+    (typeof authentication.sessionMiddleware !== 'function' ||
+      typeof authentication.requestProtection !== 'function')
+  ) {
+    throw new Error(
+      'Authentication requires session and request protection middleware.',
+    );
+  }
   const app = express();
   app.locals.db = db;
+
+  // Reject untrusted authentication writes before reading their JSON bodies or
+  // accessing session storage. No CORS or proxy trust is enabled here.
+  if (authentication) app.use('/api/auth', authentication.requestProtection);
   app.use(express.json({ limit: '16kb' }));
 
   app.get('/api/health', (_request, response) => {
     response.json({ status: 'ok' });
   });
   app.post('/api/auth/register', register);
+
+  if (authentication) {
+    // Limit login attempts before session/database work and password hashing.
+    // One limiter is shared by all login requests to this application instance.
+    app.use('/api/auth/login', createLoginRateLimiter());
+    app.use('/api/auth', authentication.sessionMiddleware);
+    app.post('/api/auth/login', login);
+    app.post('/api/auth/logout', logout);
+    app.get('/api/auth/me', currentUser);
+  }
 
   app.use(handleError);
   return app;
