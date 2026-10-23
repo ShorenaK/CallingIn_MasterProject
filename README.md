@@ -150,6 +150,22 @@ or treat mental health conditions or replace professional care.
 The following features are possibilities for later development and are
 outside the Fall 2026 MVP.
 
+The planned evolution of CallingIn is:
+
+1. **Phase 1 — AI Communication Coach:** Help users prepare messages and begin
+   conversations through the semester MVP.
+2. **Phase 2 — Trusted Circle:** Add a private circle of trusted friends and family.
+3. **Phase 3 — Seeing Yourself Through Others’ Eyes:** Let users request a trusted
+   friend's perspective on their strengths, positive qualities, and skills.
+4. **Phase 4 — Gratitude List:** Add a personal list of people who positively
+   influenced the user's life.
+5. **Phase 5 — Life Reflections:** Add a personal space for thoughts, observations,
+   and lessons learned.
+
+These phases describe the intended progression, without committed delivery dates.
+Multilingual support and other enhancements remain future possibilities outside
+this numbered sequence.
+
 ### Trusted Circle — Human Support Without AI
 
 A future version may introduce a private, invitation-only circle
@@ -162,6 +178,19 @@ without AI involvement.
 
 The idea is grounded in humans supporting humans while respecting
 each person's privacy, availability, and boundaries.
+
+### Seeing Yourself Through Others’ Eyes
+
+A future feature could let users request a personal list of strengths, positive
+qualities, and skills that a trusted friend sees in them.
+
+For example, User A could ask User B, a member of their Trusted Circle: “What
+positive qualities or skills do you see in me?” User B could choose to respond
+with a list in their own words, helping User A understand themselves through
+someone they trust.
+
+Participation would be voluntary, and responses would be private between the two
+users by default.
 
 ### Gratitude List
 
