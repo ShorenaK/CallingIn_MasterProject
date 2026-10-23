@@ -1,6 +1,8 @@
 import { createApp } from './app.js';
 import { connectDatabase } from './database.js';
 import { prepareUsers } from './registration.js';
+import { createSessionMiddleware } from './session.js';
+import { createRequestProtection } from './request-protection.js';
 
 /**
  * @param {import('express').Express} app
@@ -74,10 +76,25 @@ export function configureShutdown(server, database, options) {
   return stop;
 }
 
+/**
+ * Validate the browser trust boundary before creating the session index/store.
+ * Await session preparation so no request can reach partially initialized auth.
+ * Configuration is supplied explicitly for tests; private values are never logged.
+ * @param {import('mongodb').Db} db
+ * @param {Record<string, string | undefined>} env
+ */
+async function prepareAuthentication(db, env) {
+  const requestProtection = createRequestProtection(env);
+  const sessionMiddleware = await createSessionMiddleware(db, env);
+  return { requestProtection, sessionMiddleware };
+}
+
 const defaults = {
   connect: connectDatabase,
   prepare: prepareUsers,
   makeApp: createApp,
+  prepareAuthentication,
+  env: process.env,
   runtime: process,
   logger: console,
   timers: { setTimeout, clearTimeout },
@@ -90,11 +107,13 @@ export async function startBackend(options = {}) {
     connect,
     prepare,
     makeApp,
+    prepareAuthentication,
+    env,
     runtime,
     logger,
     timers,
     shutdownTimeoutMs,
-    port = process.env.PORT || 3001,
+    port = env.PORT || 3001,
   } = { ...defaults, ...options };
   const database = await connect();
   let stage =
@@ -102,9 +121,15 @@ export async function startBackend(options = {}) {
   let server;
   try {
     await prepare(database.db);
+    stage =
+      'Authentication setup failed. Check SESSION_SECRET, APP_ORIGIN, and session storage permissions.';
+    const authentication = await prepareAuthentication(database.db, env);
     stage = 'CallingIn backend failed to listen. Check the port configuration.';
-    server = await listen(makeApp(database.db), port);
+    server = await listen(makeApp(database.db, authentication), port);
   } catch {
+    // Session storage borrows this database's MongoClient. Closing the shared
+    // connection once releases account and session resources, including failures
+    // after session setup but before HTTP listening. Do not close the store too.
     await database.close().catch(() => {});
     throw new Error(stage);
   }
