@@ -28,12 +28,31 @@ The Fall 2026 MVP focuses on this AI-assisted communication pathway.
 
 ## Mission
 
-CallingIn's mission is to make meaningful communication easier by
-helping people begin conversations they might otherwise avoid.
+CallingIn's mission is to make meaningful communication easier by helping people begin conversations they might otherwise avoid, strengthen meaningful relationships, and remind us that human beings were never designed to heal in isolation.
 
-The application is designed around thoughtful expression, personal
-choice, and respect for boundaries. AI offers suggestions, while
-users remain in control of their words and decisions.
+The application is built on the belief that **we were never meant to carry every burden alone**. We spend so much time trying to regulate ourselves in isolation, yet humans have always found stability, strength, and comfort through other people. Sometimes, the strongest person is the one who knows when to lean on the people who love them and know them well.
+
+Human connection is not only emotional but also biological. Research on **co-regulation** explores how people influence one another's emotional and physiological states. Spending time with people we feel safe around can help regulate stress responses, including changes in physiological processes involving cortisol and oxytocin. Our nervous systems can influence one another, helping us find calm, reassurance, and a sense of safety through supportive relationships.
+
+CallingIn brings this understanding into its two complementary approaches:
+
+### AI-Assisted Communication — Finding the Words
+
+Sometimes, beginning a meaningful conversation is the hardest part. CallingIn uses generative AI to help individuals express their thoughts, feelings, and intentions while preserving their authentic inner voice. AI provides suggestions, but users remain in control of their words, decisions, and relationships.
+
+### Trusted Circle — Finding the People
+
+Human beings were not meant to navigate every challenge alone. Trusted Circle, a planned future feature, is designed around the importance of having people we trust, who know us well, and with whom we feel safe.
+
+It creates opportunities for people to lean on one another, share their experiences, offer encouragement, and support each other through difficult moments. This feature emphasizes **human support without AI**, recognizing that meaningful connection comes from genuine presence, understanding, and care.
+
+Sometimes, the fastest way to feel better isn't finding the right answers; it's finding the right person to sit beside you while you're still figuring it out.
+
+CallingIn also recognizes that past experiences and survival patterns can influence how people approach relationships and difficult conversations. By making communication easier and encouraging supportive connections, the application aims to help people approach these moments with greater awareness, authenticity, and personal choice.
+
+At its heart, **CallingIn is about helping people find both the words to begin a conversation and the human connections that make those conversations meaningful.**
+
+The application remains grounded in thoughtful expression, privacy, individual boundaries, and the freedom to choose when and how to connect.
 
 ## Research Question
 
