@@ -2,15 +2,26 @@ import assert from 'node:assert/strict';
 import { EventEmitter, once } from 'node:events';
 import { test } from 'node:test';
 import { startBackend, configureShutdown } from '../src/lifecycle.js';
+import { createApp } from '../src/app.js';
 
 function setup() {
   const runtime = new EventEmitter();
   runtime.exit = (code) => runtime.emit('exit-result', code);
-  const state = { closes: 0, prepared: false, logs: [] };
+  const state = { closes: 0, prepared: false, authPrepared: false, logs: [] };
   const db = {};
   const options = {
     port: 0,
     runtime,
+    // Lifecycle tests isolate startup/shutdown from session-store behavior.
+    // Real cookie/storage behavior is covered by the dedicated session tests.
+    env: {},
+    prepareAuthentication: async () => {
+      state.authPrepared = true;
+      return {
+        requestProtection: (_request, _response, next) => next(),
+        sessionMiddleware: (_request, _response, next) => next(),
+      };
+    },
     connect: async () => ({
       db,
       close: async () => {
@@ -31,6 +42,7 @@ test('startup prepares storage before serving health, and stop closes all resour
   const { server, stop } = await startBackend(options);
   t.after(stop);
   assert.equal(state.prepared, true);
+  assert.equal(state.authPrepared, true);
   assert.equal(state.logs.length, 2);
   const response = await fetch(
     `http://127.0.0.1:${server.address().port}/api/health`,
@@ -52,6 +64,7 @@ test('connection failure does not initialize storage or start HTTP', async () =>
   };
   await assert.rejects(startBackend(options), /Safe connection failure/);
   assert.equal(state.prepared, false);
+  assert.equal(state.authPrepared, false);
   assert.deepEqual(state.logs, []);
 });
 
@@ -179,4 +192,70 @@ test('shutdown deadline requests a failing exit if HTTP does not finish', async 
   finish();
   await stopped;
   assert.equal(cleared, true);
+});
+
+test('authentication preparation receives configuration before app creation', async (t) => {
+  const { options, state } = setup();
+  const events = [];
+  const env = {
+    APP_ORIGIN: 'http://127.0.0.1:5173',
+    SESSION_SECRET: 'public-test-value',
+  };
+  const authentication = {
+    requestProtection: (_request, _response, next) => next(),
+    sessionMiddleware: (_request, _response, next) => next(),
+  };
+  let preparedDb;
+  options.env = env;
+  options.prepareAuthentication = async (db, configuration) => {
+    assert.equal(state.prepared, true);
+    assert.equal(configuration, env);
+    preparedDb = db;
+    events.push('authentication');
+    return authentication;
+  };
+  options.makeApp = (db, middleware) => {
+    assert.equal(db, preparedDb);
+    assert.equal(middleware, authentication);
+    events.push('application');
+    return createApp(db, middleware);
+  };
+  const running = await startBackend(options);
+  t.after(running.stop);
+  assert.deepEqual(events, ['authentication', 'application']);
+});
+
+test('authentication failure prevents app creation, closes storage, and hides details', async () => {
+  const { options, state, runtime } = setup();
+  options.prepareAuthentication = async () => {
+    throw new Error('private authentication configuration');
+  };
+  options.makeApp = () =>
+    assert.fail('Must not create an app after authentication failure');
+  await assert.rejects(startBackend(options), {
+    message:
+      'Authentication setup failed. Check SESSION_SECRET, APP_ORIGIN, and session storage permissions.',
+  });
+  assert.equal(state.closes, 1);
+  assert.deepEqual(state.logs, []);
+  assert.equal(runtime.listenerCount('SIGINT'), 0);
+  assert.equal(runtime.listenerCount('SIGTERM'), 0);
+});
+
+test('authentication failure keeps its safe error even if cleanup also fails', async () => {
+  const { options, state } = setup();
+  const connection = options.connect;
+  options.connect = async () => {
+    const database = await connection();
+    database.close = async () => {
+      state.closes += 1;
+      throw new Error('private cleanup detail');
+    };
+    return database;
+  };
+  options.prepareAuthentication = async () => {
+    throw new Error('private setup detail');
+  };
+  await assert.rejects(startBackend(options), /Authentication setup failed/);
+  assert.equal(state.closes, 1);
 });
