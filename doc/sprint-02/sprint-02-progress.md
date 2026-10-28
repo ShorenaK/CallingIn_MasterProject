@@ -3,8 +3,10 @@
 **Actual start:** October 13, 2026  
 **Branch:** `sprint-02-authentication`  
 **Starting commit:** `dc21195` on `main`  
-**Status:** Atlas connection verified; backend registration implemented and tested
-with simulated storage. Further implementation awaits professor feedback.
+**Status:** Backend registration, login/logout, sessions, profile reading and
+display-name editing are implemented. Frontend account flows are implemented;
+browser and live Atlas account verification, remaining review fixes, and final
+sprint closeout are pending. Updated October 28, 2026.
 
 ## Goal
 
@@ -54,12 +56,24 @@ the actual start date; revised milestones and advisor review remain to be agreed
 - [x] Run registration tests using simulated storage.
 - [ ] Verify registration and unique-email enforcement against a test database.
 - [ ] Review professor feedback and approve the next implementation step.
-- [ ] Agree on sessions and implement login, logout, and protected endpoints.
-- [ ] Implement frontend account flows.
+- [x] Agree on sessions and implement login, logout, and protected endpoints.
+- [x] Implement frontend account flows.
 - [ ] Complete relevant tests and browser verification.
 - [ ] Student reviews, stages, commits, pushes, and merges completed work.
 
 ## Documentation organization
+
+### Current implementation — October 28, 2026
+
+Backend profile editing supports display-name changes only. Registration is
+limited to five attempts per IP per 15 minutes. Frontend registration, login,
+Keep me signed in, session restoration, profile viewing/editing, and logout are
+implemented with the existing React/Vite setup. All 89 backend tests, lint,
+type checking, formatting, and a temporary-output production build pass.
+Frontend API request contracts passed against disposable simulated storage.
+Browser interaction/accessibility checks and live Atlas account flows remain
+unverified. Password/email changes and the other Claude review fixes are not
+included in these completed items. Earlier entries below are historical records.
 
 New Sprint 02 records belong in `doc/sprint-02/`. This branch currently inherits
 shared records and Sprint 01 documentation from main. No inherited documents

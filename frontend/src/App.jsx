@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import logo from '../../public/images/logo1.png';
 import './App.css';
+import { Account } from './account/Account.jsx';
 
 /** @typedef {'loading' | 'connected' | 'error'} ConnectionStatus */
 
@@ -89,12 +90,11 @@ function ProjectStatus({ connection, retry }) {
       aria-labelledby="status-title"
     >
       <div>
-        <p className="eyebrow">Sprint 1 · Foundation</p>
+        <p className="eyebrow">Sprint 2 · Accounts</p>
         <h2 id="status-title">Every conversation starts somewhere.</h2>
         <p>
-          This starter connects our welcome page to the backend. AI assistance,
-          accounts, invitations, and messaging are planned and are not available
-          yet.
+          Create an account, sign in, and manage your profile. AI assistance,
+          invitations, and messaging are planned for future sprints.
         </p>
       </div>
       <div className="connection-panel">
@@ -122,10 +122,15 @@ function App() {
         <a className="wordmark" href="/" aria-label="CallingIn home">
           Calling<span>In</span>
         </a>
-        <span className="project-label">A project in progress</span>
+        <a className="learn-link" href="#account">
+          Your account
+        </a>
       </header>
       <main>
         <Welcome />
+        <div id="account">
+          <Account />
+        </div>
         <ProjectStatus connection={connection} retry={retry} />
       </main>
       <footer>

@@ -460,3 +460,38 @@ session identity, field-injection rejection, deleted accounts, failure responses
 and the protected HTTP update/read flow using simulated MongoDB storage.
 Live Atlas persistence and the frontend profile interface remain unverified or
 unfinished. No staging, commits, pushes, or merges were performed in this step.
+
+## October 28, 2026 — Frontend account flows
+
+Added React account components, API helpers, and session state under
+`frontend/src/account/`. The welcome page now includes registration, login,
+Keep me signed in, profile viewing/display-name editing, and logout. Registration
+directs users to sign in; it does not assume registration creates a session.
+Page loads check `/api/auth/me` before showing account forms or the profile.
+Session-check failures offer retry; expired sessions on profile save return to
+sign-in. The backend continues to enforce authorization.
+
+Requests use same-origin HttpOnly cookies; no credentials or account data are
+stored in localStorage. Forms have labels, autocomplete, pending states, feedback,
+and length constraints matching the backend. Layout follows the existing colors
+and responsive styles. No new dependency or backend behavior was added.
+
+Verification passed:
+
+- `npm run lint`
+- `npm run typecheck`
+- `npm run format:check`
+- `npm test` — all 89 backend tests
+- `npm --prefix frontend run build -- --outDir /private/tmp/callingin-account-build`
+
+The temporary build directory avoids modifying tracked dist artifacts. A temporary
+Node probe exercised the frontend API helper against a localhost preview with
+disposable in-memory accounts: registration, duplicate registration, login,
+session lookup, profile update/read, logout, and unauthorized access passed.
+Simulated rate-limit, gateway, malformed-response, and offline errors also passed.
+This was request-contract verification, not React interaction testing.
+
+Browser verification was attempted but Computer Use permissions were unavailable.
+Mobile/desktop rendering, keyboard/focus behavior, screen-reader checks, and live
+Atlas account flows remain pending. No live Atlas data or private environment
+files were used. No staging, commits, pushes, or merges were performed in this step.
