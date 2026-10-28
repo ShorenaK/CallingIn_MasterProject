@@ -40,10 +40,21 @@ function simulatedDatabase() {
       deletedCount: Number(records.delete(filter._id)),
     }),
   };
+  const profile = { ...account };
   const users = {
+    findOneAndUpdate: async (filter, update, options) => {
+      assert.deepEqual(options, {
+        returnDocument: 'after',
+        projection: { displayName: 1, email: 1 },
+      });
+      if (!filter._id.equals(profile._id)) return null;
+      assert.deepEqual(Object.keys(update.$set), ['displayName']);
+      Object.assign(profile, update.$set);
+      return profile;
+    },
     findOne: async (filter) => {
-      if (filter.email) return filter.email === account.email ? account : null;
-      return filter._id.equals(account._id) ? account : null;
+      if (filter.email) return filter.email === profile.email ? profile : null;
+      return filter._id.equals(profile._id) ? profile : null;
     },
   };
   const db = {
@@ -173,4 +184,82 @@ test('wrong credentials create no session and repeated requests reach the limite
   assert.ok(Number(blocked.headers.get('retry-after')) > 0);
   await blocked.arrayBuffer();
   assert.equal(records.size, 0);
+});
+
+function patchProfile(url, body, headers = {}) {
+  return fetch(`${url}/api/auth/me`, {
+    method: 'PATCH',
+    headers: {
+      Origin: origin,
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+test('profile route requires a signed-in session', async (t) => {
+  const { url } = await setup(t);
+  assert.equal(
+    (await patchProfile(url, { displayName: 'Updated' })).status,
+    401,
+  );
+});
+
+test('profile route persists edits for the signed-in account behind origin and JSON protection', async (t) => {
+  const { url } = await setup(t);
+  const login = await post(url, '/api/auth/login', {
+    email: account.email,
+    password,
+  });
+  assert.equal(login.status, 200);
+  const Cookie = login.headers.get('set-cookie').split(';')[0];
+  assert.equal(
+    (
+      await patchProfile(
+        url,
+        { displayName: 'Untrusted' },
+        { Cookie, Origin: 'https://untrusted.example' },
+      )
+    ).status,
+    403,
+  );
+  assert.equal(
+    (
+      await patchProfile(
+        url,
+        { displayName: 'Wrong type' },
+        { Cookie, 'Content-Type': 'text/plain' },
+      )
+    ).status,
+    415,
+  );
+  assert.equal(
+    (
+      await patchProfile(
+        url,
+        { displayName: 'Name', userId: new ObjectId().toHexString() },
+        { Cookie },
+      )
+    ).status,
+    400,
+  );
+  const updated = await patchProfile(
+    url,
+    { displayName: '  Updated Profile  ' },
+    { Cookie },
+  );
+  assert.equal(updated.status, 200);
+  assert.equal(updated.headers.get('cache-control'), 'no-store');
+  const expected = {
+    user: {
+      id: account._id.toHexString(),
+      email: account.email,
+      displayName: 'Updated Profile',
+    },
+  };
+  assert.deepEqual(await updated.json(), expected);
+  const me = await fetch(`${url}/api/auth/me`, { headers: { Cookie } });
+  assert.equal(me.status, 200);
+  assert.deepEqual(await me.json(), expected);
 });

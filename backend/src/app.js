@@ -1,6 +1,6 @@
 import express from 'express';
 import { register } from './registration.js';
-import { login, logout, currentUser } from './authentication.js';
+import { login, logout, currentUser, updateProfile } from './authentication.js';
 import { createLoginRateLimiter } from './login-rate-limit.js';
 import { createRegistrationRateLimiter } from './registration-rate-limit.js';
 
@@ -44,6 +44,7 @@ export function createApp(db, authentication) {
     app.post('/api/auth/login', login);
     app.post('/api/auth/logout', logout);
     app.get('/api/auth/me', currentUser);
+    app.patch('/api/auth/me', updateProfile);
   }
 
   app.use(handleError);

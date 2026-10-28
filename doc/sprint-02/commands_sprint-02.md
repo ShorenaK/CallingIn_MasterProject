@@ -441,3 +441,22 @@ cover successful and failed attempts, blocking before downstream work, retry
 headers, origin-protection ordering, separate login quotas, and independent app
 instances. No live Atlas data was used. No staging, commits, pushes, or merges
 were performed. Claude's other proposed fixes remain separate pending work.
+
+## October 28, 2026 — Backend profile display-name editing
+
+Added `PATCH /api/auth/me` behind the existing origin/JSON protection and session
+middleware. Signed-in users can submit `{ "displayName": "Updated name" }`.
+The name is trimmed and must contain 1–80 characters. Additional fields are
+rejected; the account ID comes exclusively from the session. Email and password
+changes remain outside this step.
+
+MongoDB updates the account atomically and returns its public fields. Responses
+use Cache-Control: no-store. Missing accounts invalidate the session and return
+401; storage failures return a generic 503. No migration or dependency was added.
+
+Verification: `npm test` passed all 89 backend tests; `npm run lint`,
+`npm run typecheck`, and `npm run format:check` passed. Tests cover validation,
+session identity, field-injection rejection, deleted accounts, failure responses,
+and the protected HTTP update/read flow using simulated MongoDB storage.
+Live Atlas persistence and the frontend profile interface remain unverified or
+unfinished. No staging, commits, pushes, or merges were performed in this step.

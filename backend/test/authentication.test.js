@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { before, test } from 'node:test';
 import { ObjectId } from 'mongodb';
-import { login, logout, currentUser } from '../src/authentication.js';
+import {
+  login,
+  logout,
+  currentUser,
+  updateProfile,
+} from '../src/authentication.js';
 import { hashPassword } from '../src/registration.js';
 
 const password = 'Public test password for authentication';
@@ -44,6 +49,15 @@ function response() {
   };
 }
 
+function profileUpdateStub(options, events) {
+  return async (filter, update, updateOptions) => {
+    events.push({ filter, update, options: updateOptions });
+    if (options.failure === 'update')
+      throw new Error('private database detail');
+    return options.missing ? null : { ...account, ...update.$set };
+  };
+}
+
 function fixture(options = {}) {
   const events = [];
   const request = {
@@ -54,6 +68,7 @@ function fixture(options = {}) {
           collection(name) {
             assert.equal(name, 'users');
             return {
+              findOneAndUpdate: profileUpdateStub(options, events),
               async findOne(filter, projection) {
                 events.push({ filter, projection });
                 if (options.failure === 'lookup')
@@ -255,5 +270,94 @@ for (const failure of ['lookup', 'destroy', 'database']) {
     if (failure === 'database') delete request.app.locals.db;
     await currentUser(request, result);
     assertSafe(result, 503);
+  });
+}
+
+test('profile update uses session identity, trims name, and returns only public data', async () => {
+  const { request, result, events } = fixture();
+  request.session.userId = account._id.toHexString();
+  request.body = { displayName: '  Updated Person  ' };
+  await updateProfile(request, result);
+  assertSafe(result, 200);
+  assert.deepEqual(result.body.user, {
+    id: account._id.toHexString(),
+    email: account.email,
+    displayName: 'Updated Person',
+  });
+  assert.deepEqual(events, [
+    {
+      filter: { _id: account._id },
+      update: { $set: { displayName: 'Updated Person' } },
+      options: {
+        returnDocument: 'after',
+        projection: { displayName: 1, email: 1 },
+      },
+    },
+  ]);
+});
+
+test('profile update rejects invalid identities before accessing storage', async () => {
+  for (const id of [undefined, '', 'invalid']) {
+    const { request, result, events } = fixture();
+    request.session.userId = id;
+    request.body = { displayName: 'Updated' };
+    await updateProfile(request, result);
+    assertSafe(result, 401);
+    assert.deepEqual(events, []);
+  }
+});
+
+test('profile update rejects invalid names and additional fields without writing', async () => {
+  for (const body of [
+    null,
+    [],
+    {},
+    { displayName: 12 },
+    { displayName: '  ' },
+    { displayName: 'x'.repeat(81) },
+    ...['email', 'password', 'passwordHash', '_id', 'userId'].map((key) => ({
+      displayName: 'Name',
+      [key]: 'injected',
+    })),
+  ]) {
+    const { request, result, events } = fixture();
+    request.session.userId = account._id.toHexString();
+    request.body = body;
+    await updateProfile(request, result);
+    assertSafe(result, 400);
+    assert.deepEqual(events, []);
+  }
+});
+
+test('profile update accepts an 80-character display name', async () => {
+  const { request, result } = fixture();
+  request.session.userId = account._id.toHexString();
+  request.body = { displayName: 'x'.repeat(80) };
+  await updateProfile(request, result);
+  assertSafe(result, 200);
+});
+
+test('profile update invalidates a deleted account session', async () => {
+  const { request, result, events } = fixture({ missing: true });
+  request.session.userId = account._id.toHexString();
+  request.body = { displayName: 'Updated' };
+  await updateProfile(request, result);
+  assertSafe(result, 401);
+  assert.equal(events.at(-1), 'destroy');
+  assert.equal(result.cleared.name, 'callingin.sid');
+});
+
+for (const failure of ['update', 'database', 'destroy']) {
+  test(`profile update handles ${failure} failure safely`, async () => {
+    const { request, result } = fixture({
+      failure,
+      missing: failure === 'destroy',
+    });
+    request.session.userId = account._id.toHexString();
+    request.body = { displayName: 'Updated' };
+    if (failure === 'database') delete request.app.locals.db;
+    await updateProfile(request, result);
+    assertSafe(result, 503);
+    assert.equal(result.cleared, undefined);
   });
 }

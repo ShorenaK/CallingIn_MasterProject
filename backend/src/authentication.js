@@ -153,3 +153,57 @@ export async function currentUser(request, response) {
     return unavailable(response);
   }
 }
+
+/** @param {unknown} input */
+function validProfileUpdate(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return false;
+  const body = /** @type {{displayName?: unknown}} */ (input);
+  return (
+    Object.keys(body).every((key) => key === 'displayName') &&
+    typeof body.displayName === 'string' &&
+    body.displayName.trim().length >= 1 &&
+    body.displayName.trim().length <= 80
+  );
+}
+
+/**
+ * Update only the signed-in account's display name. Explicitly allow fields so
+ * profile edits cannot change credentials or target another account.
+ * @param {import('express').Request} request
+ * @param {import('express').Response} response
+ */
+export async function updateProfile(request, response) {
+  response.set('Cache-Control', 'no-store');
+  const userId = /** @type {AccountSession | undefined} */ (request.session)
+    ?.userId;
+  if (!userId || !/^[a-f0-9]{24}$/.test(userId)) {
+    return response.status(401).json({ error: 'Sign in to continue.' });
+  }
+  const body = request.body;
+  if (!validProfileUpdate(body)) {
+    return response.status(400).json({
+      error: 'Provide only a display name of 1–80 characters.',
+    });
+  }
+  /** @type {import('mongodb').Db | undefined} */
+  const db = request.app.locals.db;
+  if (!db) return unavailable(response);
+  try {
+    const user = await db.collection('users').findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $set: { displayName: body.displayName.trim() } },
+      {
+        returnDocument: 'after',
+        projection: { displayName: 1, email: 1 },
+      },
+    );
+    if (!user) {
+      await sessionOperation(request.session, 'destroy');
+      response.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+      return response.status(401).json({ error: 'Sign in to continue.' });
+    }
+    return response.json({ user: publicUser(/** @type {Account} */ (user)) });
+  } catch {
+    return unavailable(response);
+  }
+}
