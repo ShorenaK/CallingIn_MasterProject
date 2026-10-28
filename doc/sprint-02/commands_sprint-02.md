@@ -528,3 +528,26 @@ session-ID replacement, and partial-configuration tests. Session storage changes
 for password changes and deployment proxy configuration remain deferred. All live
 Atlas/browser/manual accessibility verification is scheduled for October 29, 2026.
 No live database data was used. No staging, commits, pushes, or merges were made.
+
+## October 28, 2026 — Claude review fix 4: authentication test gaps
+
+Closed all four specified gaps using test-only changes:
+
+- Existing real login integration tests now check persistent cookie expiry is
+  90 days ahead, allowing HTTP date rounding to seconds. Nonpersistent login
+  cookies must omit both Expires and Max-Age.
+- A startup integration test runs the real account-index preparation,
+  prepareAuthentication, app factory, session middleware, and authentication
+  routes against simulated MongoDB storage. It verifies origin rejection,
+  anonymous access rejection, login, cookie-based account access, and shutdown.
+- Login with an existing authenticated cookie must replace its session ID,
+  remove the old stored record, reject old-cookie replay, and accept the new one.
+- App construction rejects partial or invalid authentication middleware while
+  retaining the supported complete and omitted configurations.
+
+Verification: `npm run test:coverage` passed all 98 tests, reporting 100% line,
+99.57% branch, and 100% function coverage. Lint, type checking, formatting, and
+whitespace checks pass. Coverage does not prove complete behavioral correctness.
+No production code, dependencies, private settings, or live Atlas data changed.
+Browser and live database checks remain scheduled for October 29, 2026.
+No staging, commits, pushes, or merges were performed in this step.

@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, test } from 'node:test';
+import { EventEmitter } from 'node:events';
+import { startBackend } from '../src/lifecycle.js';
 import { ObjectId } from 'mongodb';
 import { createApp } from '../src/app.js';
 import { createSessionMiddleware } from '../src/session.js';
@@ -42,6 +44,10 @@ function simulatedDatabase() {
   };
   const profile = { ...account };
   const users = {
+    createIndex: async (keys, options) => {
+      assert.deepEqual(keys, { email: 1 });
+      assert.deepEqual(options, { unique: true });
+    },
     findOneAndUpdate: async (filter, update, options) => {
       assert.deepEqual(options, {
         returnDocument: 'after',
@@ -105,6 +111,7 @@ for (const keepSignedIn of [true, false]) {
     const anonymous = await fetch(`${url}/api/auth/me`);
     assert.equal(anonymous.status, 401);
     await anonymous.arrayBuffer();
+    const beforeLogin = Date.now();
     const login = await post(url, '/api/auth/login', {
       email: account.email,
       password,
@@ -120,7 +127,7 @@ for (const keepSignedIn of [true, false]) {
     const setCookie = login.headers.get('set-cookie');
     assert.match(setCookie, /HttpOnly/);
     assert.match(setCookie, /SameSite=Lax/);
-    assert.equal(setCookie.includes('Expires='), keepSignedIn);
+    assertCookieExpiry(setCookie, keepSignedIn, beforeLogin);
     const cookie = setCookie.split(';')[0];
     const me = await fetch(`${url}/api/auth/me`, {
       headers: { Cookie: cookie },
@@ -262,4 +269,92 @@ test('profile route persists edits for the signed-in account behind origin and J
   const me = await fetch(`${url}/api/auth/me`, { headers: { Cookie } });
   assert.equal(me.status, 200);
   assert.deepEqual(await me.json(), expected);
+});
+
+function assertCookieExpiry(cookie, persistent, before) {
+  const expiry = /(?:^|; )Expires=([^;]+)/.exec(cookie);
+  if (!persistent) {
+    assert.equal(expiry, null);
+    assert.doesNotMatch(cookie, /Max-Age=/i);
+    return;
+  }
+  assert.ok(expiry, 'Persistent login must set cookie expiry');
+  const timestamp = Date.parse(expiry[1]);
+  const ninetyDays = 90 * 24 * 60 * 60 * 1000;
+  // HTTP cookie dates have second precision; allow only that rounding loss.
+  assert.ok(timestamp >= before + ninetyDays - 1000);
+  assert.ok(timestamp <= Date.now() + ninetyDays);
+}
+
+test('login replaces an existing session ID and rejects replay of the old cookie', async (t) => {
+  const { url, records } = await setup(t);
+  const credentials = { email: account.email, password };
+  const first = await post(url, '/api/auth/login', credentials);
+  assert.equal(first.status, 200);
+  const oldCookie = first.headers.get('set-cookie').split(';')[0];
+  const oldId = [...records.keys()][0];
+  const second = await post(url, '/api/auth/login', credentials, {
+    cookie: oldCookie,
+  });
+  assert.equal(second.status, 200);
+  const newCookie = second.headers.get('set-cookie').split(';')[0];
+  assert.notEqual(newCookie, oldCookie);
+  assert.equal(records.has(oldId), false);
+  assert.equal(records.size, 1);
+  const replay = await fetch(`${url}/api/auth/me`, {
+    headers: { Cookie: oldCookie },
+  });
+  assert.equal(replay.status, 401);
+  const active = await fetch(`${url}/api/auth/me`, {
+    headers: { Cookie: newCookie },
+  });
+  assert.equal(active.status, 200);
+  assert.equal((await active.json()).user.id, account._id.toHexString());
+});
+
+test('real startup wires origin protection, Mongo-backed sessions, and account routes', async (t) => {
+  const { db, records } = simulatedDatabase();
+  let closed = 0;
+  // Only connection/runtime/log output are replaced. Account index preparation,
+  // prepareAuthentication, createApp, and session middleware use real defaults.
+  const running = await startBackend({
+    port: 0,
+    env: {
+      APP_ORIGIN: origin,
+      SESSION_SECRET: 'public-startup-test-secret-at-least-32-bytes',
+    },
+    connect: async () => ({
+      db,
+      close: async () => {
+        closed += 1;
+      },
+    }),
+    runtime: new EventEmitter(),
+    logger: { log() {} },
+  });
+  t.after(running.stop);
+  const url = `http://127.0.0.1:${running.server.address().port}`;
+  const rejected = await post(
+    url,
+    '/api/auth/login',
+    {},
+    { requestOrigin: 'https://untrusted.example' },
+  );
+  assert.equal(rejected.status, 403);
+  assert.equal(records.size, 0);
+  const anonymous = await fetch(`${url}/api/auth/me`);
+  assert.equal(anonymous.status, 401);
+  const login = await post(url, '/api/auth/login', {
+    email: account.email,
+    password,
+  });
+  assert.equal(login.status, 200);
+  assert.equal(records.size, 1);
+  const cookie = login.headers.get('set-cookie').split(';')[0];
+  const me = await fetch(`${url}/api/auth/me`, { headers: { Cookie: cookie } });
+  assert.equal(me.status, 200);
+  assert.equal((await me.json()).user.id, account._id.toHexString());
+  await running.stop();
+  assert.equal(closed, 1);
+  assert.equal(running.server.listening, false);
 });

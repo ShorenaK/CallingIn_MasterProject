@@ -61,6 +61,16 @@ the actual start date; revised milestones and advisor review remain to be agreed
 - [ ] Complete relevant tests and browser verification.
 - [ ] Student reviews, stages, commits, pushes, and merges completed work.
 
+## Latest verification — October 28, 2026
+
+Claude fix 4's four automated gaps are now closed: persistent cookie lifetime,
+real authentication startup wiring with simulated storage, session-ID replacement
+and old-cookie rejection, and partial-configuration rejection. All 98 tests pass;
+coverage reports 100% lines, 99.57% branches, and 100% functions. Lint, type checking,
+formatting, and whitespace checks pass. Production behavior is unchanged by this
+test-only step. Live Atlas/browser checks remain scheduled for October 29, 2026.
+Earlier verification counts and pending-test notes below are historical.
+
 ## Documentation organization
 
 ### Authentication hardening — October 28, 2026
