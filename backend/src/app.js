@@ -2,6 +2,7 @@ import express from 'express';
 import { register } from './registration.js';
 import { login, logout, currentUser } from './authentication.js';
 import { createLoginRateLimiter } from './login-rate-limit.js';
+import { createRegistrationRateLimiter } from './registration-rate-limit.js';
 
 /**
  * Startup prepares database-backed sessions before handing middleware to this
@@ -33,7 +34,7 @@ export function createApp(db, authentication) {
   app.get('/api/health', (_request, response) => {
     response.json({ status: 'ok' });
   });
-  app.post('/api/auth/register', register);
+  app.post('/api/auth/register', createRegistrationRateLimiter(), register);
 
   if (authentication) {
     // Limit login attempts before session/database work and password hashing.

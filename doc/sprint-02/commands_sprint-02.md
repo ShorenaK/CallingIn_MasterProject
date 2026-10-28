@@ -414,3 +414,30 @@ verification and a deliberate edit to that file.
 
 No coverage thresholds, dist-index changes, staging, commits, pushes, or merges
 were performed by the agent in this step.
+
+## October 28, 2026 — Claude review Fix 1: registration rate limiting
+
+Added a separate registration limiter using the existing express-rate-limit
+dependency: five attempts per IP per 15 minutes, counting successes and failures.
+The sixth attempt returns 429 with Retry-After before registration validation,
+password hashing, or account storage. Origin protection still runs first when
+authentication is configured. Login retains its independent allowance.
+
+Counters are local to each backend process and reset on restart. Users sharing
+a public IP share the quota; multiple backend instances require a shared store.
+Proxy trust remains disabled until deployment topology is decided.
+
+Verification commands from the project root:
+
+```bash
+npm test
+npm run lint
+npm run typecheck
+npm run format:check
+```
+
+All 79 backend tests, lint, type checking, and formatting checks passed. New tests
+cover successful and failed attempts, blocking before downstream work, retry
+headers, origin-protection ordering, separate login quotas, and independent app
+instances. No live Atlas data was used. No staging, commits, pushes, or merges
+were performed. Claude's other proposed fixes remain separate pending work.
