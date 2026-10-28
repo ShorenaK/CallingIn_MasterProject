@@ -181,7 +181,7 @@ test('unknown account and wrong password return identical credential errors', as
   assert.deepEqual(unknown.result.body, wrong.result.body);
 });
 
-for (const failure of ['lookup', 'regenerate', 'save']) {
+for (const failure of ['regenerate', 'save']) {
   test(`login ${failure} failure returns safe error and destroys session`, async () => {
     const { request, result, events } = fixture({ failure });
     await login(request, result);
@@ -361,3 +361,39 @@ for (const failure of ['update', 'database', 'destroy']) {
     assert.equal(result.cleared, undefined);
   });
 }
+
+test('login lookup failure preserves an existing signed-in session', async () => {
+  const { request, result, events } = fixture({ failure: 'lookup' });
+  const existing = request.session;
+  existing.userId = account._id.toHexString();
+  await login(request, result);
+  assertSafe(result, 503);
+  assert.equal(request.session, existing);
+  assert.equal(request.session.userId, account._id.toHexString());
+  assert.equal(events.length, 1);
+});
+
+test('failed new-session save removes authorization even when cleanup fails', async () => {
+  const { request, result } = fixture();
+  const logs = [];
+  request.app.locals.logger = { error: (...args) => logs.push(args) };
+  request.session.regenerate = (done) => {
+    request.session = {
+      cookie: {},
+      save: (callback) => callback(new Error('private save detail')),
+      destroy: (callback) => callback(new Error('private destroy detail')),
+    };
+    done();
+  };
+  await login(request, result);
+  assertSafe(result, 503);
+  assert.equal(request.session.userId, undefined);
+  assert.deepEqual(
+    logs.map((entry) => entry[1].operation),
+    ['login', 'login-cleanup'],
+  );
+  assert.doesNotMatch(
+    JSON.stringify(logs),
+    /passwordHash|private|scrypt|mongodb/,
+  );
+});

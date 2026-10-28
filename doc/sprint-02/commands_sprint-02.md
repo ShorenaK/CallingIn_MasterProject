@@ -495,3 +495,36 @@ Browser verification was attempted but Computer Use permissions were unavailable
 Mobile/desktop rendering, keyboard/focus behavior, screen-reader checks, and live
 Atlas account flows remain pending. No live Atlas data or private environment
 files were used. No staging, commits, pushes, or merges were performed in this step.
+
+## October 28, 2026 — Claude review fixes 5–7
+
+Added safe account-operation logging for registration, login, logout, profile
+reading/editing, and failed-login cleanup. Logs contain a fixed operation label
+and allowlisted error names/codes only. Raw messages, stacks, request data,
+credentials, and arbitrary error fields are excluded. Logging failure does not
+interrupt cleanup or the generic HTTP error response.
+
+Login now preserves an existing session if account lookup or password verification
+fails before regeneration starts. Once regeneration starts, failures still trigger
+cleanup. Authorization is removed before attempting destruction so a cleanup
+failure cannot autosave a newly authenticated session after reporting login failure.
+Regeneration can already have destroyed the old session, so failures at that stage
+cannot promise preservation of the old login.
+
+Centralized backend display-name/email/password validation, fixed scrypt settings,
+and supported hash format in `account-policy.js`. Password hashing now lives with
+verification in `password.js`; registration re-exports the existing hash function
+for compatibility. Stored hashes retain the existing format and costs. Updated
+the four stale comments identified by Claude.
+
+Verification: all 95 tests pass under `npm run test:coverage`; coverage reports
+98.99% lines, 99.11% branches, and 98.18% functions. Regression tests cover existing
+session preservation, failed-save/failed-cleanup handling, sanitized logging,
+logger failure, and registration/verification password boundaries. Lint, type
+checking, formatting, whitespace checks, and a temporary-output frontend build pass.
+
+Still pending: Claude fix 4's separate cookie-expiry, real startup-wiring,
+session-ID replacement, and partial-configuration tests. Session storage changes
+for password changes and deployment proxy configuration remain deferred. All live
+Atlas/browser/manual accessibility verification is scheduled for October 29, 2026.
+No live database data was used. No staging, commits, pushes, or merges were made.

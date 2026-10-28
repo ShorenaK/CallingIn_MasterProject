@@ -1,49 +1,10 @@
-import { randomBytes, scrypt } from 'node:crypto';
-import { promisify } from 'node:util';
+import { hashPassword } from './password.js';
+import { validName, validEmail, validPassword } from './account-policy.js';
+import { logAccountFailure } from './safe-logging.js';
 
-/** @type {(password: string, salt: string, keylen: number, options: import('node:crypto').ScryptOptions) => Promise<Buffer>} */
-const deriveKey = promisify(scrypt);
+export { hashPassword };
 
 /** @typedef {{displayName: string, email: string, password: string}} RegistrationInput */
-
-/** @param {string} password */
-export async function hashPassword(password) {
-  const salt = randomBytes(16).toString('hex');
-  const key = await deriveKey(password, salt, 64, {
-    N: 131072,
-    r: 8,
-    p: 1,
-    maxmem: 256 * 1024 * 1024,
-  });
-  return `scrypt$131072$8$1$${salt}$${key.toString('hex')}`;
-}
-
-/** @param {unknown} name */
-function validName(name) {
-  return (
-    typeof name === 'string' &&
-    name.trim().length >= 1 &&
-    name.trim().length <= 80
-  );
-}
-
-/** @param {unknown} email */
-function validEmail(email) {
-  return (
-    typeof email === 'string' &&
-    email.trim().length <= 254 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-  );
-}
-
-/** @param {unknown} password */
-function validPassword(password) {
-  return (
-    typeof password === 'string' &&
-    password.length >= 15 &&
-    password.length <= 128
-  );
-}
 
 /** @param {Partial<RegistrationInput> | null | undefined} body */
 export function validateRegistration(body) {
@@ -95,6 +56,7 @@ export async function register(request, response) {
       return response
         .status(409)
         .json({ error: 'An account with that email already exists.' });
+    logAccountFailure(request, 'registration', failure);
     return response
       .status(503)
       .json({ error: 'Registration is temporarily unavailable.' });

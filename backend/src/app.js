@@ -9,7 +9,7 @@ import { createRegistrationRateLimiter } from './registration-rate-limit.js';
  * synchronous app factory. Tests can supply controlled middleware without Atlas.
  * Both protections are required together; partial configuration is an error.
  * Omitting both preserves the existing registration/health-only application
- * during this staged integration. Production startup will supply both next.
+ * for isolated use. Production startup supplies both.
  * @param {import('mongodb').Db} [db]
  * @param {{sessionMiddleware: import('express').RequestHandler, requestProtection: import('express').RequestHandler}} [authentication]
  */

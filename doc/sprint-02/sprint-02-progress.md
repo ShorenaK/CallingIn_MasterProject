@@ -63,6 +63,18 @@ the actual start date; revised milestones and advisor review remain to be agreed
 
 ## Documentation organization
 
+### Authentication hardening — October 28, 2026
+
+Claude review fixes 5–7 are implemented: safe failure logging, preservation of
+existing sessions on login failure before regeneration, shared backend validation
+and scrypt settings, and stale-comment cleanup. All 95 backend tests pass, along
+with lint, type checking, formatting, and the frontend build. Fix 1 (registration
+rate limiting) was completed earlier. Fix 4's additional authentication tests are
+still pending; fixes 2 and 3 remain tied to password-change scope and deployment.
+Live Atlas and manual browser checks, including account creation/duplicates,
+login/refresh, profile update/refresh, logout, mobile, and keyboard behavior, are
+scheduled for October 29, 2026. Sprint 2 is not yet verified complete.
+
 ### Current implementation — October 28, 2026
 
 Backend profile editing supports display-name changes only. Registration is

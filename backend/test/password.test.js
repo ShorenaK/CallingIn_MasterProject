@@ -75,3 +75,26 @@ test('rejects a structurally valid hash containing the wrong derived key', async
   parts[5] = '00'.repeat(64);
   assert.equal(await verifyPassword(password, parts.join('$')), false);
 });
+
+test('registration and verification agree on password policy boundaries', async () => {
+  const { validateRegistration } = await import('../src/registration.js');
+  for (const length of [14, 15, 128, 129]) {
+    const candidate = 'x'.repeat(length);
+    const valid = length === 15 || length === 128;
+    assert.equal(
+      validateRegistration({
+        displayName: 'Test',
+        email: 'test@example.com',
+        password: candidate,
+      }) === null,
+      valid,
+    );
+    if (valid) {
+      const hash = await hashPassword(candidate);
+      assert.equal(await verifyPassword(candidate, hash), true);
+      assert.match(hash, /^scrypt\$131072\$8\$1\$[a-f0-9]{32}\$[a-f0-9]{128}$/);
+    } else {
+      assert.equal(await verifyPassword(candidate, storedHash), false);
+    }
+  }
+});

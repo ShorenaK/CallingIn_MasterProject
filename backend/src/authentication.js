@@ -1,3 +1,12 @@
+import {
+  validName,
+  validEmail,
+  validPassword,
+  HASH_PREFIX,
+  SCRYPT_SALT_BYTES,
+  SCRYPT_KEY_LENGTH,
+} from './account-policy.js';
+import { logAccountFailure } from './safe-logging.js';
 import { ObjectId } from 'mongodb';
 import { verifyPassword } from './password.js';
 import { SESSION_COOKIE_NAME, setSessionPersistence } from './session.js';
@@ -8,19 +17,15 @@ import { SESSION_COOKIE_NAME, setSessionPersistence } from './session.js';
 
 // Public dummy data, never an account credential. Unknown accounts still incur
 // the same scrypt work as existing accounts with a supported password hash.
-const dummyHash = `scrypt$131072$8$1$${'00'.repeat(16)}$${'00'.repeat(64)}`;
+const dummyHash = `${HASH_PREFIX}${'00'.repeat(SCRYPT_SALT_BYTES)}$${'00'.repeat(SCRYPT_KEY_LENGTH)}`;
 
 /** @param {unknown} body @returns {body is LoginInput} */
 function validLogin(body) {
   if (!body || typeof body !== 'object') return false;
   const input = /** @type {Partial<LoginInput>} */ (body);
   return (
-    typeof input.email === 'string' &&
-    input.email.trim().length <= 254 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email.trim()) &&
-    typeof input.password === 'string' &&
-    input.password.length >= 15 &&
-    input.password.length <= 128 &&
+    validEmail(input.email) &&
+    validPassword(input.password) &&
     (input.keepSignedIn === undefined ||
       typeof input.keepSignedIn === 'boolean')
   );
@@ -57,8 +62,8 @@ function unavailable(response) {
 }
 
 /**
- * These handlers must be mounted behind session middleware and the planned
- * request-origin/CSRF and login-rate protections before exposing the routes.
+ * These handlers must be mounted behind session middleware and request-origin/CSRF
+ * protection. The login route additionally applies its attempt limiter.
  * @param {import('express').Request} request
  * @param {import('express').Response} response
  */
@@ -72,6 +77,7 @@ export async function login(request, response) {
   /** @type {import('mongodb').Db | undefined} */
   const db = request.app.locals.db;
   if (!db || !request.session) return unavailable(response);
+  let regenerationStarted = false;
   try {
     const user = await db.collection('users').findOne({
       email: request.body.email.trim().toLowerCase(),
@@ -85,6 +91,7 @@ export async function login(request, response) {
         .status(401)
         .json({ error: 'Email or password is incorrect.' });
     }
+    regenerationStarted = true;
     await sessionOperation(request.session, 'regenerate');
     // Regeneration replaces request.session; never keep a reference to the old one.
     const activeSession = /** @type {AccountSession} */ (request.session);
@@ -92,12 +99,9 @@ export async function login(request, response) {
     setSessionPersistence(activeSession, request.body.keepSignedIn === true);
     await sessionOperation(activeSession, 'save');
     return response.json({ user: publicUser(/** @type {Account} */ (user)) });
-  } catch {
-    // Avoid a later middleware autosave granting login after an explicit save
-    // failed. A store outage can still leave an orphan record until TTL cleanup.
-    if (request.session) {
-      await sessionOperation(request.session, 'destroy').catch(() => {});
-    }
+  } catch (failure) {
+    logAccountFailure(request, 'login', failure);
+    if (regenerationStarted) await cleanupFailedLogin(request);
     return unavailable(response);
   }
 }
@@ -115,7 +119,8 @@ export async function logout(request, response) {
     await sessionOperation(request.session, 'destroy');
     response.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
     return response.status(204).end();
-  } catch {
+  } catch (failure) {
+    logAccountFailure(request, 'logout', failure);
     return unavailable(response);
   }
 }
@@ -149,7 +154,8 @@ export async function currentUser(request, response) {
       return response.status(401).json({ error: 'Sign in to continue.' });
     }
     return response.json({ user: publicUser(/** @type {Account} */ (user)) });
-  } catch {
+  } catch (failure) {
+    logAccountFailure(request, 'current-user', failure);
     return unavailable(response);
   }
 }
@@ -160,9 +166,7 @@ function validProfileUpdate(input) {
   const body = /** @type {{displayName?: unknown}} */ (input);
   return (
     Object.keys(body).every((key) => key === 'displayName') &&
-    typeof body.displayName === 'string' &&
-    body.displayName.trim().length >= 1 &&
-    body.displayName.trim().length <= 80
+    validName(body.displayName)
   );
 }
 
@@ -203,7 +207,21 @@ export async function updateProfile(request, response) {
       return response.status(401).json({ error: 'Sign in to continue.' });
     }
     return response.json({ user: publicUser(/** @type {Account} */ (user)) });
-  } catch {
+  } catch (failure) {
+    logAccountFailure(request, 'profile-update', failure);
     return unavailable(response);
+  }
+}
+
+/** @param {import('express').Request} request */
+async function cleanupFailedLogin(request) {
+  if (!request.session) return;
+  // Remove authorization before destroy: a failed destroy must not autosave a
+  // newly authenticated session after the client has received a login failure.
+  delete (/** @type {AccountSession} */ (request.session).userId);
+  try {
+    await sessionOperation(request.session, 'destroy');
+  } catch (failure) {
+    logAccountFailure(request, 'login-cleanup', failure);
   }
 }

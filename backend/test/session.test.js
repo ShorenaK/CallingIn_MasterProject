@@ -52,7 +52,7 @@ async function sessionServer(t, env = settings) {
   const storage = fakeDatabase();
   const app = express();
   app.use(await createSessionMiddleware(storage.db, env));
-  // This is a test route, not an authentication endpoint. Login comes later.
+  // This test route isolates cookie persistence from the real login handler.
   app.get('/start/:remember', (req, res) => {
     req.session.userId = 'test-user';
     setSessionPersistence(req.session, req.params.remember === 'yes');
