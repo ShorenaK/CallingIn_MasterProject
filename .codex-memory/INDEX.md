@@ -13,16 +13,16 @@ against source/Git. Canonical copies are maintained on main.
 
 ## Sessions
 
-| ID  | Saved date | Topics                                                                                                                  | Branch context                             | Record                                                                           |
-| --- | ---------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------- |
-| 001 | 2026-10-17 | Sprint 01 handoff; Sprint 02 database, registration, quality checks, Claude audit/skill, research journey, memory setup | main and unmerged sprint-02-authentication | [001 — foundation and quality](sessions/001-sprint-02-foundation-and-quality.md) |
+| ID  | Saved date | Topics                                                                                                                  | Branch context                             | Record                                                                                 |
+| --- | ---------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
+| 001 | 2026-10-17 | Sprint 01 handoff; Sprint 02 database, registration, quality checks, Claude audit/skill, research journey, memory setup | main and unmerged sprint-02-authentication | [001 — foundation and quality](sessions/001-sprint-02-foundation-and-quality.md)       |
+| 002 | 2026-10-29 | Sprint 2 implementation/review fixes, live-check reports, merge, Sprint 3 setup, Meeting 4 questions                    | main at 38a9a3c; local Sprint 3 branch     | [002 — closeout and handoff](sessions/002-sprint-02-closeout-and-sprint-03-handoff.md) |
 
-Next session ID: **002**, provided it is still unused when saving. Create a
-new file with its actual topic; the example authentication/dashboard filenames
-were illustrative, not records of work performed.
+Next session ID: **003**, provided it remains unused when saving.
 
 ## Fast continuation
 
-Open the main checkout and say **CX Restore Session**. For the ongoing sprint,
-request **CX Restore Session: Sprint 02 authentication**. After inspection,
-agree on session/login design before implementing more account features.
+Say **CX Restore Session: 002 — Sprint 3 invitations**. Read AGENTS.md, current
+state, decisions, and session 002; inspect current Git/source before proposing
+implementation. Current shared handoff records are local until separately approved
+for commit/push. No full transcript was archived.

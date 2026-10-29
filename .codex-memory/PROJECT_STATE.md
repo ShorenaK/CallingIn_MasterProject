@@ -1,116 +1,83 @@
 # CallingIn — Current project state
 
-**Snapshot date:** October 17, 2026 (America/New_York)
+**Snapshot:** October 29, 2026 (America/New_York). Supersedes the October 17 snapshot;
+that history remains in session 001. Verify source/Git before acting.
 
-## Purpose and scope
+## Current checkout and handoff
 
-CS 8674 project by Shorena K. Anzhilov, advised by Professor Albert Lionelle.
-The semester MVP is AI-assisted communication: accounts/profiles, invitations,
-private conversations, basic Social Battery, and AI-assisted drafting.
-Trusted Circle, Gratitude List, Life Reflections, and multilingual interface/
-message translation are future possibilities, not implemented Sprint 02 features.
+- Desktop checkout: `/Users/shorenaanzhilov/Desktop/CallingIn`, on `main` at
+  `38a9a3c`, synchronized with origin before this save.
+- Sprint 2 merged and pushed with explicit approval. Its branch remains intact.
+- Local `sprint-03-invitations` created from `38a9a3c`; not checked out or pushed.
+- Current uncommitted work: memory session 002/index/state/decisions, Meeting 4
+  questions, and Sprint 3 planning records. Save/setup does not authorize Git submission.
+- An isolated merge worktree exists at `/private/tmp/CallingIn-sprint02-merge`
+  (detached `38a9a3c`). It is temporary; no private environment files copied there.
+- Origin still uses CallingIn_new and GitHub redirects to CallingIn_MasterProject.
+  Git fetch/push works; gh CLI authentication returned HTTP 401 during merge.
 
-## Architecture and branch boundary
+## Architecture and completed Sprint 2
 
-- Frontend: React/JavaScript with Vite in `frontend/`.
-- Backend: Node.js/Express with the native MongoDB driver in `backend/`.
-- Development database: MongoDB Atlas; private configuration in ignored
-  `backend/.env`. Safe placeholders only in tracked `.env.example`.
-- Application source remains JavaScript. TypeScript is a development checker,
-  not a migration to `.ts` application source.
+React/JavaScript + Vite frontend, Express/JavaScript backend, native MongoDB driver.
+Atlas configuration lives in ignored backend/.env; never display secrets.
+Strict checkJs/JSDoc is a development checker, not application TypeScript migration.
 
-**Do not conflate main with the sprint implementation.** At this snapshot:
+Backend routes: POST /api/auth/register, POST /api/auth/login,
+POST /api/auth/logout, GET/PATCH /api/auth/me. Profile editing is display name only.
+Fixed-cost salted scrypt password storage; shared account-policy/password helpers.
+MongoDB-backed sessions, HttpOnly SameSite=Lax cookies, optional 90-day inactivity
+persistence, session regeneration on login, logout server invalidation. Origin/JSON
+protection precedes writes. Separate per-IP registration (5/15 min) and login
+(10/15 min) limiters use process-local stores. No blind proxy trust.
+Safe account logging allowlists metadata, excludes raw errors/request credentials.
+Login preserves existing sessions on failure before regeneration and removes new
+authorization before failed-session cleanup. Frontend forms support registration,
+login, Keep me signed in, restore, profile edit/read, logout, feedback, pending states.
 
-| Checkout                                   | Branch                   | Recorded tip | Role                                           |
-| ------------------------------------------ | ------------------------ | ------------ | ---------------------------------------------- |
-| `/Users/shorenaanzhilov/Desktop/CallingIn` | sprint-02-authentication | `7561929`    | Active implementation and Claude skill         |
-| `/private/tmp/CallingIn-main-docs`         | main                     | `1bf6ea2`    | Shared docs/journey and this new memory system |
+## Evidence and limits
 
-The temporary main location is a linked worktree of the same repository, not a
-separate Git repository. It may not persist indefinitely; locate checkouts with
-`git worktree list`. The desktop checkout has an uncommitted multilingual README
-addition that the user explicitly left in place; do not discard or stage it
-without approval. Main has the same future-feature addition committed.
-Memory initialization itself is uncommitted on main until the user submits it.
-Branch tips and cleanliness must be rechecked, not assumed current forever.
+Historical checks in this chat: 98 backend tests passed; latest coverage run
+100% lines/functions, 99.57% branches. Tests cover cookie 90-day expiry, real auth
+startup with simulated storage, session-ID replacement/replay, partial-config
+rejection. Merged main result passed 98 tests, lint, types, formatting, and scratch
+build. No suite rerun merely for this save.
 
-The configured origin uses the old CallingIn_new URL; successful pushes redirected
-to `https://github.com/ShorenaK/CallingIn_MasterProject.git`. No remote URL was
-changed. Shared Git metadata does not make branch file contents identical.
+Backend security fixes: body-parser 2.4.0 and qs 6.17.0; last root/frontend/backend
+audits all zero vulnerabilities. Do not assume advisories stay unchanged.
+Student confirmed GitHub Quality green including merged main; agent could not
+independently query hosted runs because gh authentication failed.
+Student reported browser registration/duplicate rejection, login/refresh, profile
+save/refresh, logout/refresh, keep-signed-in tab reopening, wrong-password rejection,
+invalid-input blocking, and keyboard/focus checks passed. Agent reviewed welcome
+mobile screenshot only. Database environment was never confirmed in chat; do not
+claim independently verified Atlas account persistence. Full mobile account forms,
+full browser restart, and screen-reader verification remain unverified.
 
-## Completed on Sprint 02
+## Current next task: Sprint 3 invitations
 
-- Created sprint branch and records under `doc/sprint-02/`.
-- Atlas connection/ping verified by agent and user; secrets were not retained.
-- Native MongoDB driver installed (7.7.0 at installation).
-- Registration endpoint `POST /api/auth/register`: display name, normalized
-  email, password validation, salted scrypt hash, unique email index, safe errors.
-- Lifecycle module ensures database/index setup precedes listening and supports
-  cleanup, signals, port-conflict handling, and shutdown deadline testing.
-- Shared test-server helper removes repeated test setup.
-- Root ESLint/Prettier tooling and root `eslint.config.mjs`; React/browser and
-  Node-specific environments are scoped separately.
-- Complexity 10, depth 4, parameters 4, function length 60 excluding comments/blanks.
-- Strict checkJs/JSDoc source checks with noEmit, frontend/backend tsconfigs.
-- Backend coverage reporting with Node's built-in test runner, not Vitest.
-- GitHub Quality workflow: locked installs, lint, format, types, coverage tests,
-  build, three audits. Uses `.nvmrc` Node 26.0.0, package engines >=26.0.0 <27.
-- Project-local Claude quality-review skill, rubric, report template, command guide,
-  and CLAUDE.md. Manual changed/full review; it does not auto-edit or auto-run.
-- README corrections, team agreement, and documentation updates.
+Planning records: doc/sprint-03/. No invitation code or final model/API approved.
+Explain design and receive explicit approval before implementation. Decide lookup
+privacy, statuses/fields, duplicates/self-invitations, recipient-only responses,
+and Sprint 4 conversation handoff. Do not invent invitation requirements.
+Before switching to Sprint 3, review/submit current shared main records with
+separate Git approval, then update the local Sprint 3 branch to that main tip.
 
-## Verification evidence and limits
+## Deferred decisions
 
-Latest recorded implementation runs on October 16: lint, formatting, source type
-checks, **31 backend tests**, and build passed. Coverage measured 100% lines,
-branches, and functions across five backend source files. A clean temporary
-install also passed checks. Three audits reported zero known vulnerabilities
-at their recorded runs. These are historical observations, not fresh results
-from October 17's memory save, and coverage is not proof of complete behavior.
+Password changes and all-session invalidation/session stringify:false are deferred.
+Production proxy configuration waits for hosting topology. Accessibility tooling
+awaits professor input; no Playwright/axe suite installed. Full independent final
+Claude review was not performed in this chat. Tracked dist outputs, coverage gates,
+expanded type-check scope, branch protection, and other guardrail ideas are not
+implicitly authorized. Use temporary build output to avoid tracked-dist changes.
 
-Live Atlas ping passed, but account creation and real unique-email enforcement
-against a separate test database remain unverified. No frontend browser-test
-suite is installed. The user reported checks passed on GitHub; hosted run details
-and main required-status-check enforcement were not independently verified.
-GitHub CLI access last returned HTTP 401; ordinary git fetch/push did work.
+Meeting 4 is doc/meetings/meeting-4_2026-10-27.md; date preserved, responses unrecorded.
+New questions cover saved-session continuity and multi-agent business/AWS operations.
+README future ideas are exploratory: communication coach, possible separate Trusted
+Circle app, memoir-writing assistant; no current scope change.
 
-## Remaining core Sprint 02 work
+## Restore
 
-1. Agree on session persistence, cookie/session design, logout, and dependencies.
-2. Implement login, logout, protected endpoints, and profile read/update behavior.
-3. Agree on editable profile fields beyond display name/email/password registration.
-4. Build frontend registration/login/profile/logout flows and authenticated state.
-5. Verify real registration/duplicate email using isolated test data and approval.
-6. Test wrong credentials, unauthorized access, expiry/logout, and browser UX.
-7. Update records, run final checks and Claude full review; user decides readiness.
-8. Merge only at sprint completion with explicit user approval, preserving shared docs.
-
-## Deferred quality work and known gaps
-
-- Accessibility plugin 6.10.2 last declared support only through ESLint 9.
-  ESLint 9 was EOL, so keep ESLint 10 and do not force installation. Recheck
-  compatibility when revisiting; metadata is a dated finding.
-- Playwright/axe alternative documented but explicitly deferred for professor discussion.
-- Backend eslint-plugin-n not installed.
-- Coverage thresholds not enforced; 90% was suggested, not approved/implemented.
-- Type checks exclude tests/test-support/tooling config; extending scope is pending.
-- Four generated frontend/dist files remain tracked. Untracking was discussed,
-  not performed. Avoid modifying them during review by using a scratch outDir.
-- Rate limiting, frontend tests, Dependabot, CodeQL, secret scanning, pre-push
-  hooks, and other Claude audit suggestions are not automatically approved work.
-- Verify branch-protection rules separately from having a workflow in Git.
-- Some top-level sprint progress wording is stale; later dated entries supersede it.
-
-## Shared documentation on main
-
-`README.md`, `doc/project-journey.md`, `doc/meetings/`, semester planning and
-archives belong on main. The journey has October 16 and 17 research reflections,
-team responsibilities, and the one-time Git-delegation decision. Do not invent
-measured time/token savings or treat reflections as general research findings.
-
-## Immediate continuation
-
-The user is preparing to delete this long chat and requested file-based memory.
-Finish verifying the memory files, then let the user review and explicitly
-submit them before relying on a temporary checkout for long-term retention.
-No additional feature implementation has been approved by this memory request.
+Read AGENTS.md, INDEX, DECISIONS, and session 002. Inspect current Git/source.
+Give a short status and propose the next approved boundary; do not execute saved
+commands automatically. No full transcript was archived.

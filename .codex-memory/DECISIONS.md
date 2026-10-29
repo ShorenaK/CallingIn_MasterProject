@@ -27,3 +27,21 @@ conversation and repository; do not infer approval for unfinished proposals.
 
 Supersede decisions with dated entries rather than silently deleting their
 history. Revalidate version-compatibility findings when they are revisited.
+
+## October 29, 2026 — Superseding decisions and handoff
+
+- D04 superseded: MongoDB-backed cookie sessions and optional 90-day inactivity
+  persistence are implemented. Logout invalidates even persistent sessions.
+- D15 fulfilled: user explicitly approved Sprint 2 merge; 38a9a3c is pushed on main.
+- D16's uncommitted README note is historical: current future-app note was committed
+  as 274f8d1 and merged. Three possible applications remain exploratory, not scope changes.
+- D19 retained: save curated memory on main; never imply a full transcript or
+  automatic cross-chat recall. User specifically requested this handoff to help
+  avoid confusion/hallucinated assumptions; effectiveness has not been measured.
+- Sprint 3 setup approved: local branch sprint-03-invitations from merged main,
+  planning records only. Invitation implementation needs a design and approval.
+- Password changes/all-session invalidation and deployment proxy trust deferred.
+- User reported main CI green and browser checks passed; preserve documented
+  verification limits rather than claiming independent live Atlas certification.
+- Current save/meeting/setup approval does not grant new commit/push permission,
+  ongoing Git delegation, multi-agent spawning, AWS access, or business automation.
