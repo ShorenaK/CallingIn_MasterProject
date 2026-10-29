@@ -3,6 +3,7 @@ import { connectDatabase } from './database.js';
 import { prepareUsers } from './registration.js';
 import { createSessionMiddleware } from './session.js';
 import { createRequestProtection } from './request-protection.js';
+import { prepareInvitations } from './invitation-storage.js';
 
 /**
  * @param {import('express').Express} app
@@ -92,6 +93,7 @@ async function prepareAuthentication(db, env) {
 const defaults = {
   connect: connectDatabase,
   prepare: prepareUsers,
+  prepareInvitations,
   makeApp: createApp,
   prepareAuthentication,
   env: process.env,
@@ -106,6 +108,7 @@ export async function startBackend(options = {}) {
   const {
     connect,
     prepare,
+    prepareInvitations,
     makeApp,
     prepareAuthentication,
     env,
@@ -121,6 +124,9 @@ export async function startBackend(options = {}) {
   let server;
   try {
     await prepare(database.db);
+    stage =
+      'Invitation storage setup failed. Check database permissions and existing invitations.';
+    await prepareInvitations(database.db);
     stage =
       'Authentication setup failed. Check SESSION_SECRET, APP_ORIGIN, and session storage permissions.';
     const authentication = await prepareAuthentication(database.db, env);

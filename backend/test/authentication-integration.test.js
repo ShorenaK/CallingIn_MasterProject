@@ -67,6 +67,7 @@ function simulatedDatabase() {
     databaseName: 'auth_integration_test',
     collection(name) {
       if (name === 'users') return users;
+      if (name === 'invitations') return { createIndex: async () => {} };
       assert.equal(name, 'sessions');
       return sessions;
     },

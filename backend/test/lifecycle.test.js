@@ -15,6 +15,7 @@ function setup() {
     // Lifecycle tests isolate startup/shutdown from session-store behavior.
     // Real cookie/storage behavior is covered by the dedicated session tests.
     env: {},
+    prepareInvitations: async () => {},
     prepareAuthentication: async () => {
       state.authPrepared = true;
       return {
@@ -258,4 +259,40 @@ test('authentication failure keeps its safe error even if cleanup also fails', a
   };
   await assert.rejects(startBackend(options), /Authentication setup failed/);
   assert.equal(state.closes, 1);
+});
+
+test('invitation preparation finishes between account setup and authentication', async (t) => {
+  const { options } = setup();
+  const events = [];
+  const prepareAuthentication = options.prepareAuthentication;
+  options.prepare = async () => {
+    events.push('accounts');
+  };
+  options.prepareInvitations = async () => {
+    events.push('invitations');
+  };
+  options.prepareAuthentication = async () => {
+    events.push('authentication');
+    return prepareAuthentication();
+  };
+  const running = await startBackend(options);
+  t.after(running.stop);
+  assert.deepEqual(events, ['accounts', 'invitations', 'authentication']);
+});
+
+test('invitation index failure prevents serving and safely closes storage', async () => {
+  const { options, state, runtime } = setup();
+  options.prepareInvitations = async () => {
+    throw new Error('private index detail');
+  };
+  options.makeApp = () => assert.fail('Must not create application');
+  await assert.rejects(startBackend(options), {
+    message:
+      'Invitation storage setup failed. Check database permissions and existing invitations.',
+  });
+  assert.equal(state.prepared, true);
+  assert.equal(state.authPrepared, false);
+  assert.equal(state.closes, 1);
+  assert.deepEqual(state.logs, []);
+  assert.equal(runtime.listenerCount('SIGINT'), 0);
 });
