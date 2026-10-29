@@ -227,6 +227,16 @@ Sprint 02 commitments.
 
 These are possibilities for later development, not semester commitments.
 
+## Personal side notes — future ideas
+
+After CallingIn, I’d like to explore an AI-assisted memoir-writing platform.
+I’m also considering whether Trusted Circle should become a separate application,
+depending on user research and a feasibility assessment.
+
+This could lead to three focused applications: CallingIn as an AI communication
+coach, a standalone Trusted Circle app, and an AI memoir-writing assistant.
+These are exploratory ideas, not changes to the current project scope.
+
 ## Planned Technology Stack
 
 | Area            | Technology                                              |
