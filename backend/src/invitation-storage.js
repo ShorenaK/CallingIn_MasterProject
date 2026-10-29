@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from 'node:util';
 import { INVITATION_MESSAGE_MAX } from './invitation-policy.js';
 
 const properties = {
@@ -17,32 +18,55 @@ const properties = {
   respondedAt: { bsonType: ['date', 'null'] },
 };
 
+const validationOptions = {
+  validator: {
+    $jsonSchema: {
+      bsonType: 'object',
+      required: Object.keys(properties),
+      additionalProperties: false,
+      properties,
+    },
+  },
+  validationLevel: 'strict',
+  validationAction: 'error',
+};
+
+/** @param {import('mongodb').Db} db */
+async function verifyExistingValidation(db) {
+  const collection = await db.listCollections({ name: 'invitations' }).next();
+  const options =
+    collection && 'options' in collection ? collection.options : undefined;
+  if (
+    !options ||
+    !isDeepStrictEqual(options.validator, validationOptions.validator) ||
+    (options.validationLevel ?? 'strict') !== 'strict' ||
+    (options.validationAction ?? 'error') !== 'error'
+  ) {
+    throw new Error(
+      'Invitation validation differs. An administrator must update the collection validator.',
+    );
+  }
+}
+
 /** @param {import('mongodb').Db} db */
 async function prepareValidation(db) {
-  const options = {
-    validator: {
-      $jsonSchema: {
-        bsonType: 'object',
-        required: Object.keys(properties),
-        additionalProperties: false,
-        properties,
-      },
-    },
-    validationLevel: 'strict',
-    validationAction: 'error',
-  };
+  const existing = await db.listCollections({ name: 'invitations' }).next();
+  if (existing) {
+    await verifyExistingValidation(db);
+    return;
+  }
   try {
-    await db.createCollection('invitations', options);
+    await db.createCollection('invitations', validationOptions);
   } catch (failure) {
-    // Only NamespaceExists permits updating an existing collection. Permission,
-    // connection, and all other errors must stop startup before index creation.
+    // Another process may create the collection after inspection. Verify its
+    // settings without requiring collMod privileges or weakening validation.
     if (
       !(failure instanceof Error) ||
       !('code' in failure) ||
       failure.code !== 48
     )
       throw failure;
-    await db.command({ collMod: 'invitations', ...options });
+    await verifyExistingValidation(db);
   }
 }
 

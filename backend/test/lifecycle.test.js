@@ -288,7 +288,7 @@ test('invitation index failure prevents serving and safely closes storage', asyn
   options.makeApp = () => assert.fail('Must not create application');
   await assert.rejects(startBackend(options), {
     message:
-      'Invitation storage setup failed. Check database permissions and existing invitations.',
+      'Invitation storage setup failed. Check database access and validation; schema differences require an administrator update.',
   });
   assert.equal(state.prepared, true);
   assert.equal(state.authPrepared, false);

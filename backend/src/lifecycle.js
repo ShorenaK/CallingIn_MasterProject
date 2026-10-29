@@ -125,7 +125,7 @@ export async function startBackend(options = {}) {
   try {
     await prepare(database.db);
     stage =
-      'Invitation storage setup failed. Check database permissions and existing invitations.';
+      'Invitation storage setup failed. Check database access and validation; schema differences require an administrator update.';
     await prepareInvitations(database.db);
     stage =
       'Authentication setup failed. Check SESSION_SECRET, APP_ORIGIN, and session storage permissions.';

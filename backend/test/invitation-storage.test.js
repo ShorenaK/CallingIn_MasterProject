@@ -46,6 +46,7 @@ test('pair keys are stable across invitation directions and distinguish pairs', 
 test('storage prepares permanent uniqueness and both pagination indexes', async () => {
   const indexes = [];
   const db = {
+    listCollections: () => ({ next: async () => null }),
     createCollection: async () => {},
     collection(name) {
       assert.equal(name, 'invitations');
@@ -78,6 +79,7 @@ test('index failure propagates and prevents subsequent index preparation', async
     let calls = 0;
     const failure = new Error('simulated index failure');
     const db = {
+      listCollections: () => ({ next: async () => null }),
       createCollection: async () => {},
       collection: () => ({
         async createIndex() {
@@ -94,6 +96,7 @@ test('index failure propagates and prevents subsequent index preparation', async
 test('new collection receives strict validation before indexes', async () => {
   let prepared = false;
   const db = {
+    listCollections: () => ({ next: async () => null }),
     async createCollection(name, options) {
       assert.equal(name, 'invitations');
       assert.equal(options.validationLevel, 'strict');
@@ -133,40 +136,118 @@ test('new collection receives strict validation before indexes', async () => {
   await prepareInvitations(db);
 });
 
-test('existing collection receives validator update before indexes', async () => {
-  let updated = false;
+async function expectedValidation() {
   let options;
-  const db = {
-    async createCollection(_name, settings) {
+  await prepareInvitations({
+    listCollections: () => ({ next: async () => null }),
+    createCollection: async (_name, settings) => {
       options = settings;
-      throw Object.assign(new Error('exists'), { code: 48 });
     },
-    async command(command) {
-      assert.deepEqual(command, { collMod: 'invitations', ...options });
-      updated = true;
-    },
-    collection: () => ({
-      createIndex: async () => assert.equal(updated, true),
-    }),
-  };
-  await prepareInvitations(db);
+    collection: () => ({ createIndex: async () => {} }),
+  });
+  return structuredClone(options);
+}
+
+test('matching collection skips creation and modification, including default settings', async () => {
+  for (const defaults of [false, true]) {
+    const options = await expectedValidation();
+    if (defaults) {
+      delete options.validationLevel;
+      delete options.validationAction;
+    }
+    let indexes = 0;
+    await prepareInvitations({
+      listCollections: (filter) => {
+        assert.deepEqual(filter, { name: 'invitations' });
+        return { next: async () => ({ options }) };
+      },
+      createCollection: () =>
+        assert.fail('Must not create existing collection'),
+      command: () => assert.fail('Must not modify validator'),
+      collection: () => ({
+        createIndex: async () => {
+          indexes += 1;
+        },
+      }),
+    });
+    assert.equal(indexes, 3);
+  }
 });
 
-test('validation setup failures propagate without preparing indexes', async () => {
-  for (const stage of ['create', 'update', 'non-error']) {
+test('mismatched validators or weak settings stop startup before indexes', async () => {
+  for (const change of [
+    (options) => {
+      options.validator = {};
+    },
+    (options) => {
+      options.validationLevel = 'moderate';
+    },
+    (options) => {
+      options.validationAction = 'warn';
+    },
+  ]) {
+    const options = await expectedValidation();
+    change(options);
+    await assert.rejects(
+      prepareInvitations({
+        listCollections: () => ({ next: async () => ({ options }) }),
+        collection: () => assert.fail('Indexes must wait'),
+        command: () => assert.fail('No automatic administrative update'),
+      }),
+      /administrator must update/,
+    );
+  }
+});
+
+test('concurrent collection creation verifies the winner without modification', async () => {
+  const options = await expectedValidation();
+  let reads = 0;
+  await prepareInvitations({
+    listCollections: () => ({
+      next: async () => (++reads === 1 ? null : { options }),
+    }),
+    createCollection: async () => {
+      throw Object.assign(new Error('exists'), { code: 48 });
+    },
+    collection: () => ({ createIndex: async () => {} }),
+    command: () => assert.fail('Must not modify validator'),
+  });
+  assert.equal(reads, 2);
+});
+
+test('inspection, creation and race verification failures propagate before indexes', async () => {
+  for (const stage of [
+    'inspect',
+    'create',
+    'race-read',
+    'race-missing',
+    'non-error',
+  ]) {
     const failure =
       stage === 'non-error' ? { code: 48 } : new Error('private failure');
+    let reads = 0;
     const db = {
+      listCollections: () => ({
+        async next() {
+          reads += 1;
+          if (stage === 'inspect' || (stage === 'race-read' && reads > 1))
+            throw failure;
+          return null;
+        },
+      }),
       async createCollection() {
-        if (stage === 'update')
+        if (stage.startsWith('race'))
           throw Object.assign(new Error('exists'), { code: 48 });
-        throw failure;
-      },
-      async command() {
         throw failure;
       },
       collection: () => assert.fail('Indexes must wait for validation'),
     };
-    await assert.rejects(prepareInvitations(db), (error) => error === failure);
+    if (stage === 'race-missing')
+      await assert.rejects(prepareInvitations(db), /administrator must update/);
+    else
+      await assert.rejects(
+        prepareInvitations(db),
+        (error) => error === failure,
+      );
   }
 });

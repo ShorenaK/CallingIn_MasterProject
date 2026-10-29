@@ -103,6 +103,7 @@ async function setup(t) {
   };
   const db = {
     databaseName: 'invitation_cookie_test',
+    listCollections: () => ({ next: async () => null }),
     createCollection: async () => {},
     collection: (name) => collections[name],
   };
