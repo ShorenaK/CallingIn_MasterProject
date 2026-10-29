@@ -551,3 +551,22 @@ whitespace checks pass. Coverage does not prove complete behavioral correctness.
 No production code, dependencies, private settings, or live Atlas data changed.
 Browser and live database checks remain scheduled for October 29, 2026.
 No staging, commits, pushes, or merges were performed in this step.
+
+## October 29, 2026 — Browser results and closeout records
+
+The student reported successful account creation/duplicate rejection, sign-in and
+refresh, profile edit/refresh, sign-out/refresh, Keep me signed in with tab
+reopening, wrong-password rejection, invalid-input blocking, and keyboard/focus
+navigation. The agent reviewed a mobile welcome screenshot; full mobile account
+forms, screen-reader behavior, and complete browser-restart persistence were not
+verified. The database environment was not confirmed in chat and no Atlas records
+were inspected by the agent. Detailed results and limits are in
+`sprint-02-progress.md`.
+
+The student also reported the existing GitHub Quality run green. This documentation
+update changes no application code and does not rerun or replace the prior 98-test
+result. Formatting and whitespace checks are the validation for these records.
+With explicit approval, commit and push these two records on
+`sprint-02-authentication` to `ShorenaK/CallingIn_MasterProject`. Confirm the new
+hosted Quality run before merge review. No merge or Sprint 3 branch creation is
+part of this step.

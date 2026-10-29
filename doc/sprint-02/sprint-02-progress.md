@@ -3,10 +3,43 @@
 **Actual start:** October 13, 2026  
 **Branch:** `sprint-02-authentication`  
 **Starting commit:** `dc21195` on `main`  
-**Status:** Backend registration, login/logout, sessions, profile reading and
-display-name editing are implemented. Frontend account flows are implemented;
-browser and live Atlas account verification, remaining review fixes, and final
-sprint closeout are pending. Updated October 28, 2026.
+**Status:** Agreed account implementation and Claude review fixes 1 and 4–7 are
+complete. All 98 automated tests passed in the latest local run. The student
+reports GitHub Quality checks green and the core browser account checks passed.
+Final documentation push, hosted-check confirmation, and merge review remain.
+Updated October 29, 2026. See the verification limits below before treating this
+as complete live Atlas or accessibility certification.
+
+## User-reported browser verification — October 29, 2026
+
+The student performed these checks in the locally running application and
+reported the following results in chat; the agent did not independently operate
+the browser or inspect live database records.
+
+| Check                                                                                     | Reported result                                                                                                          |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Test account creation and duplicate-email registration                                    | Passed; duplicate rejected with “An account with that email already exists.”                                             |
+| Sign-in with Keep me signed in unchecked, followed by refresh                             | Passed; profile remained available                                                                                       |
+| Display-name update followed by refresh                                                   | Passed; updated name persisted                                                                                           |
+| Sign-out followed by refresh                                                              | Passed; sign-in required                                                                                                 |
+| Keep me signed in, close/reopen tab, then explicit sign-out and refresh                   | Passed                                                                                                                   |
+| Wrong password                                                                            | Passed; “Email or password is incorrect.”                                                                                |
+| Empty fields, invalid email, and password shorter than 15 characters                      | Passed; submission blocked                                                                                               |
+| Tab/Shift+Tab navigation, visible focus, checkbox Space, and switch activation with Enter | Passed, as reported by the student                                                                                       |
+| Mobile welcome section                                                                    | Screenshot reviewed after requesting a 375 × 812 viewport; visible text and logo fit without visible overlap or clipping |
+
+Verification limits: the active database name/environment was not confirmed in
+chat, so these results are recorded as browser checks rather than independently
+verified Atlas persistence or unique-index behavior. Full mobile account forms
+and absence of horizontal scrolling across all views were not confirmed. Full
+screen-reader testing and persistence across a complete browser restart remain
+unverified; reopening a tab passed. The 90-day cookie expiry is covered by the
+automated tests, not by waiting 90 days in a browser.
+
+Claude fixes 2 (session storage for password-change invalidation) and 3 (production
+proxy trust) remain deferred to password-change scope and deployment design.
+Final merge is pending review and a green hosted run for the closeout records.
+Earlier pending-check notes and test counts below are historical snapshots.
 
 ## Goal
 
