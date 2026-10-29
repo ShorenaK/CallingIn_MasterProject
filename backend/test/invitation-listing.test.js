@@ -195,3 +195,31 @@ test('list failures return safe errors and omit private content from logs', asyn
   );
   assert.equal(f.logs[0][1].operation, 'invitation-list');
 });
+
+test('cursor crosses older dates even when older records have higher IDs', async (t) => {
+  const records = [
+    invitation(1),
+    { ...invitation(9), createdAt: new Date('2026-10-28T12:00:00.000Z') },
+    { ...invitation(8), createdAt: new Date('2026-10-27T12:00:00.000Z') },
+  ];
+  const f = await setup(t, records);
+  const ids = [];
+  let nextCursor = null;
+  for (let page = 0; page < 3; page += 1) {
+    const suffix = nextCursor
+      ? `&cursor=${encodeURIComponent(nextCursor)}`
+      : '';
+    const result = await f.get(`direction=incoming&limit=1${suffix}`);
+    assert.equal(result.status, 200);
+    const body = await result.json();
+    ids.push(...body.invitations.map((r) => r.id));
+    nextCursor = body.nextCursor;
+    if (page < 2) assert.equal(typeof nextCursor, 'string');
+  }
+  assert.deepEqual(
+    ids,
+    records.map((r) => r._id.toHexString()),
+  );
+  assert.equal(new Set(ids).size, 3);
+  assert.equal(nextCursor, null);
+});

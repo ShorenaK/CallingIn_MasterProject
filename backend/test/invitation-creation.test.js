@@ -202,3 +202,21 @@ test('creation allowance counts all attempts, isolates accounts and is separate 
   assert.equal(lookup.status, 400);
   await lookup.arrayBuffer();
 });
+
+for (const [message, expected] of [
+  ['😀'.repeat(1500), 201],
+  ['😀'.repeat(1501), 400],
+  ['\u3000'.repeat(3), 400],
+  ['\u3000Hello 😀\u3000', 201],
+]) {
+  test(`creation enforces Unicode boundary: ${message.length} code units, expected ${expected}`, async (t) => {
+    const f = await setup(t);
+    const result = await f.post({ ...input, message });
+    assert.equal(result.status, expected);
+    const body = await result.json();
+    if (expected === 201) {
+      assert.equal(body.invitation.message, message.trim());
+      assert.equal([...f.records.values()][0].message, message.trim());
+    } else assert.equal(f.records.size, 0);
+  });
+}

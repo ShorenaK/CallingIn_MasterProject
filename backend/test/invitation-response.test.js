@@ -107,6 +107,15 @@ for (const from of ['pending', 'deferred', 'accepted', 'declined']) {
       assert.equal(result.status, permitted ? 200 : 409);
       assert.equal(result.headers.get('cache-control'), 'no-store');
       const body = await result.json();
+      if (from === to) {
+        assert.equal(body.invitation.status, before.status);
+        assert.equal(body.invitation.createdAt, before.createdAt.toISOString());
+        assert.equal(body.invitation.updatedAt, before.updatedAt.toISOString());
+        assert.equal(
+          body.invitation.respondedAt,
+          before.respondedAt.toISOString(),
+        );
+      }
       if (!permitted || from === to) {
         assert.equal(f.state.writes, 0);
         assert.deepEqual(f.state.record, before);
