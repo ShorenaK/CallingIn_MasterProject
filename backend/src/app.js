@@ -4,6 +4,8 @@ import { login, logout, currentUser, updateProfile } from './authentication.js';
 import { createLoginRateLimiter } from './login-rate-limit.js';
 import { createRegistrationRateLimiter } from './registration-rate-limit.js';
 import { requireAccount } from './require-account.js';
+import { lookupRecipient } from './recipient-lookup.js';
+import { createLookupRateLimiter } from './lookup-rate-limit.js';
 
 const accountRoutes = ['/api/users', '/api/invitations'];
 
@@ -50,6 +52,7 @@ export function createApp(db, authentication) {
     app.get('/api/auth/me', currentUser);
     app.patch('/api/auth/me', updateProfile);
     app.use(accountRoutes, authentication.sessionMiddleware, requireAccount);
+    app.post('/api/users/lookup', createLookupRateLimiter(), lookupRecipient);
   }
 
   app.use(handleError);
