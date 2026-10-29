@@ -11,6 +11,8 @@ import { createInvitationRateLimiter } from './invitation-rate-limit.js';
 
 import { listInvitations } from './invitation-listing.js';
 
+import { respondToInvitation } from './invitation-response.js';
+
 const accountRoutes = ['/api/users', '/api/invitations'];
 
 /**
@@ -57,6 +59,7 @@ export function createApp(db, authentication) {
     app.patch('/api/auth/me', updateProfile);
     app.use(accountRoutes, authentication.sessionMiddleware, requireAccount);
     app.get('/api/invitations', listInvitations);
+    app.patch('/api/invitations/:id/response', respondToInvitation);
     app.post('/api/users/lookup', createLookupRateLimiter(), lookupRecipient);
     app.post(
       '/api/invitations',
