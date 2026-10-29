@@ -8,9 +8,11 @@
 
 **Starting commit:** `38a9a3c` on merged `main`
 
-**Implementation reviewed through:** `7afcb1e`
+**Latest implementation/test tip:** `911443d`
 
-**Status:** Planned backend features implemented and pushed. Independent Claude review, live database verification, and frontend invitation work remain. Sprint 3 is not complete or merged.
+**Independent review scope:** `38a9a3c..7afcb1e`; fixes await focused re-review
+
+**Status:** Planned backend features implemented and pushed. Initial Claude review completed; focused fix re-review, live database verification, and frontend invitation work remain. Sprint 3 is not complete or merged.
 
 ## Goal and scope
 
@@ -83,8 +85,11 @@ Private responses use `Cache-Control: no-store`. Storage failures return safe
 `invitations` documents contain `_id`, `senderId`, `recipientId`, `pairKey`,
 `message`, `status`, `createdAt`, `updatedAt`, and `respondedAt`.
 
-Startup creates the collection with strict/error MongoDB JSON Schema validation,
-or applies the validator with `collMod` after NamespaceExists. Required fields,
+Startup inspects the existing collection validation. Matching rules permit startup
+without collection creation or `collMod`; a missing collection is created with
+strict/error MongoDB JSON Schema validation. A concurrent creation is handled by
+verifying the winning collection. Different or missing validation stops startup
+and requires an explicit administrator update. No automatic `collMod` is run. Required fields,
 BSON types, allowed statuses, nonblank bounded messages, and rejection of extra
 fields are specified. The API separately enforces identity, self-invitation,
 pair-key construction, trimming, and legal response transitions. The validator
@@ -99,7 +104,8 @@ Indexes:
 
 Preparation runs after account indexes and before authentication/HTTP serving.
 Failures close the database connection and stop startup with a safe error.
-Startup needs collection creation/validation/index permissions. Existing invalid
+Startup needs collection inspection and index permissions, plus collection creation
+permission when missing. Validator changes require a separate administrative action. Existing invalid
 documents are not automatically repaired. No expiry index or seed data was added.
 No live Atlas preparation was run in this work.
 
@@ -107,8 +113,9 @@ No live Atlas preparation was run in this work.
 
 Checks actually run during this implementation:
 
-- Final coverage run after the cookie integration test: **151 tests passed**, zero
-  failures/skips; **100% lines, 100% functions, 98.19% branches** across backend source.
+- Latest coverage run after the approved review fixes: **158 tests passed**, zero
+  failures/skips; **100% lines, 100% functions, 98.27% branches** across backend source.
+  The earlier cookie integration baseline was 151 tests and 98.19% branches.
 - The preceding full verification passed frontend/backend lint, repository-wide
   formatting, frontend/backend type checks, and a frontend production build in
   `/private/tmp/callingin-sprint03-verification-build`, preserving tracked dist files.
@@ -127,20 +134,53 @@ MongoDB schema rejection, unique-index races, atomicity, persistence, permission
 or query plans. Live Atlas checks remain pending. No private `.env` was opened,
 no network audits were run, and hosted GitHub Quality results were not independently
 verified in this session. Frontend invitation behavior and browser accessibility
-have not been implemented or verified. Claude review has not yet been invoked.
+have not been implemented or verified. Claude independently reported 151 passing
+tests and passing lint, formatting, types, and scratch build for the initial review;
+that evidence predates the fixes below.
+
+## Independent review and approved follow-up
+
+The [original Claude review](quality-review-2026-10-29.md) is preserved as a historical
+snapshot, not a review of subsequent fixes. It found no confirmed code defect,
+flagged a conditional startup-permission risk, and identified test gaps.
+
+Approved follow-up, implemented and pushed:
+
+- `c8c3d32`: verify existing validation without `collMod`, fail safely on mismatch,
+  and test matching/default settings, missing collections, inspection failures,
+  mismatches, and concurrent creation. The safe startup error now mentions the
+  administrative update requirement. Actual read/write-only Atlas restart behavior
+  remains unverified.
+- `911443d`: assert returned retry timestamps remain unchanged; paginate across
+  different dates with older records having higher IDs; test 1,500 emoji accepted,
+  1,501 rejected, Unicode whitespace-only rejection, and Unicode trimming.
+- Latest checks: 158 tests passed with coverage as above; backend lint, project
+  type checks, changed-file formatting, and whitespace checks passed. Pre-commit
+  lint/format checks passed for both commits. These checks were run before this
+  documentation update; they were not rerun just to edit Markdown.
+
+Remaining review items are real-database verification and focused Claude re-review.
+An opt-in real-database test suite has not been added or approved. Optional startup
+logging diagnostics remain deferred; the safe error was clarified, but allowlisted
+startup logging was not added. `respondedAt` continues to mean the latest response;
+preserving the original deferral time would need a product decision. User-facing
+"characters" wording still uses JavaScript code-unit limits; frontend wording and
+counter behavior need consideration during interface work. No Atlas roles, private
+settings, or live data were changed.
 
 ## Remaining work
 
 - [x] Approve model/API and all three response choices.
 - [x] Implement backend protection, storage, lookup, creation, lists, and responses.
 - [x] Run automated verification and add real-cookie integration coverage.
-- [ ] Independently review the backend with Claude; approve any fixes separately.
+- [x] Complete initial independent Claude review and approve the selected fixes.
+- [ ] Obtain focused Claude re-review of the startup fix and regression tests.
 - [ ] Plan and approve controlled live Atlas verification using test data.
 - [ ] Implement and verify the frontend invitation workflow with approval per step.
 - [ ] Complete sprint review and obtain explicit merge approval.
 
 Each Git submission was separately authorized. Latest pushed implementation tip
-is `7afcb1e`; nothing from Sprint 3 has been merged into main in this session.
+is `911443d`; nothing from Sprint 3 has been merged into main in this session.
 Shared setup/handoff records were committed in `86cf68c`, superseding the earlier
 uncommitted/main-checkout descriptions in the historical
 [session 002 handoff](../../.codex-memory/sessions/002-sprint-02-closeout-and-sprint-03-handoff.md).

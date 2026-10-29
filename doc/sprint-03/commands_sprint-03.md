@@ -70,3 +70,33 @@ by the agent. No dependency installs or network audits were run.
 Remaining: Claude review, approved live Atlas verification, frontend invitation
 work, final sprint checks, and explicit merge approval. See
 [progress and API details](sprint-03-progress.md).
+
+## October 29, 2026 — Claude review follow-up
+
+The previous section records the pre-review baseline. The user supplied the
+[Claude review](quality-review-2026-10-29.md), reporting an independent read-only
+review through `7afcb1e` at checkout `0725c55`. Claude reported 151 tests and the same
+coverage baseline, plus passing lint, formatting, types, and scratch build. No
+network audits or live database verification were completed. The original report
+has not been rewritten to imply review of later fixes.
+
+The user separately approved and requested Git submission for:
+
+| Commit    | Follow-up                                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------------------------ |
+| `c8c3d32` | Inspect and verify existing collection validation without startup `collMod`; safe mismatch failure and tests |
+| `911443d` | Returned retry timestamp assertions, pagination across dates, and Unicode boundaries                         |
+
+Both commits were pushed to `origin/sprint-03-invitations`; pre-commit lint and
+formatting passed. Latest actual coverage run after both changes: **158 tests
+passed**, zero failures/skips, **100% lines/functions and 98.27% branches**.
+Backend lint, project type checks, changed-file formatting, and whitespace checks
+passed. Tests used simulated storage and temporary localhost servers. No Atlas
+connection, permissions change, seed data, installation, or audit occurred.
+
+This approved documentation follow-up updates only the progress and command
+records. Claude's report remains unchanged and was untracked at the start of this
+step. No new tests or Git submissions were run as part of this documentation edit.
+Remaining: focused Claude re-review, approved live database checks, frontend work,
+and explicit merge approval. Optional startup diagnostics and response-history
+changes were not implemented.
