@@ -348,26 +348,45 @@ See the [Sprint Plan](doc/sprint-plan.md) for dates and deliverables.
 
 ## Code Quality
 
-The project uses:
+The project combines automated quality gates with a manually invoked AI review:
 
-- **ESLint:** Detect potential mistakes and enforce coding rules.
-- **Prettier:** Keep formatting consistent.
-- **Complexity checks:** Identify functions that are difficult
-  to understand or test.
-- **Pre-commit hooks:** Run selected fast checks before commits.
-- **Automated tests:** Verify important behavior and failure paths.
-- **Dependency scanning:** Review known vulnerabilities in packages.
+- **Cyclomatic complexity:** ESLint's `complexity` rule limits cyclomatic
+  complexity to **10 per function**. This measures branching through code and
+  helps identify functions that are difficult to understand or test. Exceeding
+  the limit fails linting. Additional rules limit nesting depth to 4, parameters
+  to 4, and function length to 60 lines, excluding comments and blank lines.
+- **ESLint:** `npm run lint` detects potential mistakes and enforces coding and
+  React Hooks rules with zero warnings allowed. Rules live in `eslint.config.mjs`.
+- **Type checking:** `npm run typecheck` runs TypeScript's JavaScript checker
+  (`tsc`) with strict `checkJs`, JSDoc, and `noEmit`. Application code remains
+  JavaScript. Type checking is separate from ESLint and currently covers frontend
+  and backend application source, not tests or tooling configuration.
+- **Formatting and pre-commit checks:** Prettier checks consistent formatting.
+  Husky and lint-staged run ESLint and Prettier on matching staged files before
+  commits; this fast hook does not run the full test suite or type checker.
+- **Automated tests:** Node's built-in test runner covers registration, password
+  hashing/verification, sessions, login/logout, profile access/updates, request
+  protection, rate limiting, safe failure handling, and server startup/shutdown.
+  `npm run test:coverage` reports backend source coverage; no minimum coverage
+  threshold is enforced. Automated frontend browser tests are not configured.
+- **GitHub Actions continuous integration (CI):** The Quality workflow in
+  `.github/workflows/quality.yml` runs on pushes to `main` and sprint branches,
+  pull requests to `main`, and manual dispatch. It installs locked dependencies,
+  then checks linting (including cyclomatic complexity), formatting, JavaScript
+  types, backend tests with coverage, the frontend build, and dependency security
+  audits for all three packages. Failed checks fail the workflow. Deployment is
+  separate; required merge checks depend on GitHub branch-protection settings.
+  The `.git` directory stores repository metadata, not the CI workflow.
+- **Claude quality-review skill:** The project-local
+  [quality-review skill](.claude/skills/quality-review/SKILL.md) is invoked manually
+  with `/quality-review` or `/quality-review full`. It runs project checks and
+  reviews duplication, documentation accuracy, meaningful tests, and guardrail
+  gaps. It reports measured results separately from review judgments and proposes
+  fixes for human approval. It is read-only and is not an automatic CI gate or
+  a replacement for tests and human review.
 
-Shared root tooling includes ESLint, Prettier, TypeScript's JavaScript checker,
-and Husky with lint-staged. ESLint limits cyclomatic complexity to 10, nesting
-depth to 4, parameters to 4, and function length to 60 lines excluding comments
-and blank lines. Accessibility linting remains deferred due to plugin compatibility.
-
-Node's built-in test suite covers health routes, registration validation and
-password hashing, database failure handling, and server startup/shutdown.
-`npm run test:coverage` reports backend source coverage; no minimum threshold
-is enforced yet. Frontend browser tests are not configured. GitHub's Quality
-workflow also runs checks and dependency audits after pushes/pull requests.
+Accessibility linting remains deferred due to plugin compatibility. Manual
+browser/accessibility verification complements the automated checks.
 
 The professor's Rust checklist is retained as reference material.
 Its Rust commands do not apply to this JavaScript application.
