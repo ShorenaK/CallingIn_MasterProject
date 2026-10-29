@@ -3,6 +3,9 @@ import { register } from './registration.js';
 import { login, logout, currentUser, updateProfile } from './authentication.js';
 import { createLoginRateLimiter } from './login-rate-limit.js';
 import { createRegistrationRateLimiter } from './registration-rate-limit.js';
+import { requireAccount } from './require-account.js';
+
+const accountRoutes = ['/api/users', '/api/invitations'];
 
 /**
  * Startup prepares database-backed sessions before handing middleware to this
@@ -26,9 +29,10 @@ export function createApp(db, authentication) {
   const app = express();
   app.locals.db = db;
 
-  // Reject untrusted authentication writes before reading their JSON bodies or
+  // Reject untrusted API writes before reading their JSON bodies or
   // accessing session storage. No CORS or proxy trust is enabled here.
-  if (authentication) app.use('/api/auth', authentication.requestProtection);
+  if (authentication)
+    app.use(['/api/auth', ...accountRoutes], authentication.requestProtection);
   app.use(express.json({ limit: '16kb' }));
 
   app.get('/api/health', (_request, response) => {
@@ -45,6 +49,7 @@ export function createApp(db, authentication) {
     app.post('/api/auth/logout', logout);
     app.get('/api/auth/me', currentUser);
     app.patch('/api/auth/me', updateProfile);
+    app.use(accountRoutes, authentication.sessionMiddleware, requireAccount);
   }
 
   app.use(handleError);

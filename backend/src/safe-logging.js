@@ -19,7 +19,7 @@ const errorCodes = new Set([
  * Never serialize errors, messages, stacks, request data, or arbitrary name/code
  * fields: database errors can contain credentials and user input in any of them.
  * @param {import('express').Request} request
- * @param {'login' | 'login-cleanup' | 'logout' | 'current-user' | 'profile-update' | 'registration'} operation
+ * @param {'login' | 'login-cleanup' | 'logout' | 'current-user' | 'profile-update' | 'registration' | 'require-account'} operation
  * @param {unknown} failure
  */
 export function logAccountFailure(request, operation, failure) {
