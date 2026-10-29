@@ -65,6 +65,7 @@ function simulatedDatabase() {
   };
   const db = {
     databaseName: 'auth_integration_test',
+    createCollection: async (name) => assert.equal(name, 'invitations'),
     collection(name) {
       if (name === 'users') return users;
       if (name === 'invitations') return { createIndex: async () => {} };
