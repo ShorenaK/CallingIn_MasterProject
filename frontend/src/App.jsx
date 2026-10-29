@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
 import logo from '../../public/images/logo1.png';
 import './App.css';
+import { Account } from './account/Account.jsx';
 
-function App() {
-  const [connection, setConnection] = useState('loading');
+/** @typedef {'loading' | 'connected' | 'error'} ConnectionStatus */
+
+function useBackendConnection() {
+  const [connection, setConnection] = useState(
+    /** @type {ConnectionStatus} */ ('loading'),
+  );
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -35,80 +40,98 @@ function App() {
     };
   }, [attempt]);
 
+  function retry() {
+    setConnection('loading');
+    setAttempt((value) => value + 1);
+  }
+  return { connection, retry };
+}
+
+function Welcome() {
+  return (
+    <section className="welcome" aria-labelledby="welcome-title">
+      <div>
+        <p className="eyebrow">A little courage. A meaningful connection.</p>
+        <h1 id="welcome-title">Begin the conversations that matter most.</h1>
+        <p className="intro">
+          Welcome to CallingIn — a space being built to help you find the words,
+          while keeping your voice.
+        </p>
+        <p className="description">
+          Our vision is AI-assisted communication that supports thoughtful
+          expression and respects each person’s choice to connect.
+        </p>
+        <a className="learn-link" href="#project-status">
+          See where we are <span aria-hidden="true">↓</span>
+        </a>
+      </div>
+      <img
+        className="brand-image"
+        src={logo}
+        alt="CallingIn: two people joined by a heart"
+        width="1254"
+        height="1254"
+      />
+    </section>
+  );
+}
+
+/** @param {{connection: ConnectionStatus, retry: () => void}} props */
+function ProjectStatus({ connection, retry }) {
   const messages = {
     loading: 'Checking the connection…',
     connected: 'Backend connected. The application foundation is ready.',
     error: 'Unable to reach the backend. Please try again.',
   };
+  return (
+    <section
+      className="project-status"
+      id="project-status"
+      aria-labelledby="status-title"
+    >
+      <div>
+        <p className="eyebrow">Sprint 2 · Accounts</p>
+        <h2 id="status-title">Every conversation starts somewhere.</h2>
+        <p>
+          Create an account, sign in, and manage your profile. AI assistance,
+          invitations, and messaging are planned for future sprints.
+        </p>
+      </div>
+      <div className="connection-panel">
+        <h3>Connection status</h3>
+        <p className={`connection ${connection}`} role="status">
+          {messages[connection]}
+        </p>
+        <button
+          type="button"
+          disabled={connection === 'loading'}
+          onClick={retry}
+        >
+          {connection === 'loading' ? 'Checking…' : 'Check again'}
+        </button>
+      </div>
+    </section>
+  );
+}
 
+function App() {
+  const { connection, retry } = useBackendConnection();
   return (
     <div className="page">
       <header className="header">
         <a className="wordmark" href="/" aria-label="CallingIn home">
           Calling<span>In</span>
         </a>
-        <span className="project-label">A project in progress</span>
+        <a className="learn-link" href="#account">
+          Your account
+        </a>
       </header>
       <main>
-        <section className="welcome" aria-labelledby="welcome-title">
-          <div>
-            <p className="eyebrow">
-              A little courage. A meaningful connection.
-            </p>
-            <h1 id="welcome-title">
-              Begin the conversations that matter most.
-            </h1>
-            <p className="intro">
-              Welcome to CallingIn — a space being built to help you find the
-              words, while keeping your voice.
-            </p>
-            <p className="description">
-              Our vision is AI-assisted communication that supports thoughtful
-              expression and respects each person’s choice to connect.
-            </p>
-            <a className="learn-link" href="#project-status">
-              See where we are <span aria-hidden="true">↓</span>
-            </a>
-          </div>
-          <img
-            className="brand-image"
-            src={logo}
-            alt="CallingIn: two people joined by a heart"
-            width="1254"
-            height="1254"
-          />
-        </section>
-        <section
-          className="project-status"
-          id="project-status"
-          aria-labelledby="status-title"
-        >
-          <div>
-            <p className="eyebrow">Sprint 1 · Foundation</p>
-            <h2 id="status-title">Every conversation starts somewhere.</h2>
-            <p>
-              This starter connects our welcome page to the backend. AI
-              assistance, accounts, invitations, and messaging are planned and
-              are not available yet.
-            </p>
-          </div>
-          <div className="connection-panel">
-            <h3>Connection status</h3>
-            <p className={`connection ${connection}`} role="status">
-              {messages[connection]}
-            </p>
-            <button
-              type="button"
-              disabled={connection === 'loading'}
-              onClick={() => {
-                setConnection('loading');
-                setAttempt((value) => value + 1);
-              }}
-            >
-              {connection === 'loading' ? 'Checking…' : 'Check again'}
-            </button>
-          </div>
-        </section>
+        <Welcome />
+        <div id="account">
+          <Account />
+        </div>
+        <ProjectStatus connection={connection} retry={retry} />
       </main>
       <footer>
         CallingIn · CS 8674 · Fall 2026{' '}
