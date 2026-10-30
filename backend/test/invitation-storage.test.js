@@ -7,7 +7,7 @@ import {
   invitationPairKey,
 } from '../src/invitation-policy.js';
 
-test('invitation messages require trimmed text within the 3000-character limit', () => {
+test('invitation messages require trimmed text within the 5000-character limit', () => {
   for (const value of [
     null,
     undefined,
@@ -16,14 +16,14 @@ test('invitation messages require trimmed text within the 3000-character limit',
     123,
     '',
     ' \n\t ',
-    'x'.repeat(3001),
+    'x'.repeat(5001),
   ])
     assert.equal(validInvitationMessage(value), false);
   for (const value of [
     'x',
     '  hello  ',
-    'x'.repeat(3000),
-    `  ${'x'.repeat(3000)}  `,
+    'x'.repeat(5000),
+    `  ${'x'.repeat(5000)}  `,
   ])
     assert.equal(validInvitationMessage(value), true);
 });
@@ -106,7 +106,7 @@ test('new collection receives strict validation before indexes', async () => {
       assert.deepEqual(schema.required, Object.keys(schema.properties));
       for (const key of ['_id', 'senderId', 'recipientId'])
         assert.equal(schema.properties[key].bsonType, 'objectId');
-      assert.equal(schema.properties.message.maxLength, 3000);
+      assert.equal(schema.properties.message.maxLength, 5000);
       assert.equal(
         new RegExp(schema.properties.message.pattern).test(' \n '),
         false,
@@ -267,9 +267,9 @@ test('existing collection without validation rules requires an administrator upd
   );
 });
 
-test('existing validator allowing 5000 characters is rejected instead of weakening policy', async () => {
+test('existing validator allowing 6000 characters is rejected instead of weakening policy', async () => {
   const options = await expectedValidation();
-  options.validator.$jsonSchema.properties.message.maxLength = 5000;
+  options.validator.$jsonSchema.properties.message.maxLength = 6000;
   await assert.rejects(
     prepareInvitations({
       listCollections: () => ({ next: async () => ({ options }) }),
@@ -279,6 +279,21 @@ test('existing validator allowing 5000 characters is rejected instead of weakeni
         assert.fail('Must not prepare indexes with weaker validation'),
       command: () =>
         assert.fail('Must not automatically modify collection rules'),
+    }),
+    /administrator must update/,
+  );
+});
+
+test('existing 3000-character validator requires explicit migration to 5000', async () => {
+  const options = await expectedValidation();
+  options.validator.$jsonSchema.properties.message.maxLength = 3000;
+  await assert.rejects(
+    prepareInvitations({
+      listCollections: () => ({ next: async () => ({ options }) }),
+      collection: () =>
+        assert.fail('Indexes must wait for validator migration'),
+      command: () =>
+        assert.fail('Must not automatically migrate the validator'),
     }),
     /administrator must update/,
   );

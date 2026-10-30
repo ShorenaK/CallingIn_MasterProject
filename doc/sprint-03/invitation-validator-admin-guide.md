@@ -7,6 +7,11 @@ change Atlas. Use it only after the database owner approves the exact target and
 update. Like replacing a building's lock, changing database rules is separate from
 opening the building each morning.
 
+**October 30 limit update:** The approved message limit is now 5,000 JavaScript
+code units. Existing collections created with a 3,000 maximum require an explicit
+administrator update before the new backend can restart. This guide was updated,
+but no database rule was changed by editing it.
+
 ## When this is needed
 
 The backend checks that an existing `invitations` collection has the expected
@@ -19,7 +24,7 @@ The current source of truth is
 [invitation-storage.js](../../backend/src/invitation-storage.js) and the invitation
 message limit in [account-policy helpers](../../backend/src/invitation-policy.js).
 Recheck those files before using this dated example. The invitation message limit
-of 3,000 is unrelated to the account password length.
+of 5,000 is unrelated to the account password length.
 
 ## 1. Confirm the target and stop writes
 
@@ -94,7 +99,7 @@ const expectedValidator = {
       message: {
         bsonType: 'string',
         minLength: 1,
-        maxLength: 3000,
+        maxLength: 5000,
         pattern: '\\S',
       },
       status: { enum: ['pending', 'deferred', 'accepted', 'declined'] },

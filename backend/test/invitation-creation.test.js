@@ -107,7 +107,7 @@ test('creation rejects invalid fields, spoofed identity and self invitations wit
     {},
     { ...input, recipientId: 'invalid' },
     { ...input, message: ' ' },
-    { ...input, message: 'x'.repeat(3001) },
+    { ...input, message: 'x'.repeat(5001) },
     { ...input, senderId: new ObjectId().toHexString() },
     { ...input, status: 'accepted' },
     { ...input, recipientId: sender.toHexString() },
@@ -120,11 +120,11 @@ test('creation rejects invalid fields, spoofed identity and self invitations wit
   assert.ok(!f.events.includes('insert'));
 });
 
-test('creation accepts a 3000-character message after trimming', async (t) => {
+test('creation accepts a 5000-character message after trimming', async (t) => {
   const f = await setup(t);
-  const result = await f.post({ ...input, message: `  ${'x'.repeat(3000)}  ` });
+  const result = await f.post({ ...input, message: `  ${'x'.repeat(5000)}  ` });
   assert.equal(result.status, 201);
-  assert.equal((await result.json()).invitation.message.length, 3000);
+  assert.equal((await result.json()).invitation.message.length, 5000);
 });
 
 test('missing recipient returns 404 without writing', async (t) => {
@@ -204,8 +204,8 @@ test('creation allowance counts all attempts, isolates accounts and is separate 
 });
 
 for (const [message, expected] of [
-  ['😀'.repeat(1500), 201],
-  ['😀'.repeat(1501), 400],
+  ['😀'.repeat(2500), 201],
+  ['😀'.repeat(2501), 400],
   ['\u3000'.repeat(3), 400],
   ['\u3000Hello 😀\u3000', 201],
 ]) {

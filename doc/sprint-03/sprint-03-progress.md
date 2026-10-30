@@ -29,7 +29,7 @@ messaging are outside this backend implementation.
   registered; this privacy tradeoff was explicitly approved. Missing recipients
   and self-lookups return the same 404 response.
 - Invitation creation accepts only `recipientId` and `message`. The sender comes
-  from the verified session. Messages are trimmed and must have 1–3,000 JavaScript
+  from the verified session. Messages are trimmed and must have 1–5,000 JavaScript
   string code units. Sent messages cannot be edited through this API.
 - Self-invitations are rejected. One invitation is permitted per unordered account
   pair, including after acceptance or decline. A reverse invitation is a duplicate,
@@ -355,3 +355,62 @@ h2/h3/h4 heading order. Pending steps, each approved separately: Show more
 pagination, recipient responses with final-choice confirmation, lookup and sending
 with a 3,000-code-unit counter, then status copy, docs, and final checks. Sprint 3
 is not complete.
+
+### October 30 — Approved invitation limit increase to 5,000
+
+Shorena approved increasing invitation messages from 3,000 to **5,000 JavaScript
+code units after trimming**. The shared backend limit, creation error, schema
+preparation, boundary/emoji tests, and administrator guide now reflect 5,000.
+Historical test/review notes above describe the former limit. The weaker-validator
+regression now uses 6,000 as the incorrect maximum.
+
+Existing Atlas collections still enforcing 3,000 do not automatically change.
+The new startup check will reject that mismatch until an administrator explicitly
+applies the reviewed 5,000 validator. The update needs separate approval and the
+[administrator guide](invitation-validator-admin-guide.md); no Atlas command was
+run here. An already running old backend must also be restarted after the approved
+migration. Claude's sending form/counter must use 5,000; no frontend sender was
+added by this backend change. The existing 16 KB JSON body-size guard remains;
+requests exceeding it return 413 even if the message length alone is valid.
+Verification: **169 backend tests passed**, zero failures/skips; **100% lines/functions,
+98.35% branches**. Tests cover 5,000 accepted, 5,001 rejected, emoji/code-unit
+boundaries, whitespace, the 5,000 schema value, rejection of a weaker 6,000 rule,
+and rejection of the old 3,000 validator until explicit migration. Repository lint,
+formatting, existing app type checks, and whitespace checks passed. No frontend
+or live database verification was claimed for this backend-only update.
+
+### Tomorrow's checklist — October 31, 2026 (America/New_York)
+
+Shorena explicitly deferred the live 5,000-character database-rule update until
+tomorrow, alongside final verification work. No Atlas rule was changed today.
+The 5,000 backend changes and related documentation remain uncommitted at this
+checkpoint; Git submission requires a separate request.
+
+- [ ] Confirm the exact cluster and database names before any live action. Test:
+      `callingin_sprint03_verify`. Development name remains to be confirmed:
+      `callingin_dev` versus `calling_dev`; do not guess from historical notes.
+- [ ] Follow the [administrator guide](invitation-validator-admin-guide.md) for
+      each existing target: confirm approval/maintenance scope, stop writers,
+      back up data and validation settings privately, and check existing records.
+- [ ] Deliberately update invitation validation from 3,000 to 5,000, preserving
+      the other expected rules and strict/error settings. Read back and verify.
+      No deletion, permission expansion, or automatic migration is authorized by
+      this checklist alone.
+- [ ] Restart the backend twice against each approved target with its regular
+      limited application account. Verify successful startup and the new limit
+      using approved test data. Keep credentials out of chat, reports, and Git.
+- [ ] Coordinate Claude's sending form/counter with the 5,000 backend contract.
+      Until migration, mocked frontend tests can continue; do not restart the new
+      backend against an old 3,000 validator and expect startup to succeed.
+- [ ] Finish the full browser/backend verification and guided human desktop,
+      mobile, keyboard, zoom/reflow, and accessibility checks. Record actual runs
+      and limits; earlier results do not certify later changes.
+- [ ] Complete independent review and update sprint documentation/handoff. Restore
+      the intended development configuration privately after isolated tests.
+- [ ] Review Sprint 3 completion with Shorena. Commit/push and any merge into main
+      require explicit authorization; do not mark the sprint complete prematurely.
+
+Before each step, explain what it does, why, Shorena's action, and the expected
+result in short everyday language, using a simple life analogy where helpful.
+Proceed one approved step at a time. This is a to-do record, not proof that backup,
+migration, verification, or a full transcript archive has occurred.

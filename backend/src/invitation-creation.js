@@ -45,7 +45,7 @@ export async function createInvitation(request, response) {
   if (!validCreation(request.body)) {
     response.status(400).json({
       error:
-        'Provide only a valid recipient ID and a message of 1–3000 characters.',
+        'Provide only a valid recipient ID and a message of 1–5000 characters.',
     });
     return;
   }

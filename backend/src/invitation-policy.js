@@ -12,7 +12,7 @@
  * @property {Date | null} respondedAt
  */
 
-export const INVITATION_MESSAGE_MAX = 3000;
+export const INVITATION_MESSAGE_MAX = 5000;
 
 /** @param {unknown} message @returns {message is string} */
 export function validInvitationMessage(message) {
