@@ -272,3 +272,25 @@ are documentation only: no Atlas update, backup, tool installation, or credentia
 inspection was performed. The guide is dated and must be compared with current
 source before use. This closes the two test cases and missing-instructions items
 from Claude's follow-up; Claude has not yet reviewed the subsequent password changes.
+
+### October 30 — Approved browser and accessibility tooling
+
+Shorena approved Playwright, axe-core integration, Chromium downloads, and CI
+browser checks before the invitation frontend handoff. This supersedes the earlier
+accessibility-tooling deferral without implying professor approval.
+
+Added a separate root `test:e2e` command, isolated Vite server on port 4175, three
+Chromium account-screen tests, axe scans, lint coverage for the new test/config
+files, ignored reports, and Quality workflow browser installation/execution.
+All API calls use explicit mock responses; no backend or Atlas connection is
+required. Existing app source and Claude's pending password review were untouched.
+
+Local run: **3 browser tests passed**; **164 backend tests passed**. Repository
+lint/formatting, existing app type checks, and whitespace checks passed. axe reported no violations under the selected
+WCAG tags on sign-in, registration, and profile views. Keyboard field order/focus
+outline, password rules/errors, mock sign-in, and sign-out were exercised. This
+is not full accessibility certification or real-session integration. Manual
+screen-reader, zoom/reflow, visible focus, and other-browser checks remain.
+See [browser/accessibility testing](browser-accessibility-testing.md) for commands,
+scope, reports, CI behavior, and frontend handoff guidance. Hosted CI remains
+unverified; tooling changes are not permission to submit Git or merge the sprint.
