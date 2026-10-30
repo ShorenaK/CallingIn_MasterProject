@@ -383,8 +383,9 @@ or live database verification was claimed for this backend-only update.
 
 Shorena explicitly deferred the live 5,000-character database-rule update until
 tomorrow, alongside final verification work. No Atlas rule was changed today.
-The 5,000 backend changes and related documentation remain uncommitted at this
-checkpoint; Git submission requires a separate request.
+The 5,000 backend change and initial checklist were subsequently committed and
+pushed as `76b576a`. The expanded manual plan below is a later documentation
+update. Claude’s sending-form changes still await review/submission at this checkpoint.
 
 - [ ] Confirm the exact cluster and database names before any live action. Test:
       `callingin_sprint03_verify`. Development name remains to be confirmed:
@@ -414,3 +415,38 @@ Before each step, explain what it does, why, Shorena's action, and the expected
 result in short everyday language, using a simple life analogy where helpful.
 Proceed one approved step at a time. This is a to-do record, not proof that backup,
 migration, verification, or a full transcript archive has occurred.
+
+#### Expanded manual journey for October 31 — user-confirmed plan
+
+Do the database-rule update first, following the guide's backup, existing-data
+check, deliberate update, and restart sequence. Do not begin live frontend tests
+against an incompatible validator. Review Claude's final sending-form handoff
+before exercising it; no source edits are authorized by this manual checklist.
+
+- [ ] Register 2–3 fresh disposable CallingIn accounts in the confirmed test
+      database. Use made-up details and unique test passwords, never personal
+      credentials. Existing pairs cannot receive another invitation, so use
+      separate pairs for acceptance and decline.
+- [ ] As A, look up B and send an invitation. Confirm success and that it appears
+      in A's Sent list and B's Received list, with the correct names/message.
+- [ ] Try a 5,001-code-unit message; confirm the form blocks submission with clear
+      feedback and does not silently shorten it. Also check a valid message at
+      the 5,000 boundary, subject to the separate request-body size guard.
+- [ ] As B, choose Maybe Later; confirm both sides show the deferred status.
+      Then choose Accept with its confirmation step and check both lists again.
+- [ ] With a different unused pair, choose I need some space with confirmation.
+      Check final-state behavior, including cancellation making no saved change.
+- [ ] Check pending, deferred, accepted, and declined colors, alongside readable
+      text/shape labels. Color must never be the only way to understand status.
+- [ ] Use only Tab, Shift+Tab, Enter, and Space for the journey; check visible
+      focus, confirmation focus, error feedback, and Show more where available.
+- [ ] Zoom to 200% and check for clipped text, overlapping controls, or lost actions.
+- [ ] Try a phone-width window and Safari. A narrow desktop window is responsive
+      layout evidence, not proof of behavior on an actual phone.
+- [ ] If available, try macOS VoiceOver (Cmd+F5, or the Mac's configured shortcut)
+      and record which screens/actions were checked. If not done, mark it unverified.
+- [ ] Record results, failures, browser/viewport, and limits. Run final automated
+      checks and independent review before considering sprint completion.
+
+This is tomorrow's plan, not a claim that the new frontend journey, Safari,
+VoiceOver, or 5,000-character Atlas checks already passed.
