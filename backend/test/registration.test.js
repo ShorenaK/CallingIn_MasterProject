@@ -9,7 +9,7 @@ import { hashPassword, prepareUsers } from '../src/registration.js';
 const input = {
   displayName: ' Student ',
   email: ' STUDENT@example.com ',
-  password: 'a-long-test-password',
+  password: 'test-password-123',
 };
 
 async function start(t, db) {
@@ -151,11 +151,8 @@ test('registration rejects full email in passwords regardless of case without wr
     t,
     fakeDb(() => assert.fail('Must not write rejected credentials')),
   );
-  for (const password of [
-    'student@example.com',
-    'prefix-STUDENT@EXAMPLE.COM-suffix',
-  ]) {
-    const result = await post({ ...input, password });
+  for (const password of ['a@b.co123', 'prefix-A@B.CO-end']) {
+    const result = await post({ ...input, email: ' A@b.co ', password });
     assert.equal(result.status, 400);
     assert.deepEqual(await result.json(), {
       error: 'Password must not contain your email address.',
@@ -191,4 +188,29 @@ test('email restriction uses full address and does not change existing password 
     await verifyPassword(existing, await hashPassword(existing)),
     true,
   );
+});
+
+test('registration rejects whitespace and lengths outside 8–18 before writing', async (t) => {
+  for (const password of [
+    'x'.repeat(7),
+    'x'.repeat(19),
+    'abcd 1234',
+    ' abcd1234',
+    'abcd1234 ',
+    'abcd\t1234',
+    'abcd\n1234',
+    'abcd\u30001234',
+  ]) {
+    const post = await start(
+      t,
+      fakeDb(() => assert.fail('Must not write')),
+    );
+    const result = await post({ ...input, password });
+    assert.equal(result.status, 400);
+    assert.deepEqual(await result.json(), {
+      error: /\s/u.test(password)
+        ? 'Password must not contain spaces.'
+        : 'Password must be 8–18 characters.',
+    });
+  }
 });

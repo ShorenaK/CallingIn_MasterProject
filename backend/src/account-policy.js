@@ -1,5 +1,6 @@
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 128;
+export const REGISTRATION_PASSWORD_MAX_LENGTH = 18;
 export const SCRYPT_KEY_LENGTH = 64;
 export const SCRYPT_SALT_BYTES = 16;
 export const SCRYPT_OPTIONS = Object.freeze({

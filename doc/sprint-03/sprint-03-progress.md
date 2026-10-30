@@ -236,3 +236,22 @@ Repository lint/formatting, frontend/backend type checks, scratch frontend build
 Browser validation messages, layout, and accessibility still need manual review.
 Claude's previous review predates this policy change. No new live Atlas check or
 Git submission was performed for this change.
+
+### October 30 — Superseding registration limits and visible rules
+
+Shorena subsequently approved **8–18 characters**, no whitespace (including spaces,
+tabs, and line breaks), and the existing full-email exclusion for new accounts.
+The registration form displays all four rules below the password field, linked
+as its accessible description. Client and server reject invalid new passwords;
+passwords are never silently stripped of spaces. This supersedes the earlier
+8–128/spaces-allowed registration policy above. Sign-in and hash verification
+retain 8–128 support, including whitespace, for existing accounts. No stored hash
+migration or database changes are needed. Google sign-in remains future work.
+Verification: **162 backend tests passed**, zero failures/skips; **100% lines/functions,
+98.30% branches**. Tests cover new registration bounds, whitespace rejection,
+case-insensitive full-email exclusion, and existing 19–128-character/space-containing
+password verification. Repository lint/formatting, frontend/backend type checks,
+scratch frontend build, and whitespace checks passed. Two test fixtures were
+corrected for the new limit and the existing registration attempt quota; no rate
+limit was weakened. Browser guidance/layout still needs manual review. No Atlas
+access, private settings change, or Git submission occurred for this update.

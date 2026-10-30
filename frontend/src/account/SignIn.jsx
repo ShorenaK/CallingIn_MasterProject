@@ -67,7 +67,7 @@ function SignInFields({ register }) {
             );
         }}
         onInput={(event) => event.currentTarget.setCustomValidity('')}
-        maxLength={128}
+        maxLength={register ? 18 : 128}
       />
       <PasswordGuidance register={register} />
       {!register && (
@@ -94,9 +94,10 @@ function PasswordGuidance({ register }) {
           <p>Your password must:</p>
           <ul>
             <li>Contain at least 8 characters.</li>
-            <li>Not contain your email address.</li>
+            <li>Contain no more than 18 characters.</li>
+            <li>Don’t use your email address.</li>
+            <li>Contain no spaces.</li>
           </ul>
-          <p>Maximum 128 characters. Spaces are allowed.</p>
         </>
       ) : (
         <p>Use 8–128 characters. Spaces are allowed.</p>

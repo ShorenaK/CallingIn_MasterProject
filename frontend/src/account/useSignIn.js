@@ -20,11 +20,7 @@ export function useSignIn(submit) {
       password: String(fields.get('password')),
     };
     try {
-      if (
-        register &&
-        body.password.toLowerCase().includes(body.email.toLowerCase())
-      )
-        throw new Error('Password must not contain your email address.');
+      if (register) validateNewPassword(body);
       await submit(
         register ? 'register' : 'login',
         register
@@ -48,4 +44,14 @@ export function useSignIn(submit) {
     setNotice('');
   }
   return { register, busy, error, notice, handleSubmit, switchMode };
+}
+
+/** @param {{email: string, password: string}} body */
+function validateNewPassword(body) {
+  if (body.password.length < 8 || body.password.length > 18)
+    throw new Error('Password must be 8–18 characters.');
+  if (/\s/u.test(body.password))
+    throw new Error('Password must not contain spaces.');
+  if (body.password.toLowerCase().includes(body.email.toLowerCase()))
+    throw new Error('Password must not contain your email address.');
 }

@@ -71,10 +71,11 @@ responsible design.
 Users will be able to register, sign in, sign out, and maintain
 a basic profile.
 
-Password policy updated October 30, 2026: new passwords must contain **8–128
+Password policy updated October 30, 2026: new passwords must contain **8–18
 characters** and must not contain the account's full email address (case-insensitive).
-Spaces are allowed; a letter/number combination is not required. The email rule
-applies at registration, so existing accounts can continue signing in. The reduced
+Spaces, tabs, and other whitespace are not allowed in new passwords; a
+letter/number combination is not required. The email, whitespace, and 18-character maximum rules apply at registration;
+existing accounts can still sign in with their original passwords (up to 128 characters). The reduced
 minimum is a user-approved usability tradeoff; it is below current NIST guidance
 for password-only sign-in.
 
