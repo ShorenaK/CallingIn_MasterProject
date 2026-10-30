@@ -320,3 +320,38 @@ names after refresh, and real-cookie workflow integration with simulated storage
 Repository lint/formatting, existing application type checks, and whitespace checks
 passed. No live Atlas operation was performed. Independent review and frontend
 integration remain separate steps; no Git submission occurred in this update.
+
+### October 30 — Invitation frontend step 1 (Claude implementation)
+
+Claude implemented the approved first frontend step in `2dadde5`; Codex reviewed it.
+Signed-in users now see an Invitations area with **Received** and **Sent** lists
+(first 10 of each). Read-only cards show “From/To {name}” from `otherPerson`, or
+“Account unavailable”, plus the message (line breaks kept), sent date, and a status
+label pairing a shape with words (● waiting, ◐ Maybe Later, ✓ accepted, ○ I need
+some space), so status is not shown by color alone. Accepted cards state that
+private conversations are future work. Loading, empty, and calm amber retryable
+problem states are included; red is not used on invitation screens. Shorena chose
+the current label colors after reviewing previews; icon and alternative color
+previews were not applied. A 401 from invitation requests returns to sign-in with
+“Your session has ended. Please sign in again.” and moves focus to the heading.
+Account requests now share one JSON request helper with invitations.
+
+Codex found that any `createdAt` string passed validation, so a malformed date
+threw while rendering and blanked the page. Fixed in `29dab81`: only exact ISO
+dates are accepted; otherwise the list shows the retryable notice. Its browser
+test failed before the fix (`RangeError: Invalid time value`) and passes after.
+
+Checks Claude ran after the fix: repository lint, formatting, frontend/backend type
+checks, **168 backend tests** (100% lines/functions, 98.35% branches), a scratch
+frontend build, and **12 Playwright tests** with axe scans and no violations,
+all using mocked APIs. Shorena reported viewing the outsider account's received
+invitation in the running app. Not verified: screen reader, zoom/reflow, Safari/
+Firefox, or step 1 against live Atlas.
+
+**For Codex re-review:** range `824a02b..29dab81`, frontend only. Check list-shape
+validation including dates, that session expiry cannot loop (`expire` is a stable
+callback), unchanged account behavior after the request-helper refactor, and the
+h2/h3/h4 heading order. Pending steps, each approved separately: Show more
+pagination, recipient responses with final-choice confirmation, lookup and sending
+with a 3,000-code-unit counter, then status copy, docs, and final checks. Sprint 3
+is not complete.
