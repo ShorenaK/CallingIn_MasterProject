@@ -2,7 +2,7 @@
 
 **Actual setup date:** October 29, 2026 (America/New_York)
 
-**Updated:** October 29, 2026 (America/New_York)
+**Updated:** October 30, 2026 (America/New_York)
 
 **Branch:** `sprint-03-invitations`
 
@@ -10,9 +10,9 @@
 
 **Latest implementation/test tip:** `911443d`
 
-**Independent review scope:** `38a9a3c..7afcb1e`; fixes await focused re-review
+**Independent review scope:** Initial `38a9a3c..7afcb1e`; focused follow-up through `20ad1ba`, saved in `326203e`
 
-**Status:** Planned backend features implemented and pushed. Initial Claude review completed; focused fix re-review, live database verification, and frontend invitation work remain. Sprint 3 is not complete or merged.
+**Status:** Planned backend features implemented and pushed. Initial and focused Claude reviews completed. Planned manual Atlas checks were user-reported successful; remaining review follow-ups and frontend invitation work remain. Sprint 3 is not complete or merged.
 
 ## Goal and scope
 
@@ -107,7 +107,8 @@ Failures close the database connection and stop startup with a safe error.
 Startup needs collection inspection and index permissions, plus collection creation
 permission when missing. Validator changes require a separate administrative action. Existing invalid
 documents are not automatically repaired. No expiry index or seed data was added.
-No live Atlas preparation was run in this work.
+Live test preparation and restart checks were subsequently performed by Shorena on
+October 29–30; see the dated live report below.
 
 ## Verification evidence and limits
 
@@ -150,7 +151,7 @@ Approved follow-up, implemented and pushed:
   and test matching/default settings, missing collections, inspection failures,
   mismatches, and concurrent creation. The safe startup error now mentions the
   administrative update requirement. Actual read/write-only Atlas restart behavior
-  remains unverified.
+  was subsequently reported successful by Shorena; roles were not independently inspected.
 - `911443d`: assert returned retry timestamps remain unchanged; paginate across
   different dates with older records having higher IDs; test 1,500 emoji accepted,
   1,501 rejected, Unicode whitespace-only rejection, and Unicode trimming.
@@ -159,14 +160,36 @@ Approved follow-up, implemented and pushed:
   lint/format checks passed for both commits. These checks were run before this
   documentation update; they were not rerun just to edit Markdown.
 
-Remaining review items are real-database verification and focused Claude re-review.
+The focused Claude re-review completed with no regressions found. It identified two
+additional explicit validator test cases and missing administrator-update instructions.
+These remain pending. Real-database checks and their limits are recorded below.
 An opt-in real-database test suite has not been added or approved. Optional startup
 logging diagnostics remain deferred; the safe error was clarified, but allowlisted
 startup logging was not added. `respondedAt` continues to mean the latest response;
 preserving the original deferral time would need a product decision. User-facing
 "characters" wording still uses JavaScript code-unit limits; frontend wording and
-counter behavior need consideration during interface work. No Atlas roles, private
-settings, or live data were changed.
+counter behavior need consideration during interface work. The code-fix stage did not
+change Atlas; Shorena subsequently configured the isolated live test environment.
+
+## October 29–30 — User-operated live Atlas checks
+
+See the [detailed live verification report](live-atlas-verification-2026-10-30.md)
+for the purpose of each test, database-user versus app-account explanations,
+reported evidence, the corrected duplicate request, and remaining limits.
+
+Shorena reported successful restricted-user startup and restart, expected
+collections/indexes/validation, account registration/sign-in, recipient lookup,
+invitation flow, outsider rejection, Maybe Later then acceptance, final-state
+conflict, persistence, duplicate 409, decline, stable retry times, and database
+rejection of missing required fields. Codex guided the steps and read pasted
+outputs; it did not independently operate Atlas or inspect credentials/roles.
+The exact rejected document and full outgoing-list response were not retained;
+the report avoids claiming more than the available evidence supports.
+
+Live simultaneous-request behavior, pagination query plans/load, every individual
+schema constraint, and the invitation UI remain unverified. This documentation
+update ran no application suites or live checks. Latest automated evidence remains
+158 passing tests, 100% lines/functions, and 98.27% branches.
 
 ## Remaining work
 
@@ -174,8 +197,10 @@ settings, or live data were changed.
 - [x] Implement backend protection, storage, lookup, creation, lists, and responses.
 - [x] Run automated verification and add real-cookie integration coverage.
 - [x] Complete initial independent Claude review and approve the selected fixes.
-- [ ] Obtain focused Claude re-review of the startup fix and regression tests.
-- [ ] Plan and approve controlled live Atlas verification using test data.
+- [x] Obtain focused Claude re-review of the startup fix and regression tests.
+- [x] Guide planned manual Atlas checks and record user-reported results/limits.
+- [ ] Add missing/weaker-validator tests and administrator-update instructions.
+- [ ] Restore original development connection settings privately after testing.
 - [ ] Implement and verify the frontend invitation workflow with approval per step.
 - [ ] Complete sprint review and obtain explicit merge approval.
 

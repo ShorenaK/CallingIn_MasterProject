@@ -100,3 +100,27 @@ step. No new tests or Git submissions were run as part of this documentation edi
 Remaining: focused Claude re-review, approved live database checks, frontend work,
 and explicit merge approval. Optional startup diagnostics and response-history
 changes were not implemented.
+
+## October 30, 2026 — Manual Atlas results and review status
+
+The earlier pending-review/live-check statements are historical. The focused
+[Claude follow-up review](quality-review-2026-10-29-followup.md) was saved and pushed
+as `326203e`. Claude found no regressions and independently reported 158 passing
+tests with the previously recorded coverage. Missing/weaker-validator test cases
+and administrator-update instructions remain follow-ups.
+
+Shorena performed the October 29–30 live Atlas exercise with step-by-step Codex
+guidance, a separate test database, a reported read/write-only database user, and
+three disposable CallingIn accounts. Browser console requests stood in for the
+future invitation UI. The [live report](live-atlas-verification-2026-10-30.md)
+records the steps, meaning, reported outcomes, corrections, and limits. No secrets
+or connection strings were recorded. Codex did not inspect private `.env` or Atlas
+roles. Restoration of the original connection settings remains pending.
+
+The user approved this documentation update. Only Sprint 3 Markdown was changed;
+no application tests, live requests, Git submissions, or database cleanup were run
+as part of writing it. Formatting, whitespace, and local Markdown links were
+checked. Git submission needs a separate request. Next: remaining review items,
+private configuration restoration, and Claude frontend design/implementation with
+Codex independent review. Sprint completion and merge still require review and
+explicit approval.
