@@ -199,7 +199,7 @@ update ran no application suites or live checks. Latest automated evidence remai
 - [x] Complete initial independent Claude review and approve the selected fixes.
 - [x] Obtain focused Claude re-review of the startup fix and regression tests.
 - [x] Guide planned manual Atlas checks and record user-reported results/limits.
-- [ ] Add missing/weaker-validator tests and administrator-update instructions.
+- [x] Add missing/weaker-validator tests and administrator-update instructions.
 - [ ] Restore original development connection settings privately after testing.
 - [ ] Implement and verify the frontend invitation workflow with approval per step.
 - [ ] Complete sprint review and obtain explicit merge approval.
@@ -255,3 +255,20 @@ scratch frontend build, and whitespace checks passed. Two test fixtures were
 corrected for the new limit and the existing registration attempt quota; no rate
 limit was weakened. Browser guidance/layout still needs manual review. No Atlas
 access, private settings change, or Git submission occurred for this update.
+
+### October 30 — Remaining validator review items
+
+The two explicit regression cases were added and pushed in `f90da8d`: an existing
+collection with no validator and one permitting 5,000-character messages must both
+fail before index work or automatic administrative updates. All **11 storage tests**,
+focused lint, formatting, and whitespace checks passed for that test-only change.
+The full application suite was not rerun for those two cases; the prior full
+baseline remains 162 passing tests.
+
+The approved [administrator repair guide](invitation-validator-admin-guide.md)
+now explains target confirmation, private backup, existing-data checks, deliberate
+validator update, and restart with the limited application account. Its commands
+are documentation only: no Atlas update, backup, tool installation, or credentials
+inspection was performed. The guide is dated and must be compared with current
+source before use. This closes the two test cases and missing-instructions items
+from Claude's follow-up; Claude has not yet reviewed the subsequent password changes.
