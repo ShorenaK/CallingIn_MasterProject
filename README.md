@@ -380,12 +380,24 @@ The project combines automated quality gates with a manually invoked AI review:
   hashing/verification, sessions, login/logout, profile access/updates, request
   protection, rate limiting, safe failure handling, and server startup/shutdown.
   `npm run test:coverage` reports backend source coverage; no minimum coverage
-  threshold is enforced. Automated frontend browser tests are not configured.
+  threshold is enforced.
+- **Browser tests — Playwright:** `npm run test:e2e` runs Chromium checks for
+  account screens, keyboard field navigation/focus, password guidance/errors,
+  and mock sign-in/sign-out. An isolated frontend server and simulated API
+  responses keep these checks independent of Atlas and private credentials.
+- **Accessibility scans — axe-core:** `@axe-core/playwright` checks the rendered
+  sign-in, registration, and profile views for common accessibility problems,
+  such as missing labels and insufficient contrast. The current scans use
+  supported WCAG 2 A/AA, 2.1 A/AA, and 2.2 AA tags, without rule exclusions.
+  Passing scans do not establish full accessibility or WCAG conformance.
+  See the [browser/accessibility guide](doc/sprint-03/browser-accessibility-testing.md)
+  for browser installation, commands, reports, and verification limits.
 - **GitHub Actions continuous integration (CI):** The Quality workflow in
   `.github/workflows/quality.yml` runs on pushes to `main` and sprint branches,
   pull requests to `main`, and manual dispatch. It installs locked dependencies,
   then checks linting (including cyclomatic complexity), formatting, JavaScript
-  types, backend tests with coverage, the frontend build, and dependency security
+  types, backend tests with coverage, the frontend build, Playwright/axe browser
+  checks (with Chromium installation), and dependency security
   audits for all three packages. Failed checks fail the workflow. Deployment is
   separate; required merge checks depend on GitHub branch-protection settings.
   The `.git` directory stores repository metadata, not the CI workflow.
@@ -397,8 +409,12 @@ The project combines automated quality gates with a manually invoked AI review:
   fixes for human approval. It is read-only and is not an automatic CI gate or
   a replacement for tests and human review.
 
-Accessibility linting remains deferred due to plugin compatibility. Manual
-browser/accessibility verification complements the automated checks.
+The separate JSX accessibility lint plugin remains deferred due to compatibility;
+Playwright and axe-core are now configured. Human checks still cover keyboard-only
+operation, clearly visible focus, zoom/reflow, and screen-reader behavior.
+Automated scans and keyboard smoke tests support these checks rather than replace
+them. Browser tests currently use Chromium only; other-browser behavior remains
+outside that automated coverage.
 
 The professor's Rust checklist is retained as reference material.
 Its Rust commands do not apply to this JavaScript application.
