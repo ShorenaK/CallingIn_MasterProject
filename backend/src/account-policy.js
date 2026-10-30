@@ -1,4 +1,4 @@
-export const PASSWORD_MIN_LENGTH = 15;
+export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 128;
 export const SCRYPT_KEY_LENGTH = 64;
 export const SCRYPT_SALT_BYTES = 16;
@@ -39,4 +39,11 @@ export function validPassword(password) {
     password.length >= PASSWORD_MIN_LENGTH &&
     password.length <= PASSWORD_MAX_LENGTH
   );
+}
+
+/** Account-creation rule only; existing accounts must remain able to sign in.
+ * @param {string} password @param {string} email
+ */
+export function passwordContainsEmail(password, email) {
+  return password.toLowerCase().includes(email.trim().toLowerCase());
 }

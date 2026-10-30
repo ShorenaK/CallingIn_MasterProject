@@ -58,10 +58,18 @@ function SignInFields({ register }) {
         label="Password"
         type="password"
         autoComplete={register ? 'new-password' : 'current-password'}
-        minLength={15}
+        minLength={8}
+        aria-describedby="password-guidance"
+        onInvalid={(event) => {
+          if (event.currentTarget.validity.tooShort)
+            event.currentTarget.setCustomValidity(
+              'This field must have at least 8 characters.',
+            );
+        }}
+        onInput={(event) => event.currentTarget.setCustomValidity('')}
         maxLength={128}
       />
-      <p className="field-hint">Use 15–128 characters. Spaces are allowed.</p>
+      <PasswordGuidance register={register} />
       {!register && (
         <label className="checkbox-field">
           <input type="checkbox" name="keepSignedIn" /> Keep me signed in
@@ -74,5 +82,25 @@ function SignInFields({ register }) {
         </p>
       )}
     </>
+  );
+}
+
+/** @param {{register: boolean}} props */
+function PasswordGuidance({ register }) {
+  return (
+    <div id="password-guidance" className="field-hint">
+      {register ? (
+        <>
+          <p>Your password must:</p>
+          <ul>
+            <li>Contain at least 8 characters.</li>
+            <li>Not contain your email address.</li>
+          </ul>
+          <p>Maximum 128 characters. Spaces are allowed.</p>
+        </>
+      ) : (
+        <p>Use 8–128 characters. Spaces are allowed.</p>
+      )}
+    </div>
   );
 }

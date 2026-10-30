@@ -20,6 +20,11 @@ export function useSignIn(submit) {
       password: String(fields.get('password')),
     };
     try {
+      if (
+        register &&
+        body.password.toLowerCase().includes(body.email.toLowerCase())
+      )
+        throw new Error('Password must not contain your email address.');
       await submit(
         register ? 'register' : 'login',
         register

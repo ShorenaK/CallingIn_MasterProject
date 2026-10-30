@@ -1,4 +1,4 @@
-/** @param {{name: string, label: string, type?: string, autoComplete?: string, minLength?: number, maxLength?: number, defaultValue?: string}} props */
+/** @param {{name: string, label: string, type?: string, autoComplete?: string, minLength?: number, maxLength?: number, defaultValue?: string, onInvalid?: import('react').FormEventHandler<HTMLInputElement>, onInput?: import('react').FormEventHandler<HTMLInputElement>, 'aria-describedby'?: string}} props */
 export function Field({ name, label, type = 'text', ...rest }) {
   return (
     <label className="form-field" htmlFor={name}>

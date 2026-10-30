@@ -71,6 +71,13 @@ responsible design.
 Users will be able to register, sign in, sign out, and maintain
 a basic profile.
 
+Password policy updated October 30, 2026: new passwords must contain **8–128
+characters** and must not contain the account's full email address (case-insensitive).
+Spaces are allowed; a letter/number combination is not required. The email rule
+applies at registration, so existing accounts can continue signing in. The reduced
+minimum is a user-approved usability tradeoff; it is below current NIST guidance
+for password-only sign-in.
+
 ### 2. AI Communication Coach
 
 Users will explain why they want to reach out and request help
@@ -168,6 +175,10 @@ or treat mental health conditions or replace professional care.
 
 The following features are possibilities for later development and are
 outside the Fall 2026 MVP.
+
+**Google sign-in** is planned future work, outside the current invitation sprint
+and the committed Fall 2026 MVP. It is not implemented. It will need provider setup,
+secure account linking, and separate design, approval, and testing.
 
 The planned evolution of CallingIn is:
 

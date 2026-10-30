@@ -210,3 +210,29 @@ Shared setup/handoff records were committed in `86cf68c`, superseding the earlie
 uncommitted/main-checkout descriptions in the historical
 [session 002 handoff](../../.codex-memory/sessions/002-sprint-02-closeout-and-sprint-03-handoff.md).
 See the [commands and step record](commands_sprint-03.md) for implementation milestones.
+
+## October 30 — Approved password policy change
+
+Shorena explicitly approved lowering the shared minimum from 15 to 8 characters,
+keeping the 128-character maximum, and rejecting new passwords that contain the
+account's full normalized email address, ignoring case. Passwords themselves are
+not trimmed or normalized for hashing. No letter/number requirement was added.
+This is a deliberate usability tradeoff below current NIST password-only length
+guidance, not a claim of equivalent strength.
+
+Registration enforces the email rule server-side and gives matching form guidance.
+Sign-in uses the new length bounds but does not apply the new email restriction
+to existing credentials. Existing hashes/accounts need no migration. Google sign-in
+is documented in README as future work, not implemented or approved for this sprint.
+The historical live test report correctly retains the 15-character rule in force
+when those accounts were created. No private settings or Atlas data were changed.
+Verification after this change: **161 backend tests passed**, zero failures/skips;
+**100% lines/functions and 98.29% branches**. Tests cover 7/8/128/129 length
+boundaries, successful eight-character registration/hash verification, rejection
+of the full email inside a password with case variation, allowed email-local-part
+text, and continued verification of existing passwords containing an email.
+Repository lint/formatting, frontend/backend type checks, scratch frontend build
+(`/private/tmp/callingin-password-policy-build`), and whitespace checks passed.
+Browser validation messages, layout, and accessibility still need manual review.
+Claude's previous review predates this policy change. No new live Atlas check or
+Git submission was performed for this change.

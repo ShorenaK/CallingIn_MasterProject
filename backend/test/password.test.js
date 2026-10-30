@@ -32,7 +32,7 @@ test('rejects password inputs outside the registration contract', async () => {
     123,
     {},
     '',
-    'x'.repeat(14),
+    'x'.repeat(7),
     'x'.repeat(129),
   ]) {
     assert.equal(await verifyPassword(candidate, storedHash), false);
@@ -78,9 +78,9 @@ test('rejects a structurally valid hash containing the wrong derived key', async
 
 test('registration and verification agree on password policy boundaries', async () => {
   const { validateRegistration } = await import('../src/registration.js');
-  for (const length of [14, 15, 128, 129]) {
+  for (const length of [7, 8, 128, 129]) {
     const candidate = 'x'.repeat(length);
-    const valid = length === 15 || length === 128;
+    const valid = length === 8 || length === 128;
     assert.equal(
       validateRegistration({
         displayName: 'Test',

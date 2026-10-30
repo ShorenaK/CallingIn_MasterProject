@@ -145,3 +145,50 @@ test('non-Error storage failures still return a safe response', async (t) => {
   assert.equal(response.status, 503);
   assert.doesNotMatch(await response.text(), /private non-Error failure/);
 });
+
+test('registration rejects full email in passwords regardless of case without writing', async (t) => {
+  const post = await start(
+    t,
+    fakeDb(() => assert.fail('Must not write rejected credentials')),
+  );
+  for (const password of [
+    'student@example.com',
+    'prefix-STUDENT@EXAMPLE.COM-suffix',
+  ]) {
+    const result = await post({ ...input, password });
+    assert.equal(result.status, 400);
+    assert.deepEqual(await result.json(), {
+      error: 'Password must not contain your email address.',
+    });
+  }
+});
+
+test('eight-character password registration stores a working hash', async (t) => {
+  let saved;
+  const post = await start(
+    t,
+    fakeDb(async (user) => {
+      saved = user;
+      return { insertedId: 'test-id' };
+    }),
+  );
+  const result = await post({ ...input, password: 'abcd1234' });
+  assert.equal(result.status, 201);
+  await result.arrayBuffer();
+  const { verifyPassword } = await import('../src/password.js');
+  assert.equal(await verifyPassword('abcd1234', saved.passwordHash), true);
+});
+
+test('email restriction uses full address and does not change existing password verification', async () => {
+  const { validateRegistration } = await import('../src/registration.js');
+  assert.equal(
+    validateRegistration({ ...input, password: 'student1234' }),
+    null,
+  );
+  const { verifyPassword } = await import('../src/password.js');
+  const existing = 'STUDENT@example.com';
+  assert.equal(
+    await verifyPassword(existing, await hashPassword(existing)),
+    true,
+  );
+});
