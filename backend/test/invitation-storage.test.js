@@ -251,3 +251,35 @@ test('inspection, creation and race verification failures propagate before index
       );
   }
 });
+
+test('existing collection without validation rules requires an administrator update', async () => {
+  await assert.rejects(
+    prepareInvitations({
+      listCollections: () => ({ next: async () => ({ options: {} }) }),
+      createCollection: () =>
+        assert.fail('Must not recreate existing collection'),
+      collection: () =>
+        assert.fail('Must not prepare indexes without validation'),
+      command: () =>
+        assert.fail('Must not automatically modify collection rules'),
+    }),
+    /administrator must update/,
+  );
+});
+
+test('existing validator allowing 5000 characters is rejected instead of weakening policy', async () => {
+  const options = await expectedValidation();
+  options.validator.$jsonSchema.properties.message.maxLength = 5000;
+  await assert.rejects(
+    prepareInvitations({
+      listCollections: () => ({ next: async () => ({ options }) }),
+      createCollection: () =>
+        assert.fail('Must not recreate existing collection'),
+      collection: () =>
+        assert.fail('Must not prepare indexes with weaker validation'),
+      command: () =>
+        assert.fail('Must not automatically modify collection rules'),
+    }),
+    /administrator must update/,
+  );
+});
