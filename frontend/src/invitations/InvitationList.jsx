@@ -7,11 +7,13 @@ const LIST_COPY = {
     title: 'Received',
     loading: 'Loading received invitations…',
     empty: 'No invitations yet. When someone invites you, it will appear here.',
+    more: 'Show more received',
   },
   outgoing: {
     title: 'Sent',
     loading: 'Loading sent invitations…',
     empty: 'You haven’t sent any invitations yet.',
+    more: 'Show more sent',
   },
 };
 
@@ -36,11 +38,42 @@ export function InvitationList({ direction, onSessionExpired }) {
         <ul className="invitation-list">
           {list.invitations.map((invitation) => (
             <li key={invitation.id}>
-              <InvitationCard direction={direction} invitation={invitation} />
+              <InvitationCard
+                direction={direction}
+                invitation={invitation}
+                focusOnMount={invitation.id === list.more.focusId}
+              />
             </li>
           ))}
         </ul>
       )}
+      <MoreControls list={list} label={copy.more} />
     </section>
+  );
+}
+
+/** @param {{list: ReturnType<typeof useInvitationList>, label: string}} props */
+function MoreControls({ list, label }) {
+  const { more } = list;
+  return (
+    <>
+      {/* Present before it changes so screen readers announce each load. */}
+      <p className="visually-hidden" role="status">
+        {more.announcement}
+      </p>
+      {more.status === 'error' && (
+        <Problem message={more.error} onRetry={list.loadMore} />
+      )}
+      {list.nextCursor && more.status !== 'error' && (
+        <button
+          type="button"
+          className="secondary-button"
+          disabled={more.status === 'loading'}
+          onClick={list.loadMore}
+        >
+          {more.status === 'loading' ? 'Loading…' : label}
+        </button>
+      )}
+    </>
   );
 }

@@ -23,7 +23,10 @@ function invitation(overrides) {
   };
 }
 
-/** Serve one fixed page per direction and record each list query. */
+/**
+ * Serve a page per direction and record each list query. A function receives
+ * the query parameters, so tests can answer differently for later pages.
+ */
 async function mockLists(page, pages, queries = []) {
   await mockApi(
     page,
@@ -32,7 +35,9 @@ async function mockLists(page, pages, queries = []) {
       queries.push(Object.fromEntries(url.searchParams));
       const result = pages[url.searchParams.get('direction')];
       await route.fulfill(
-        typeof result === 'function' ? result() : { json: result },
+        typeof result === 'function'
+          ? result(url.searchParams)
+          : { json: result },
       );
       return true;
     },
@@ -214,4 +219,119 @@ test('expired session returns to sign-in with a focused explanation', async ({
     page.getByRole('heading', { name: 'Invitations', exact: true }),
   ).toHaveCount(0);
   await expectAccessible(page);
+});
+
+const cursor = '2026-10-29T10:00:00.000Z~000000000000000000000c10';
+
+function people(from, count) {
+  return Array.from({ length: count }, (_, index) => {
+    const number = from + index;
+    return invitation({
+      id: String(number).padStart(24, '0'),
+      otherPerson: { displayName: `Person ${number}` },
+    });
+  });
+}
+
+function firstPageThen(laterPage) {
+  return (params) =>
+    params.get('cursor')
+      ? laterPage()
+      : { json: { invitations: people(1, 10), nextCursor: cursor } };
+}
+
+test('show more appends the next page, moves focus, and announces it', async ({
+  page,
+}) => {
+  const queries = [];
+  await mockLists(
+    page,
+    {
+      incoming: firstPageThen(() => ({
+        json: { invitations: people(11, 3), nextCursor: null },
+      })),
+      outgoing: empty,
+    },
+    queries,
+  );
+  await page.goto('/');
+  const received = page.getByRole('region', { name: 'Received' });
+  await expect(received.getByRole('article')).toHaveCount(10);
+  await expectAccessible(page);
+  await received.getByRole('button', { name: 'Show more received' }).click();
+  await expect(received.getByRole('article')).toHaveCount(13);
+  await expect(
+    received.getByRole('heading', { name: 'From Person 11' }),
+  ).toBeFocused();
+  await expect(
+    received
+      .getByRole('status')
+      .filter({ hasText: 'Loaded 3 more invitations.' }),
+  ).toBeAttached();
+  await expect(
+    received.getByRole('button', { name: 'Show more received' }),
+  ).toHaveCount(0);
+  expect(queries).toContainEqual({
+    direction: 'incoming',
+    limit: '10',
+    cursor,
+  });
+  await expectAccessible(page);
+});
+
+test('show more failure keeps loaded invitations and can be retried', async ({
+  page,
+}) => {
+  let fail = true;
+  await mockLists(page, {
+    incoming: firstPageThen(() =>
+      fail
+        ? {
+            status: 503,
+            json: { error: 'Invitation lists are temporarily unavailable.' },
+          }
+        : { json: { invitations: people(11, 1), nextCursor: null } },
+    ),
+    outgoing: empty,
+  });
+  await page.goto('/');
+  const received = page.getByRole('region', { name: 'Received' });
+  await received.getByRole('button', { name: 'Show more received' }).click();
+  await expect(received.getByRole('alert')).toContainText(
+    'Invitation lists are temporarily unavailable.',
+  );
+  await expect(received.getByRole('article')).toHaveCount(10);
+  await expectAccessible(page);
+  fail = false;
+  await received.getByRole('button', { name: 'Try again' }).click();
+  await expect(received.getByRole('article')).toHaveCount(11);
+  await expect(
+    received
+      .getByRole('status')
+      .filter({ hasText: 'Loaded 1 more invitation.' }),
+  ).toBeAttached();
+  await expect(received.getByRole('alert')).toHaveCount(0);
+});
+
+test('session expiry during show more returns to sign-in', async ({ page }) => {
+  await mockLists(page, {
+    incoming: firstPageThen(() => ({
+      status: 401,
+      json: { error: 'Sign in to continue.' },
+    })),
+    outgoing: empty,
+  });
+  await page.goto('/');
+  await page
+    .getByRole('region', { name: 'Received' })
+    .getByRole('button', { name: 'Show more received' })
+    .click();
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back' }),
+  ).toBeFocused();
+  await expect(
+    page
+      .getByRole('status')
+      .filter({ hasText: 'Your session has ended. Please sign in again.' }),
+  ).toBeVisible();
 });
