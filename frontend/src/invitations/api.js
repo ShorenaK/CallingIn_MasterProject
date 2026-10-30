@@ -30,6 +30,24 @@ export async function listInvitations(direction, cursor) {
   return /** @type {InvitationPage} */ (data);
 }
 
+/**
+ * Recipient response. The server confirms identity and allowed transitions;
+ * its reply omits `otherPerson`, so callers keep the name from the list.
+ * @param {string} id
+ * @param {Exclude<InvitationStatus, 'pending'>} status
+ */
+export async function respondToInvitation(id, status) {
+  const data = /** @type {{invitation?: Invitation} | null} */ (
+    await apiRequest(`/api/invitations/${encodeURIComponent(id)}/response`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    })
+  );
+  if (!validInvitation(data?.invitation) || data?.invitation?.id !== id)
+    throw unexpectedResponse();
+  return data.invitation;
+}
+
 /** @param {unknown} value */
 function validInvitation(value) {
   const item = /** @type {Partial<Invitation> | null} */ (value);

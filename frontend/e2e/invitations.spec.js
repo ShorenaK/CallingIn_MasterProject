@@ -26,11 +26,18 @@ function invitation(overrides) {
 /**
  * Serve a page per direction and record each list query. A function receives
  * the query parameters, so tests can answer differently for later pages.
+ * `respond(id, body)` answers PATCH /api/invitations/:id/response.
  */
-async function mockLists(page, pages, queries = []) {
+async function mockLists(page, pages, queries = [], respond) {
   await mockApi(
     page,
     async (route, path, url) => {
+      const response = path.match(/^\/api\/invitations\/(\w+)\/response$/);
+      if (response && respond && route.request().method() === 'PATCH') {
+        const body = route.request().postDataJSON();
+        await route.fulfill(await respond(response[1], body));
+        return true;
+      }
       if (path !== '/api/invitations') return false;
       queries.push(Object.fromEntries(url.searchParams));
       const result = pages[url.searchParams.get('direction')];
@@ -334,4 +341,169 @@ test('session expiry during show more returns to sign-in', async ({ page }) => {
       .getByRole('status')
       .filter({ hasText: 'Your session has ended. Please sign in again.' }),
   ).toBeVisible();
+});
+
+const sarahId = '0000000000000000000000a1';
+
+/** The server's response payload has no counterpart name. */
+function answer(status) {
+  const updated = invitation({
+    status,
+    updatedAt: '2026-10-30T14:00:00.000Z',
+    respondedAt: '2026-10-30T14:00:00.000Z',
+  });
+  delete updated.otherPerson;
+  return { json: { invitation: updated } };
+}
+
+async function openReceived(page, received, requests, respond) {
+  await mockLists(
+    page,
+    {
+      incoming: { invitations: received, nextCursor: null },
+      outgoing: empty,
+    },
+    [],
+    respond ??
+      ((id, body) => {
+        requests.push({ id, body });
+        return answer(body.status);
+      }),
+  );
+  await page.goto('/');
+  return page.getByRole('article', { name: 'From Sarah' });
+}
+
+test('Maybe Later saves immediately and keeps the final choices open', async ({
+  page,
+}) => {
+  const requests = [];
+  const card = await openReceived(page, [invitation()], requests);
+  await expectAccessible(page);
+  await card.getByRole('button', { name: 'Maybe Later' }).click();
+  const status = card.locator('.status-label');
+  await expect(status).toHaveText(/You chose Maybe Later/);
+  await expect(status).toBeFocused();
+  expect(requests).toEqual([{ id: sarahId, body: { status: 'deferred' } }]);
+  await expect(card.getByRole('button', { name: 'Maybe Later' })).toHaveCount(
+    0,
+  );
+  await expect(card.getByRole('button', { name: 'Accept' })).toBeVisible();
+  await expect(
+    card.getByRole('button', { name: 'I need some space' }),
+  ).toBeVisible();
+});
+
+test('Accept asks once, Go back saves nothing, and confirming is final', async ({
+  page,
+}) => {
+  const requests = [];
+  const card = await openReceived(page, [invitation()], requests);
+  await card.getByRole('button', { name: 'Accept' }).click();
+  await expect(
+    card.getByText('Accept this invitation? This is final'),
+  ).toBeFocused();
+  await expectAccessible(page);
+  await card.getByRole('button', { name: 'Go back' }).click();
+  await expect(card.getByRole('button', { name: 'Accept' })).toBeFocused();
+  expect(requests).toEqual([]);
+  await card.getByRole('button', { name: 'Accept' }).click();
+  await card.getByRole('button', { name: 'Yes, accept' }).click();
+  const status = card.locator('.status-label');
+  await expect(status).toHaveText(/You accepted/);
+  await expect(status).toBeFocused();
+  await expect(card.getByRole('button')).toHaveCount(0);
+  await expect(card).toContainText(
+    'Private conversations are coming in a future update.',
+  );
+  expect(requests).toEqual([{ id: sarahId, body: { status: 'accepted' } }]);
+});
+
+test('I need some space confirms from Maybe Later and closes the invitation', async ({
+  page,
+}) => {
+  const requests = [];
+  const card = await openReceived(
+    page,
+    [invitation({ status: 'deferred' })],
+    requests,
+  );
+  await expect(card.getByRole('button')).toHaveText([
+    'Accept',
+    'I need some space',
+  ]);
+  await card.getByRole('button', { name: 'I need some space' }).click();
+  await expect(
+    card.getByText('Choose I need some space? This closes the invitation'),
+  ).toBeFocused();
+  await card.getByRole('button', { name: 'Yes, I need some space' }).click();
+  await expect(card.locator('.status-label')).toHaveText(
+    /You chose I need some space/,
+  );
+  await expect(card.getByRole('button')).toHaveCount(0);
+  expect(requests).toEqual([{ id: sarahId, body: { status: 'declined' } }]);
+  await expectAccessible(page);
+});
+
+test('sent invitations never offer response buttons', async ({ page }) => {
+  await mockLists(page, {
+    incoming: empty,
+    outgoing: {
+      invitations: [invitation({ otherPerson: { displayName: 'Michael' } })],
+      nextCursor: null,
+    },
+  });
+  await page.goto('/');
+  const card = page.getByRole('article', { name: 'To Michael' });
+  await expect(card).toContainText('Waiting for a reply');
+  await expect(card.getByRole('button')).toHaveCount(0);
+});
+
+test('an already-final invitation explains itself and offers a refresh', async ({
+  page,
+}) => {
+  let refreshed = false;
+  await mockLists(
+    page,
+    {
+      incoming: () => ({
+        json: {
+          invitations: [
+            invitation({ status: refreshed ? 'accepted' : 'pending' }),
+          ],
+          nextCursor: null,
+        },
+      }),
+      outgoing: empty,
+    },
+    [],
+    () => ({
+      status: 409,
+      json: { error: 'This invitation already has a final response.' },
+    }),
+  );
+  await page.goto('/');
+  const card = page.getByRole('article', { name: 'From Sarah' });
+  await card.getByRole('button', { name: 'Accept' }).click();
+  await card.getByRole('button', { name: 'Yes, accept' }).click();
+  await expect(card.getByRole('alert')).toContainText(
+    'This invitation already has a final response.',
+  );
+  await expectAccessible(page);
+  refreshed = true;
+  await card.getByRole('button', { name: 'Refresh list' }).click();
+  await expect(
+    page.getByRole('article', { name: 'From Sarah' }).locator('.status-label'),
+  ).toHaveText(/You accepted/);
+});
+
+test('session expiry while responding returns to sign-in', async ({ page }) => {
+  const card = await openReceived(page, [invitation()], [], () => ({
+    status: 401,
+    json: { error: 'Sign in to continue.' },
+  }));
+  await card.getByRole('button', { name: 'Maybe Later' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back' }),
+  ).toBeFocused();
 });

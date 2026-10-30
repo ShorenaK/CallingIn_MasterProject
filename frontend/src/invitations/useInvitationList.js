@@ -96,7 +96,28 @@ export function useInvitationList(direction, onSessionExpired) {
         });
     }
   }
-  return { ...state, more, retry, loadMore };
+  /** @param {import('./api.js').Invitation} updated */
+  function update(updated) {
+    setState((current) => replaceInvitation(current, updated));
+  }
+  return { ...state, more, retry, loadMore, update };
+}
+
+/**
+ * Response payloads omit the counterpart name; keep the one from the list.
+ * @param {ListState} current
+ * @param {import('./api.js').Invitation} updated
+ * @returns {ListState}
+ */
+function replaceInvitation(current, updated) {
+  return {
+    ...current,
+    invitations: current.invitations.map((item) =>
+      item.id === updated.id
+        ? { ...item, ...updated, otherPerson: item.otherPerson }
+        : item,
+    ),
+  };
 }
 
 /**

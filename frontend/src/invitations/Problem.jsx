@@ -1,8 +1,8 @@
 /**
  * Calm amber notice for invitation problems: icon and words, not red alone.
- * @param {{message: string, onRetry?: () => void}} props
+ * @param {{message: string, onRetry?: () => void, actionLabel?: string}} props
  */
-export function Problem({ message, onRetry }) {
+export function Problem({ message, onRetry, actionLabel = 'Try again' }) {
   return (
     <div className="invitation-problem" role="alert">
       <p>
@@ -10,7 +10,7 @@ export function Problem({ message, onRetry }) {
       </p>
       {onRetry && (
         <button type="button" onClick={onRetry}>
-          Try again
+          {actionLabel}
         </button>
       )}
     </div>

@@ -327,6 +327,41 @@ fieldset {
   white-space: nowrap;
   border: 0;
 }
+.invitation-response {
+  margin-top: 16px;
+}
+.invitation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.response-deferred {
+  background: #efe4ec;
+  color: #5c3d55;
+  border: 1px solid #8e6a86;
+}
+.response-deferred:hover:enabled {
+  background: #e6d5e1;
+  color: #5c3d55;
+}
+.response-declined {
+  background: #fff6cc;
+  color: #5a4300;
+  border: 1px solid #a87412;
+}
+.response-declined:hover:enabled {
+  background: #fbeaa6;
+  color: #5a4300;
+}
+.invitation-confirm {
+  padding: 14px;
+  background: white;
+  border: 1px solid #b8d6cf;
+  border-radius: 12px;
+}
+.invitation-confirm .secondary-button {
+  margin-top: 0;
+}
 .invitation-problem {
   padding: 10px 14px;
   color: #6b4500;
@@ -339,5 +374,8 @@ fieldset {
   }
   .invitation-panel {
     padding: 20px;
+  }
+  .invitation-actions button {
+    flex: 1 1 100%;
   }
 }

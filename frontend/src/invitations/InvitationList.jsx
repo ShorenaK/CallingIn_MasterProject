@@ -21,6 +21,11 @@ const LIST_COPY = {
 export function InvitationList({ direction, onSessionExpired }) {
   const list = useInvitationList(direction, onSessionExpired);
   const copy = LIST_COPY[direction];
+  const actions = {
+    update: list.update,
+    refresh: list.retry,
+    onSessionExpired,
+  };
   return (
     <section
       className="invitation-panel"
@@ -41,6 +46,7 @@ export function InvitationList({ direction, onSessionExpired }) {
               <InvitationCard
                 direction={direction}
                 invitation={invitation}
+                actions={actions}
                 focusOnMount={invitation.id === list.more.focusId}
               />
             </li>
