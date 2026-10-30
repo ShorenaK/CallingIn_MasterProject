@@ -100,7 +100,7 @@ function PasswordGuidance({ register }) {
           </ul>
         </>
       ) : (
-        <p>Use 8–128 characters. Spaces are allowed.</p>
+        <p>Enter the password you used to create your account.</p>
       )}
     </div>
   );
