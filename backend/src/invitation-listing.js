@@ -2,7 +2,7 @@ import {
   parseInvitationQuery,
   invitationCursor,
 } from './invitation-pagination.js';
-import { publicInvitation } from './invitation-creation.js';
+import { invitationsWithNames } from './invitation-participants.js';
 import { logAccountFailure } from './safe-logging.js';
 
 const invitationProjection = {
@@ -59,7 +59,7 @@ export async function listInvitations(request, response) {
       );
     const hasMore = records.length > query.pageSize;
     response.json({
-      invitations: invitations.map(publicInvitation),
+      invitations: await invitationsWithNames(db, invitations, query.direction),
       nextCursor: hasMore
         ? invitationCursor(invitations[invitations.length - 1])
         : null,

@@ -95,6 +95,10 @@ async function setup(t) {
     invitations: invitationStorage(),
     users: {
       createIndex: async () => {},
+      find: (filter) => ({
+        toArray: async () =>
+          users.filter((u) => filter._id.$in.some((id) => id.equals(u._id))),
+      }),
       findOne: async (filter) =>
         users.find((u) =>
           filter.email ? u.email === filter.email : u._id.equals(filter._id),
@@ -234,7 +238,14 @@ test('real cookie sessions connect login, lookup, creation, lists, responses and
       cookie,
     );
     assert.equal(result.status, 200);
-    assert.deepEqual((await result.json()).invitations, [invitation]);
+    assert.deepEqual((await result.json()).invitations, [
+      {
+        ...invitation,
+        otherPerson: {
+          displayName: direction === 'outgoing' ? 'recipient' : 'sender',
+        },
+      },
+    ]);
   }
   await assertIsolation(request, outsiderCookie, invitation.id);
   const senderResponse = await request(

@@ -59,12 +59,31 @@ function cursor(records, filter, options, queries) {
   };
 }
 
-async function setup(t, records = [], failure = false) {
+async function setup(t, records = [], failure = false, people = {}) {
   const queries = [];
   const logs = [];
+  const nameQueries = [];
   const db = {
     collection(name) {
-      if (name === 'users') return { findOne: async () => ({ _id: account }) };
+      if (name === 'users')
+        return {
+          findOne: async () => ({ _id: account }),
+          find(filter, options) {
+            nameQueries.push({ filter, options });
+            return {
+              async toArray() {
+                if (people.failure) throw new Error('Private name lookup');
+                if (people.missing) return [];
+                return filter._id.$in.map((_id) => ({
+                  _id,
+                  displayName: people.displayName ?? 'Other Person',
+                  email: 'private@example.com',
+                  passwordHash: 'secret',
+                }));
+              },
+            };
+          },
+        };
       assert.equal(name, 'invitations');
       return {
         find(filter, options) {
@@ -88,6 +107,7 @@ async function setup(t, records = [], failure = false) {
   return {
     queries,
     logs,
+    nameQueries,
     get(query, authenticated = true) {
       return fetch(`${url}/api/invitations?${query}`, {
         headers: authenticated
@@ -222,4 +242,60 @@ test('cursor crosses older dates even when older records have higher IDs', async
   );
   assert.equal(new Set(ids).size, 3);
   assert.equal(nextCursor, null);
+});
+
+test('counterpart names use one bounded deduplicated lookup and only public fields', async (t) => {
+  const f = await setup(t, [
+    invitation(1),
+    invitation(2),
+    invitation(3, false),
+  ]);
+  for (const direction of ['incoming', 'outgoing']) {
+    const result = await f.get(`direction=${direction}&limit=2`);
+    assert.equal(result.status, 200);
+    const body = await result.json();
+    assert.deepEqual(body.invitations[0].otherPerson, {
+      displayName: 'Other Person',
+    });
+    assert.doesNotMatch(
+      JSON.stringify(body),
+      /private@example|passwordHash|secret/,
+    );
+  }
+  assert.equal(f.nameQueries.length, 2);
+  for (const query of f.nameQueries) {
+    assert.deepEqual(query.filter, { _id: { $in: [other] } });
+    assert.deepEqual(query.options, { projection: { _id: 1, displayName: 1 } });
+  }
+});
+
+test('missing counterpart returns null and empty pages do not query names', async (t) => {
+  const f = await setup(t, [invitation(1)], false, { missing: true });
+  const body = await (await f.get('direction=incoming')).json();
+  assert.equal(body.invitations[0].otherPerson, null);
+  await (await f.get('direction=outgoing')).arrayBuffer();
+  assert.equal(f.nameQueries.length, 1);
+});
+
+test('name storage failure fails the list safely without leaking private details', async (t) => {
+  const f = await setup(t, [invitation(1)], false, { failure: true });
+  const result = await f.get('direction=incoming');
+  assert.equal(result.status, 503);
+  assert.doesNotMatch(
+    JSON.stringify([await result.json(), f.logs]),
+    /Private name lookup/,
+  );
+});
+
+test('a fresh list request returns the current display name', async (t) => {
+  const people = { displayName: 'Original Name' };
+  const f = await setup(t, [invitation(1)], false, people);
+  const first = await (await f.get('direction=incoming')).json();
+  assert.equal(first.invitations[0].otherPerson.displayName, 'Original Name');
+  people.displayName = 'Updated Name';
+  const refreshed = await (await f.get('direction=incoming')).json();
+  assert.equal(
+    refreshed.invitations[0].otherPerson.displayName,
+    'Updated Name',
+  );
 });

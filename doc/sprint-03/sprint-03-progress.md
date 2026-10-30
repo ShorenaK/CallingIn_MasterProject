@@ -76,7 +76,9 @@ an authorization token; participant identity is always included in the query.
 
 Public invitation fields are `id`, `senderId`, `recipientId`, `message`, `status`,
 `createdAt`, `updatedAt`, and `respondedAt`. Dates are ISO strings; `respondedAt`
-is initially null. Internal pair keys and account credentials are excluded.
+is initially null. List entries additionally include `otherPerson: { displayName }`,
+or `null` if the counterpart account is unavailable. Creation/response payloads
+retain the original invitation shape. Internal pair keys and account credentials are excluded.
 Private responses use `Cache-Control: no-store`. Storage failures return safe
 503 messages; logs exclude submitted emails, invitation messages, and raw errors.
 
@@ -294,3 +296,27 @@ screen-reader, zoom/reflow, visible focus, and other-browser checks remain.
 See [browser/accessibility testing](browser-accessibility-testing.md) for commands,
 scope, reports, CI behavior, and frontend handoff guidance. Hosted CI remains
 unverified; tooling changes are not permission to submit Git or merge the sprint.
+
+### October 30 — Other participant display names in lists
+
+Approved backend addition: each listed invitation now includes
+`otherPerson: { displayName }`, or `otherPerson: null` when that account is missing.
+Incoming lists resolve the sender; outgoing lists resolve the recipient. Names
+are current profile values, not stored invitation snapshots or verified identity.
+The frontend can show “From Sarah” / “To Michael” and “Account unavailable” when
+missing. This prevents asking recipients to decide without a sender label.
+
+Only after fetching the authorized, paginated invitation page does the backend
+collect counterpart IDs and issue one deduplicated user query selecting `_id` and
+`displayName` only. Empty pages skip it. Names from lookahead records, unrelated
+accounts, emails, and password hashes are not returned. Failure of this lookup
+fails the list safely with 503. No endpoint, schema, index, stored record, or
+creation/response payload changed. Claude owns the frontend implementation;
+this backend response addition does not authorize concurrent frontend edits here.
+Verification: **168 backend tests passed**, zero failures/skips; **100% lines/functions,
+98.35% branches**. Tests cover both directions, single/deduplicated lookups,
+minimal field projection, missing accounts, empty pages, lookup failure, current
+names after refresh, and real-cookie workflow integration with simulated storage.
+Repository lint/formatting, existing application type checks, and whitespace checks
+passed. No live Atlas operation was performed. Independent review and frontend
+integration remain separate steps; no Git submission occurred in this update.
