@@ -1,4 +1,5 @@
 import { Field, Feedback } from './Fields.jsx';
+import { PasswordField } from './PasswordField.jsx';
 import { useSignIn } from './useSignIn.js';
 
 /** @param {{submit: (path: string, body: unknown) => Promise<void>}} props */
@@ -53,22 +54,7 @@ function SignInFields({ register }) {
         autoComplete="email"
         maxLength={254}
       />
-      <Field
-        name="password"
-        label="Password"
-        type="password"
-        autoComplete={register ? 'new-password' : 'current-password'}
-        minLength={8}
-        aria-describedby="password-guidance"
-        onInvalid={(event) => {
-          if (event.currentTarget.validity.tooShort)
-            event.currentTarget.setCustomValidity(
-              'This field must have at least 8 characters.',
-            );
-        }}
-        onInput={(event) => event.currentTarget.setCustomValidity('')}
-        maxLength={register ? 18 : 128}
-      />
+      <PasswordField register={register} />
       <PasswordGuidance register={register} />
       {!register && (
         <label className="checkbox-field">

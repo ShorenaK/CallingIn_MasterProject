@@ -150,3 +150,89 @@ test('mock sign-in reaches profile and sign-out returns to sign-in', async ({
     page.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
 });
+
+for (const register of [false, true]) {
+  test(`password visibility preserves text and keyboard access in ${register ? 'registration' : 'sign-in'}`, async ({
+    page,
+  }) => {
+    let submissions = 0;
+    await mockApi(page, async (route, path) => {
+      if (!['/api/auth/register', '/api/auth/login'].includes(path))
+        return false;
+      submissions += 1;
+      await route.fulfill({
+        status: 500,
+        json: { error: 'Unexpected submission' },
+      });
+      return true;
+    });
+    if (register) await openRegistration(page);
+    else {
+      await page.goto('/');
+      await expect(
+        page.getByRole('heading', { name: 'Welcome back' }),
+      ).toBeVisible();
+    }
+    const password = page.getByLabel('Password', { exact: true });
+    await password.fill('MyPassword123');
+    await expect(password).toHaveAttribute('type', 'password');
+    await password.focus();
+    await page.keyboard.press('Tab');
+    await expect(
+      page.getByRole('button', { name: 'Show password', exact: true }),
+    ).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(password).toHaveAttribute('type', 'text');
+    await expect(password).toHaveValue('MyPassword123');
+    await expectAccessible(page);
+    await page.keyboard.press('Space');
+    await expect(password).toHaveAttribute('type', 'password');
+    await expect(password).toHaveValue('MyPassword123');
+    expect(submissions).toBe(0);
+    const switchName = register
+      ? 'Already have an account? Sign in'
+      : 'New here? Create an account';
+    await page.getByRole('button', { name: switchName, exact: true }).click();
+    await expect(page.getByLabel('Password', { exact: true })).toHaveAttribute(
+      'type',
+      'password',
+    );
+  });
+}
+
+test('overlong inserted registration password stays intact and is rejected', async ({
+  page,
+}) => {
+  let submissions = 0;
+  await mockApi(page, async (route, path) => {
+    if (path !== '/api/auth/register') return false;
+    submissions += 1;
+    await route.fulfill({
+      status: 500,
+      json: { error: 'Unexpected submission' },
+    });
+    return true;
+  });
+  await openRegistration(page);
+  await page.getByLabel('Display name', { exact: true }).fill('Test');
+  await page
+    .getByLabel('Email address', { exact: true })
+    .fill('test@example.com');
+  const password = page.getByLabel('Password', { exact: true });
+  const original = 'CorrectHorseBattery123';
+  await password.focus();
+  await page.keyboard.insertText(original);
+  await expect(password).toHaveValue(original);
+  await page
+    .getByRole('button', { name: 'Show password', exact: true })
+    .click();
+  await expect(password).toHaveValue(original);
+  await page
+    .getByRole('button', { name: 'Create account', exact: true })
+    .click();
+  await expect(page.getByRole('alert')).toHaveText(
+    'Password must be 8–18 characters.',
+  );
+  await expect(password).toHaveValue(original);
+  expect(submissions).toBe(0);
+});
