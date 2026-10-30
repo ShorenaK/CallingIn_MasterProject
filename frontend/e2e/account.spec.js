@@ -1,31 +1,5 @@
 import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
-
-// Mock every /api request before opening the page. No backend or Atlas required;
-// unexpected API calls fail explicitly rather than reaching the Vite API proxy.
-async function mockApi(page, handler) {
-  await page.route('**/api/**', async (route) => {
-    const path = new URL(route.request().url()).pathname;
-    if (handler && (await handler(route, path))) return;
-    if (path === '/api/health')
-      return route.fulfill({ json: { status: 'ok' } });
-    if (path === '/api/auth/me')
-      return route.fulfill({
-        status: 401,
-        json: { error: 'Sign in to continue.' },
-      });
-    throw new Error(
-      `Unexpected API request: ${route.request().method()} ${path}`,
-    );
-  });
-}
-
-async function expectAccessible(page) {
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-    .analyze();
-  expect(results.violations).toEqual([]);
-}
+import { mockApi, expectAccessible } from './helpers.js';
 
 async function openRegistration(page) {
   await page.goto('/');
@@ -133,6 +107,10 @@ test('mock sign-in reaches profile and sign-out returns to sign-in', async ({
     }
     if (path === '/api/auth/logout') {
       await route.fulfill({ status: 204 });
+      return true;
+    }
+    if (path === '/api/invitations') {
+      await route.fulfill({ json: { invitations: [], nextCursor: null } });
       return true;
     }
     return false;

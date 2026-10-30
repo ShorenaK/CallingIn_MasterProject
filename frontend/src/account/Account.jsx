@@ -1,6 +1,7 @@
 import { useAccount } from './useAccount.js';
 import { SignIn } from './SignIn.jsx';
 import { Profile } from './Profile.jsx';
+import { Invitations } from '../invitations/Invitations.jsx';
 
 export function Account() {
   const account = useAccount();
@@ -21,8 +22,11 @@ export function Account() {
       </section>
     );
   return account.user ? (
-    <Profile user={account.user} submit={account.submit} />
+    <>
+      <Profile user={account.user} submit={account.submit} />
+      <Invitations onSessionExpired={account.expire} />
+    </>
   ) : (
-    <SignIn submit={account.submit} />
+    <SignIn submit={account.submit} sessionNotice={account.sessionNotice} />
   );
 }

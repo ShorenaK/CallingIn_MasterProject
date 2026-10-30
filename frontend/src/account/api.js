@@ -16,7 +16,21 @@ export class ApiError extends Error {
  * @returns {Promise<{user: User} | undefined>}
  */
 export async function accountRequest(path, options = {}) {
-  const response = await fetchAccount(path, options);
+  const data = await apiRequest(`/api/auth/${path}`, options);
+  if (data === undefined) return undefined;
+  validateUser(data);
+  return { user: /** @type {{user: User}} */ (data).user };
+}
+
+/**
+ * Shared JSON request for signed-in features. Server error messages are shown
+ * as returned; the status lets callers recognize an expired session (401).
+ * @param {string} url
+ * @param {RequestInit} [options]
+ * @returns {Promise<unknown>}
+ */
+export async function apiRequest(url, options = {}) {
+  const response = await fetchJson(url, options);
   if (response.status === 204) return undefined;
   const data = await response.json().catch(() => null);
   if (!response.ok) {
@@ -27,8 +41,7 @@ export async function accountRequest(path, options = {}) {
       response.status,
     );
   }
-  validateUser(data);
-  return { user: data.user };
+  return data;
 }
 
 /** @param {unknown} error */
@@ -53,10 +66,10 @@ function validateUser(input) {
   }
 }
 
-/** @param {string} path @param {RequestInit} options */
-async function fetchAccount(path, options) {
+/** @param {string} url @param {RequestInit} options */
+async function fetchJson(url, options) {
   try {
-    return await fetch(`/api/auth/${path}`, {
+    return await fetch(url, {
       ...options,
       credentials: 'same-origin',
       signal: options.signal ?? AbortSignal.timeout(15000),

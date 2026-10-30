@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { accountRequest, ApiError, errorMessage } from './api.js';
 
 export function useAccount() {
@@ -40,18 +40,28 @@ export function useAccount() {
     };
   }, [attempt]);
 
-  const submit = createAccountSubmit(setUser);
+  const [sessionNotice, setSessionNotice] = useState('');
+  const submit = createAccountSubmit(setUser, setSessionNotice);
+  // Stable so signed-in features can depend on it without refetch loops.
+  const expire = useCallback(() => {
+    setUser(null);
+    setSessionNotice('Your session has ended. Please sign in again.');
+  }, []);
   function retry() {
     setStatus('loading');
     setAttempt((value) => value + 1);
   }
-  return { user, status, error, retry, submit };
+  return { user, status, error, retry, submit, expire, sessionNotice };
 }
 
-/** @param {(user: import('./api.js').User | null) => void} setUser */
-function createAccountSubmit(setUser) {
+/**
+ * @param {(user: import('./api.js').User | null) => void} setUser
+ * @param {(notice: string) => void} setSessionNotice
+ */
+function createAccountSubmit(setUser, setSessionNotice) {
   /** @param {string} path @param {unknown} body @param {string} [method] */
   return async function submit(path, body, method = 'POST') {
+    setSessionNotice('');
     try {
       const data = await accountRequest(path, {
         method,

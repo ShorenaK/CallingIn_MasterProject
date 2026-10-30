@@ -228,3 +228,95 @@ fieldset {
     padding: 24px;
   }
 }
+
+.invitations {
+  margin: 0 auto 48px;
+}
+.invitations-intro {
+  max-width: 62ch;
+  color: #46646a;
+}
+.invitation-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 24px;
+}
+.invitation-panel {
+  min-width: 0;
+  padding: 28px;
+  background: white;
+  border: 1px solid #b8d6cf;
+  border-radius: 24px;
+  overflow-wrap: anywhere;
+}
+.invitation-panel h3 {
+  font-size: 21px;
+  margin-bottom: 16px;
+}
+.invitation-list {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.invitation-card {
+  padding: 18px;
+  background: #fffaf4;
+  border: 1px solid #d9e4df;
+  border-radius: 16px;
+}
+.invitation-card h4 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.invitation-card p:last-child {
+  margin-bottom: 0;
+}
+.invitation-message {
+  white-space: pre-wrap;
+}
+.invitation-date,
+.empty-state {
+  font-size: 14px;
+  color: #46646a;
+}
+.status-label {
+  display: inline-flex;
+  gap: 6px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 650;
+}
+.status-pending {
+  background: #fdf1cf;
+  color: #5a4300;
+}
+.status-deferred {
+  background: #f8e7b8;
+  color: #064c59;
+}
+.status-accepted {
+  background: #d5ece5;
+  color: #064c59;
+}
+.status-declined {
+  background: #fff6cc;
+  color: #5a4300;
+}
+.invitation-problem {
+  padding: 10px 14px;
+  color: #6b4500;
+  background: #fff4dc;
+  border-left: 3px solid #b07a1a;
+}
+@media (max-width: 700px) {
+  .invitation-columns {
+    grid-template-columns: 1fr;
+  }
+  .invitation-panel {
+    padding: 20px;
+  }
+}

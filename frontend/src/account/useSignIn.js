@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { errorMessage } from './api.js';
 
-/** @param {(path: string, body: unknown) => Promise<void>} submit */
-export function useSignIn(submit) {
+/**
+ * @param {(path: string, body: unknown) => Promise<void>} submit
+ * @param {string} [initialNotice]
+ */
+export function useSignIn(submit, initialNotice = '') {
   const [register, setRegister] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState(initialNotice);
   /** @param {import('react').FormEvent<HTMLFormElement>} event */
   async function handleSubmit(event) {
     event.preventDefault();
