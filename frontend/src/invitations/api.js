@@ -36,10 +36,17 @@ function validInvitation(value) {
   return (
     typeof item?.id === 'string' &&
     typeof item.message === 'string' &&
-    typeof item.createdAt === 'string' &&
+    validDate(item.createdAt) &&
     STATUSES.includes(String(item.status)) &&
     validPerson(item.otherPerson)
   );
+}
+
+/** @param {unknown} value Server dates are exact ISO strings (toISOString). */
+function validDate(value) {
+  if (typeof value !== 'string') return false;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) && date.toISOString() === value;
 }
 
 /** @param {unknown} person */

@@ -162,6 +162,38 @@ test('unexpected list data is not displayed', async ({ page }) => {
   ).toContainText('The server returned an unexpected response.');
 });
 
+test('malformed invitation date shows a retryable notice instead of breaking the page', async ({
+  page,
+}) => {
+  let malformed = true;
+  await mockLists(page, {
+    incoming: () => ({
+      json: {
+        invitations: [invitation(malformed ? { createdAt: 'not-a-date' } : {})],
+        nextCursor: null,
+      },
+    }),
+    outgoing: empty,
+  });
+  await page.goto('/');
+  const received = page.getByRole('region', { name: 'Received' });
+  await expect(received.getByRole('alert')).toContainText(
+    'The server returned an unexpected response.',
+  );
+  await expect(
+    page.getByRole('heading', { name: 'Invitations', exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Sent' })).toContainText(
+    'You haven’t sent any invitations yet.',
+  );
+  malformed = false;
+  await received.getByRole('button', { name: 'Try again' }).click();
+  await expect(
+    received.getByRole('article', { name: 'From Sarah' }),
+  ).toBeVisible();
+  await expect(received.getByRole('alert')).toHaveCount(0);
+});
+
 test('expired session returns to sign-in with a focused explanation', async ({
   page,
 }) => {
