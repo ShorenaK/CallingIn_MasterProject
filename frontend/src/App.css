@@ -362,6 +362,43 @@ fieldset {
 .invitation-confirm .secondary-button {
   margin-top: 0;
 }
+.send-panel {
+  margin-bottom: 24px;
+}
+.send-panel form,
+.send-panel .form-notice,
+.send-panel .invitation-problem {
+  max-width: 640px;
+}
+.form-field textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #668984;
+  border-radius: 8px;
+  padding: 12px;
+  color: #064c59;
+  background: #fffaf4;
+  font: inherit;
+  font-weight: 400;
+  resize: vertical;
+}
+.send-panel button[type='submit'] + .field-hint {
+  margin-top: 10px;
+}
+.recipient-found {
+  margin-bottom: 0;
+  padding: 10px 14px;
+  background: #e6f3ef;
+  border-radius: 10px;
+}
+.message-count {
+  font-size: 14px;
+  color: #46646a;
+}
+.count-over {
+  color: #6b4500;
+  font-weight: 650;
+}
 .invitation-problem {
   padding: 10px 14px;
   color: #6b4500;

@@ -13,6 +13,8 @@ import { apiRequest } from '../account/api.js';
 /** @typedef {{invitations: Invitation[], nextCursor: string | null}} InvitationPage */
 
 export const PAGE_SIZE = 10;
+/** Must match the backend's INVITATION_MESSAGE_MAX (trimmed JS code units). */
+export const MESSAGE_MAX = 5000;
 const STATUSES = ['pending', 'deferred', 'accepted', 'declined'];
 
 /** @param {Direction} direction @param {string | null} [cursor] */
@@ -46,6 +48,42 @@ export async function respondToInvitation(id, status) {
   if (!validInvitation(data?.invitation) || data?.invitation?.id !== id)
     throw unexpectedResponse();
   return data.invitation;
+}
+
+/** @typedef {{id: string, displayName: string}} Recipient */
+
+/** Exact-email lookup; returns only the account ID and display name.
+ * @param {string} email
+ */
+export async function lookupRecipient(email) {
+  const data = /** @type {{user?: Partial<Recipient>} | null} */ (
+    await apiRequest('/api/users/lookup', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+  );
+  const user = data?.user;
+  if (
+    typeof user?.id !== 'string' ||
+    !/^[a-f0-9]{24}$/.test(user.id) ||
+    typeof user.displayName !== 'string'
+  )
+    throw unexpectedResponse();
+  return /** @type {Recipient} */ (user);
+}
+
+/** The sender is the signed-in account; the server never trusts a sender ID.
+ * @param {string} recipientId @param {string} message
+ */
+export async function createInvitation(recipientId, message) {
+  const data = /** @type {{invitation?: Invitation} | null} */ (
+    await apiRequest('/api/invitations', {
+      method: 'POST',
+      body: JSON.stringify({ recipientId, message }),
+    })
+  );
+  if (!validInvitation(data?.invitation)) throw unexpectedResponse();
+  return /** @type {Invitation} */ (data?.invitation);
 }
 
 /** @param {unknown} value */

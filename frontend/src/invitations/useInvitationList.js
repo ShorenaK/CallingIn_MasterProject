@@ -42,8 +42,9 @@ function sessionExpired(failure) {
 /**
  * @param {import('./api.js').Direction} direction
  * @param {() => void} onSessionExpired Must be stable between renders.
+ * @param {number} [reloadKey] Changing it reloads the first page.
  */
-export function useInvitationList(direction, onSessionExpired) {
+export function useInvitationList(direction, onSessionExpired, reloadKey = 0) {
   const [state, setState] = useState(initialState);
   const [attempt, setAttempt] = useState(0);
   const [more, setMore] = useState(initialMore);
@@ -66,7 +67,7 @@ export function useInvitationList(direction, onSessionExpired) {
     return () => {
       active = false;
     };
-  }, [direction, attempt, onSessionExpired]);
+  }, [direction, attempt, onSessionExpired, reloadKey]);
 
   function retry() {
     setState(initialState);

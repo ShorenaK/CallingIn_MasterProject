@@ -17,9 +17,9 @@ const LIST_COPY = {
   },
 };
 
-/** @param {{direction: import('./api.js').Direction, onSessionExpired: () => void}} props */
-export function InvitationList({ direction, onSessionExpired }) {
-  const list = useInvitationList(direction, onSessionExpired);
+/** @param {{direction: import('./api.js').Direction, onSessionExpired: () => void, reloadKey?: number}} props */
+export function InvitationList({ direction, onSessionExpired, reloadKey }) {
+  const list = useInvitationList(direction, onSessionExpired, reloadKey);
   const copy = LIST_COPY[direction];
   const actions = {
     update: list.update,
