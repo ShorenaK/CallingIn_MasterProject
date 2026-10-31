@@ -1,0 +1,192 @@
+<div
+  id="callingin-palette-preview"
+  aria-label="CallingIn status palette comparison"
+>
+  <style>
+    #callingin-palette-preview {
+      color-scheme: light;
+      font:
+        16px/1.5 system-ui,
+        sans-serif;
+      color: #064c59;
+    }
+    #callingin-palette-preview * {
+      box-sizing: border-box;
+    }
+    #callingin-palette-preview .palette-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    #callingin-palette-preview .palette-sample {
+      background: #fffaf4;
+      padding: 24px 20px;
+      border-radius: 18px;
+    }
+    #callingin-palette-preview h2 {
+      font-size: 20px;
+      margin: 0 0 6px;
+    }
+    #callingin-palette-preview .palette-caption {
+      color: #46646a;
+      margin: 0 0 22px;
+      font-size: 14px;
+    }
+    #callingin-palette-preview .sample-card {
+      background: #fff;
+      border: 1px solid #b8d6cf;
+      border-radius: 15px;
+      padding: 18px;
+      margin: 0 0 14px;
+    }
+    #callingin-palette-preview h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    #callingin-palette-preview .status {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 6px 11px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    #callingin-palette-preview .symbol {
+      flex: none;
+    }
+    #callingin-palette-preview .sample-message {
+      margin: 12px 0 0;
+      color: #46646a;
+      font-size: 14px;
+    }
+    #callingin-palette-preview .sample-button {
+      display: block;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font: inherit;
+      background: #076573;
+      color: #fff;
+    }
+    #callingin-palette-preview .waiting {
+      background: #e3eefb;
+      color: #1f4e79;
+    }
+    #callingin-palette-preview .later {
+      background: #efe4ec;
+      color: #5c3d55;
+    }
+    #callingin-palette-preview .accepted {
+      background: #d5ece5;
+      color: #064c59;
+    }
+    #callingin-palette-preview .space {
+      background: #fff6cc;
+      color: #5a4300;
+    }
+    #callingin-palette-preview .calm .waiting {
+      background: #e9eff2;
+      color: #354f5b;
+    }
+    #callingin-palette-preview .calm .later {
+      background: #eee8dd;
+      color: #594e3d;
+    }
+    #callingin-palette-preview .calm .accepted {
+      background: #dcece6;
+      color: #245447;
+    }
+    #callingin-palette-preview .calm .space {
+      background: #eeebe7;
+      color: #554e48;
+    }
+    #callingin-palette-preview .swatches {
+      display: flex;
+      gap: 7px;
+      margin-top: 18px;
+    }
+    #callingin-palette-preview .swatches span {
+      height: 12px;
+      flex: 1;
+      border-radius: 4px;
+    }
+    @media (max-width: 600px) {
+      #callingin-palette-preview .palette-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <div class="palette-columns">
+    <section class="palette-sample" aria-label="Current palette">
+      <h2>Current palette</h2>
+      <p class="palette-caption">Blue · purple · mint · yellow</p>
+      <div class="sample-card">
+        <h3>To Sarah</h3>
+        <div class="status waiting">
+          <span class="symbol" aria-hidden="true">●</span>Waiting for a reply
+        </div>
+        <p class="sample-message">I’d love to catch up when you’re ready.</p>
+      </div>
+      <div class="sample-card">
+        <h3>To Michael</h3>
+        <div class="status later">
+          <span class="symbol" aria-hidden="true">◐</span>Your invitation is
+          still open; please wait.
+        </div>
+      </div>
+      <div class="sample-card">
+        <h3>To Emma</h3>
+        <div class="status accepted">
+          <span class="symbol" aria-hidden="true">✓</span>Accepted
+        </div>
+      </div>
+      <div class="sample-card">
+        <h3>To Alex</h3>
+        <div class="status space">
+          <span class="symbol" aria-hidden="true">○</span>For now, the recipient
+          needs some space.
+        </div>
+      </div>
+      <button class="sample-button" type="button" disabled>
+        Send invitation
+      </button>
+    </section>
+    <section class="palette-sample calm" aria-label="Proposed calmer palette">
+      <h2>Calmer palette</h2>
+      <p class="palette-caption">Blue-gray · beige · soft mint · warm gray</p>
+      <div class="sample-card">
+        <h3>To Sarah</h3>
+        <div class="status waiting">
+          <span class="symbol" aria-hidden="true">●</span>Waiting for a reply
+        </div>
+        <p class="sample-message">I’d love to catch up when you’re ready.</p>
+      </div>
+      <div class="sample-card">
+        <h3>To Michael</h3>
+        <div class="status later">
+          <span class="symbol" aria-hidden="true">◐</span>Your invitation is
+          still open; please wait.
+        </div>
+      </div>
+      <div class="sample-card">
+        <h3>To Emma</h3>
+        <div class="status accepted">
+          <span class="symbol" aria-hidden="true">✓</span>Accepted
+        </div>
+      </div>
+      <div class="sample-card">
+        <h3>To Alex</h3>
+        <div class="status space">
+          <span class="symbol" aria-hidden="true">○</span>For now, the recipient
+          needs some space.
+        </div>
+      </div>
+      <button class="sample-button" type="button" disabled>
+        Send invitation
+      </button>
+    </section>
+  </div>
+</div>

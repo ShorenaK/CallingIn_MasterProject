@@ -450,3 +450,116 @@ before exercising it; no source edits are authorized by this manual checklist.
 
 This is tomorrow's plan, not a claim that the new frontend journey, Safari,
 VoiceOver, or 5,000-character Atlas checks already passed.
+
+### October 31 — Login-limit follow-up deferred to November 1
+
+During manual account switching, Shorena reported that correct credentials were
+blocked by “Too many login attempts.” Current protection counts all login attempts,
+including successes, against a shared per-IP allowance of 10 per 15 minutes before
+credential verification. She later confirmed both test accounts were signed in
+and chose to continue invitation testing without changing the limiter today.
+
+- [ ] Tomorrow, explain and agree on an account-based failed-login allowance
+      (proposed: 10 failures per normalized email per 15 minutes), plus a separate
+      higher per-IP ceiling. Successful logins should not consume the proposed
+      per-email failure allowance. Exact IP ceiling and reset/error behavior still
+      need design and explicit approval before implementation.
+- [ ] Add meaningful isolation, success/failure, concurrency, and abuse-protection
+      tests; update documentation and obtain review after the approved change.
+
+This is a deferred proposal, not implementation approval or a verified password
+failure. No login rule was modified. Continue the current manual invitation test
+using the already signed-in sender and recipient sessions.
+
+### October 31 — Manual frontend observations
+
+Shorena reported completing the live sender/recipient journey: sending, receiving,
+Maybe Later, cancellation of the acceptance confirmation without changing the
+choice, and confirmed acceptance. After refreshing the sender view, she confirmed
+Sent also displayed Accepted. These are user-reported results, not independently
+observed browser runs by Codex.
+
+- [ ] Investigate the reported missing invitation status symbols (described by
+      Shorena as “emoji”). The current labels use Unicode shapes/checkmarks alongside
+      text; the exact missing glyphs, browser, and affected states still need
+      confirmation. Text status labels were reported readable. Do not claim a cause
+      or fix until reproduced. Check rendering and accessibility during final review.
+
+### October 31 — Requested Cancel control for an unsent invitation
+
+Shorena supplied a screenshot of the compose form with a selected recipient,
+message box, Change person link, and Send invitation button, and requested a
+Cancel button. Record this as a proposed UI follow-up, not an implemented feature.
+
+- [ ] Explain and approve a Cancel action beside Send invitation that leaves
+      composition and clears the unsent recipient/message, returning focus to the
+      lookup field. Decide whether a nonempty draft needs discard confirmation.
+      It must send no creation request and remain usable with the keyboard.
+- [ ] Test cancellation, draft-discard behavior, focus, and no accidental send.
+
+The screenshot concerns a draft that has not been sent. Withdrawing an already
+sent invitation would require a separate approved backend/status policy and is
+not included in this note. No application code was changed for this request.
+The screenshot also shows a successful lookup of Sprint3 Third Oct31; it does not
+establish that the earlier asymmetric lookup report was reproduced or explained.
+
+### October 31 — Requested sent-list decline wording
+
+Shorena requested replacing “Closed — they need some space” with
+“For now, the recipient needs some space.” Record this as a copy-change request
+for the outgoing declined status label in `frontend/src/invitations/format.js`.
+No wording or behavior was changed in this documentation step.
+
+- [ ] Review the requested wording before implementation: “For now” should not
+      imply the declined invitation can reopen. The approved current behavior
+      keeps decline final and prevents another invitation for that account pair.
+      Explain that distinction and confirm final copy with Shorena.
+- [ ] After approval, update the label and affected browser assertions; keep
+      the status understandable through text rather than color alone.
+
+### October 31 — Approved product direction: contact again after a decline
+
+Shorena identified that permanent pair uniqueness makes “I need some space” block
+contact forever. She agreed to the proposed product direction below and requested
+that it be recorded. Detailed implementation and database migration still require
+an explained plan and explicit approval before edits or live changes.
+
+- Declined invitations should impose a **30-day wait measured from the decline**,
+  after which either participant may send a new invitation to the other.
+- Pending and Maybe Later invitations should continue to prevent another open
+  invitation for the same pair. Accepted invitations remain blocked for now;
+  private conversations belong to Sprint 4.
+- Show the restriction transparently, for example: “The recipient needs some
+  space. You can send another invitation after [date].” Before the wait expires,
+  creation should be blocked server-side and provide the next permitted date.
+  Final copy, timezone/date presentation, and both sender viewpoints need design.
+- Preserve old invitations as history; a new invitation must not overwrite the
+  old decline. The recorded decision on the old invitation remains final.
+
+The current implementation is unchanged: its permanent unique pair index still
+blocks repeat invitations indefinitely. The new direction supersedes that product
+intent but is not yet executable behavior. Review authorization, concurrency,
+server-controlled timing, repeat declines, history/pagination, API error fields,
+and the index migration before implementation. No index was dropped or changed,
+and no repeat-contact endpoint or database write was performed for this note.
+
+This also informs the earlier requested “For now, the recipient needs some space”
+copy and the duplicate error, which must match actual backend rules when the
+feature is implemented. The unsent-draft Cancel request remains a separate item.
+
+### October 31 — Requested Maybe Later wording
+
+Shorena requested using “The recipient” instead of “They” in the Sent list:
+replace “They chose Maybe Later” with “The recipient chose Maybe Later.”
+This is a wording-only follow-up for `frontend/src/invitations/format.js` and
+associated browser assertions. The recipient's own “You chose Maybe Later” label
+and deferred-state behavior remain unchanged. No UI code was edited for this note.
+
+### October 31 — Superseding preferred Sent-list Maybe Later copy
+
+Shorena selected **“Your invitation is still open; please wait.”** for the
+sender-facing deferred status. This supersedes the earlier proposed
+“The recipient chose Maybe Later” copy above. Keep the recipient-facing
+“You chose Maybe Later” unchanged. The invitation remains open with no promise
+or obligation that the recipient will respond. This records approved wording;
+UI implementation and affected browser assertions remain pending.
