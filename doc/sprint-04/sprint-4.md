@@ -6,6 +6,9 @@
 
 **Next review/testing session:** November 3, 2026 (tomorrow)
 
+See [Sprint 4 progress notes](sprint-04-progress.md) for implementation history,
+commits, verification evidence, and the planned testing/editing/review sequence.
+
 ## Completed backend work
 
 - [x] Open or retrieve one participant-only conversation from an accepted
@@ -53,12 +56,12 @@ The initial smoke harness needed its browser context setup corrected for axe;
 the corrected smoke run passed. No Atlas, human keyboard-only, Safari,
 VoiceOver, or actual phone check was performed during this UI work.
 
-These UI changes are local and uncommitted at this checkpoint. The dedicated
+These UI changes were subsequently committed and pushed as `ccce3c4`. The dedicated
 messaging browser regression tests, live/manual checks, Claude review, and
 GitHub Quality verification below remain pending for the next session.
 
-**Social Battery remains undecided.** Do not implement it without a separate
-scope decision and approval. Other deferred product/design ideas are not
+**Social Battery behavior remains undecided.** Shorena plans to discuss it
+tomorrow and implement the agreed behavior after an explained design and approval. Other deferred product/design ideas are not
 implicitly included in this sprint.
 
 ## Tomorrow — 2. Browser tests
@@ -110,7 +113,7 @@ implicitly included in this sprint.
 - [ ] Check visible focus and logical order, including errors and session expiry.
       The retained draft should receive focus and allow real text copying before
       the user explicitly chooses Sign in again.
-- [ ] Include the conversation screens and messaging controls once implemented.
+- [ ] Include the implemented conversation screens and messaging controls.
 - [ ] Record browser, paths, actual results, and failures. Existing automated
       focus tests do not substitute for this human check.
 
@@ -120,6 +123,15 @@ implicitly included in this sprint.
 - [ ] Safari: account, invitation, and messaging journeys.
 - [ ] 200% zoom: readable content and usable controls.
 - [ ] Phone-width layout and an actual phone check; record which was performed.
+
+## Tomorrow — Social Battery and requested edits
+
+- [ ] Discuss Social Battery behavior and visibility, explain the implementation,
+      and obtain approval before building it.
+- [ ] Gather Shorena's other requested changes and make approved corrections.
+- [ ] Add more questions to the November 3 meeting agenda.
+- [ ] Complete affected tests before Claude's independent review; approve and
+      verify any fixes identified by that review.
 
 ## Tomorrow — 4. Independent review and closeout
 
