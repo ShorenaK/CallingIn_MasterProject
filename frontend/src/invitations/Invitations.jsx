@@ -23,10 +23,11 @@ export function Invitations({ onSessionExpired }) {
           direction="incoming"
           onSessionExpired={onSessionExpired}
         />
+        {/* A successful send starts a fresh Sent list and pagination lifecycle. */}
         <InvitationList
+          key={sentVersion}
           direction="outgoing"
           onSessionExpired={onSessionExpired}
-          reloadKey={sentVersion}
         />
       </div>
     </section>

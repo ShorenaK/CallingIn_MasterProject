@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ApiError, errorMessage } from '../account/api.js';
 import { listInvitations } from './api.js';
 
@@ -42,34 +42,20 @@ function sessionExpired(failure) {
 /**
  * @param {import('./api.js').Direction} direction
  * @param {() => void} onSessionExpired Must be stable between renders.
- * @param {number} [reloadKey] Changing it reloads the first page.
  */
-export function useInvitationList(direction, onSessionExpired, reloadKey = 0) {
+export function useInvitationList(direction, onSessionExpired) {
   const [state, setState] = useState(initialState);
   const [attempt, setAttempt] = useState(0);
   const [more, setMore] = useState(initialMore);
-  useEffect(() => {
-    let active = true;
-    listInvitations(direction)
-      .then((page) => {
-        if (active) setState({ status: 'ready', error: '', ...page });
-      })
-      .catch((failure) => {
-        if (!active) return;
-        if (sessionExpired(failure)) onSessionExpired();
-        else
-          setState({
-            ...initialState,
-            status: 'error',
-            error: errorMessage(failure),
-          });
-      });
-    return () => {
-      active = false;
-    };
-  }, [direction, attempt, onSessionExpired, reloadKey]);
+  const generation = useRef(0);
+  useEffect(
+    () =>
+      startFirstPageRequest(direction, onSessionExpired, setState, generation),
+    [direction, attempt, onSessionExpired],
+  );
 
   function retry() {
+    generation.current += 1;
     setState(initialState);
     setMore(initialMore);
     setAttempt((value) => value + 1);
@@ -77,10 +63,12 @@ export function useInvitationList(direction, onSessionExpired, reloadKey = 0) {
 
   async function loadMore() {
     const cursor = state.nextCursor;
+    const version = generation.current;
     if (!cursor || more.status === 'loading') return;
     setMore({ ...initialMore, status: 'loading' });
     try {
       const page = await listInvitations(direction, cursor);
+      if (version !== generation.current) return;
       setState((current) => appendPage(current, page));
       setMore({
         ...initialMore,
@@ -88,6 +76,7 @@ export function useInvitationList(direction, onSessionExpired, reloadKey = 0) {
         announcement: loadedMessage(page.invitations.length),
       });
     } catch (failure) {
+      if (version !== generation.current) return;
       if (sessionExpired(failure)) onSessionExpired();
       else
         setMore({
@@ -102,6 +91,39 @@ export function useInvitationList(direction, onSessionExpired, reloadKey = 0) {
     setState((current) => replaceInvitation(current, updated));
   }
   return { ...state, more, retry, loadMore, update };
+}
+
+/** Start a first-page request and invalidate all older pagination on cleanup.
+ * @param {import('./api.js').Direction} direction
+ * @param {() => void} onSessionExpired
+ * @param {import('react').Dispatch<import('react').SetStateAction<ListState>>} setState
+ * @param {import('react').RefObject<number>} generation
+ */
+function startFirstPageRequest(
+  direction,
+  onSessionExpired,
+  setState,
+  generation,
+) {
+  const version = ++generation.current;
+  listInvitations(direction)
+    .then((page) => {
+      if (version === generation.current)
+        setState({ status: 'ready', error: '', ...page });
+    })
+    .catch((failure) => {
+      if (version !== generation.current) return;
+      if (sessionExpired(failure)) onSessionExpired();
+      else
+        setState({
+          ...initialState,
+          status: 'error',
+          error: errorMessage(failure),
+        });
+    });
+  return () => {
+    generation.current += 1;
+  };
 }
 
 /**

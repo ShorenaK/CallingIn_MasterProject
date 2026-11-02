@@ -19,6 +19,7 @@ npm run test:e2e
 ```
 
 The browser download lives in ignored `node_modules`, not your normal browser.
+Repeat the download after a clean installation removes that project-local folder.
 The suite starts its own Vite server on `127.0.0.1:4175` in `e2e` mode. It refuses
 to reuse an existing server, so stop anything else on that port before running.
 Your regular frontend on port 5173 and backend on 3001 are not required.
@@ -34,12 +35,28 @@ any `VITE_*` variables because those are exposed to frontend code.
 - Keyboard Tab moves through account fields and a focus outline is present.
 - Too-short, space-containing, and email-containing new passwords are blocked.
 - Mock sign-in displays the profile; sign-out returns to the sign-in screen.
-- axe scans full sign-in, registration, and profile views for WCAG 2 A/AA,
+- Password Show/Hide preserves entered text; overlong registration passwords
+  remain intact and are rejected instead of silently shortened.
+- Invitation lists show counterpart names, messages, text/shape status labels,
+  loading/empty/error states, and malformed-date feedback.
+- Show more appends pages, announces results, moves focus, and handles retries
+  and expired sessions; stale pagination replies cannot replace a newer reload.
+- Recipient choices cover Maybe Later, final-choice confirmations, Go back,
+  accepted/declined states, conflicts, and session expiry.
+- Sending covers exact-email lookup, missing/rate-limited accounts, message
+  validation, the 5,000-code-unit counter, duplicate feedback, and session expiry.
+- Cancel/Discard clears unsent drafts only after confirming written text;
+  Keep writing preserves it. Keyboard focus follows each action, and cancellation
+  is disabled during an active send.
+- A draft retained by Change person remains available to copy if lookup discovers
+  an expired session; sign-in is an explicit action after the warning.
+- axe scans tested sign-in, registration, profile, and invitation views for WCAG 2 A/AA,
   WCAG 2.1 A/AA, and WCAG 2.2 AA tagged rules supported by the installed engine.
 
 These are browser UI tests with simulated APIs, not real login/session/Atlas
 integration tests. Backend tests and the separately recorded live Atlas checks
-cover different boundaries. The setup does not add invitation UI or provider login.
+cover different boundaries. Provider login is not implemented. Passing mocked
+invitation tests does not establish live database, cookie, or server behavior.
 
 ## Reports and failures
 
@@ -63,10 +80,11 @@ It uses mocked APIs and needs no Atlas secrets. No hosted workflow result is
 implied by local success. These checks run separately from backend `npm test`;
 `npm run check` is not silently expanded to include browser downloads.
 
-Claude should extend these tests as invitation screens are implemented: lookup,
-creation, incoming/outgoing lists, all responses, pending/error states, and keyboard
-operation. Obtain approval for new app edits; Codex independently reviews Claude's
-implementation. Only one agent edits a given task at a time.
+Extend the existing invitation tests when approved behavior changes. Obtain
+approval for new app edits; keep implementation and independent review distinct.
+Only one agent edits a given task at a time. See the latest dated
+[Sprint 3 progress notes](sprint-03-progress.md) for measured run results and
+remaining live/manual checks.
 
 Automated scans and an outline check do not certify accessibility. Manual keyboard
 navigation, visible focus/contrast, zoom/reflow, screen-reader use, and usability

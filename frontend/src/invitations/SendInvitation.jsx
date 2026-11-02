@@ -26,10 +26,34 @@ export function SendInvitation({ onSent, onSessionExpired }) {
       )}
       {send.recipient ? (
         <ComposeMessage send={send} />
+      ) : send.problem?.expired ? (
+        <RetainedDraft message={send.message} />
       ) : (
         <FindPerson send={send} />
       )}
     </section>
+  );
+}
+
+/** Keep the retained text visible so it can be copied before explicit sign-in.
+ * @param {{message: string}} props
+ */
+function RetainedDraft({ message }) {
+  const draft = useRef(/** @type {HTMLTextAreaElement | null} */ (null));
+  useEffect(() => {
+    draft.current?.focus();
+  }, []);
+  return (
+    <label className="form-field" htmlFor="unsent-invitation-message">
+      <span>Your unsent message</span>
+      <textarea
+        id="unsent-invitation-message"
+        ref={draft}
+        rows={6}
+        value={message}
+        readOnly
+      />
+    </label>
   );
 }
 

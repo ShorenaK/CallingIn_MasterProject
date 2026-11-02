@@ -35,8 +35,8 @@ export function useSendInvitation(onSent, onSessionExpired) {
     try {
       setRecipient(await lookupRecipient(email.trim()));
     } catch (failure) {
-      if (hasStatus(failure, 401)) onSessionExpired();
-      else setProblem({ message: lookupProblem(failure) });
+      if (hasStatus(failure, 401) && !message) onSessionExpired();
+      else setProblem(lookupProblem(failure));
     } finally {
       setBusy(false);
     }
@@ -51,9 +51,7 @@ export function useSendInvitation(onSent, onSessionExpired) {
     try {
       await createInvitation(recipient.id, message);
       setSentTo(recipient.displayName);
-      setRecipient(null);
-      setMessage('');
-      setEmail('');
+      cancel();
       setReturning(false);
       onSent();
     } catch (failure) {
@@ -81,9 +79,13 @@ export function useSendInvitation(onSent, onSessionExpired) {
 
 /** @param {unknown} failure */
 function lookupProblem(failure) {
+  if (hasStatus(failure, 401)) return sendProblem(failure, '');
   if (hasStatus(failure, 404))
-    return 'No account matches that email. Check the spelling — they may not have joined CallingIn yet.';
-  return errorMessage(failure);
+    return {
+      message:
+        'No account matches that email. Check the spelling — they may not have joined CallingIn yet.',
+    };
+  return { message: errorMessage(failure) };
 }
 
 /** @param {string} message */

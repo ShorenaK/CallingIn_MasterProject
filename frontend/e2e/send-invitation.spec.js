@@ -36,7 +36,7 @@ async function mockSending(page, { lookup, create, sent = () => empty }) {
       if (path === '/api/invitations' && method === 'GET') {
         const direction = url.searchParams.get('direction');
         await route.fulfill({
-          json: direction === 'outgoing' ? sent() : empty,
+          json: direction === 'outgoing' ? await sent(url.searchParams) : empty,
         });
         return true;
       }
@@ -354,4 +354,153 @@ test('Cancel is disabled while the invitation is being sent', async ({
   expect(
     requests.filter((request) => request.path === '/api/invitations'),
   ).toHaveLength(1);
+});
+
+test('lookup expiry after Change person keeps the draft available to copy', async ({
+  page,
+}) => {
+  let lookups = 0;
+  await mockSending(page, {
+    lookup: () =>
+      ++lookups === 1
+        ? found()
+        : {
+            status: 401,
+            json: { error: 'Sign in to continue.' },
+          },
+  });
+  const panel = await findSarah(page);
+  await panel
+    .getByRole('textbox', { name: 'Your message' })
+    .fill('A long message I want to keep');
+  await panel.getByRole('button', { name: 'Change person' }).click();
+  await panel.getByRole('button', { name: 'Find person' }).click();
+  await expect(panel.getByRole('alert')).toContainText(
+    'Your session has ended. Copy your message',
+  );
+  const draft = panel.getByRole('textbox', { name: 'Your unsent message' });
+  await expect(draft).toBeFocused();
+  await expect(draft).toHaveValue('A long message I want to keep');
+  await expect(draft).toHaveAttribute('readonly', '');
+  await expectAccessible(page);
+  await page.keyboard.press('Shift+Tab');
+  await expect(
+    panel.getByRole('button', { name: 'Sign in again' }),
+  ).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(draft).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Enter');
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back' }),
+  ).toBeFocused();
+});
+
+for (const staleOutcome of ['success', 'error', 'expired']) {
+  test(`Sent reload ignores an older Show more ${staleOutcome}`, async ({
+    page,
+  }) => {
+    const { pending, cursors } = await mockStalePage(page, staleOutcome);
+    const sent = page.getByRole('region', { name: 'Sent', exact: true });
+    const oldStarted = page.waitForRequest((request) =>
+      request.url().includes('cursor=old'),
+    );
+    await sent.getByRole('button', { name: 'Show more sent' }).click();
+    await oldStarted;
+    const panel = await findSarah(page);
+    await panel
+      .getByRole('textbox', { name: 'Your message' })
+      .fill('New invitation');
+    await panel.getByRole('button', { name: 'Send invitation' }).click();
+    // Seeing an enabled button proves the new first page reset the old loading state.
+    const more = sent.getByRole('button', { name: 'Show more sent' });
+    const oldFinished = page.waitForResponse((response) =>
+      response.url().includes('cursor=old'),
+    );
+    try {
+      await expect(more).toBeEnabled();
+    } finally {
+      pending.release();
+    }
+    await (await oldFinished).finished();
+    await page.evaluate(() => new Promise(globalThis.requestAnimationFrame));
+    await expect(sent.getByRole('alert')).toHaveCount(0);
+    await expect(sent.getByRole('article')).toHaveCount(1);
+    await expect(sent.getByText('Stale page', { exact: true })).toHaveCount(0);
+    await more.click();
+    await expect(more).toHaveCount(0);
+    expect(cursors).toEqual(['fresh']);
+  });
+}
+
+function holdResponse() {
+  let release;
+  const response = new Promise((resolve) => {
+    release = () => resolve(empty);
+  });
+  return { response, release: () => release() };
+}
+
+async function mockStalePage(page, staleOutcome) {
+  const pending = holdResponse();
+  let hasSent = false;
+  const cursors = [];
+  await mockSending(page, {
+    lookup: found,
+    create: (body) => {
+      hasSent = true;
+      return { status: 201, json: { invitation: created(body.message) } };
+    },
+    sent: async (params) => {
+      const cursor = params.get('cursor');
+      if (!cursor) {
+        return {
+          invitations: [{ ...created('Current page'), otherPerson: sarah }],
+          nextCursor: hasSent ? 'fresh' : 'old',
+        };
+      }
+      cursors.push(cursor);
+      if (cursor === 'old') return pending.response;
+      return empty;
+    },
+  });
+  // Override only the held old page so it can also return HTTP errors.
+  await page.route('**/api/invitations?*cursor=old', async (route) => {
+    await pending.response;
+    await route.fulfill(
+      staleOutcome === 'success'
+        ? {
+            json: {
+              invitations: [
+                {
+                  ...created('Stale page'),
+                  id: '0000000000000000000000d1',
+                  otherPerson: sarah,
+                },
+              ],
+              nextCursor: 'stale',
+            },
+          }
+        : {
+            status: staleOutcome === 'error' ? 503 : 401,
+            json: { error: 'Old request failed' },
+          },
+    );
+  });
+  return { pending, cursors };
+}
+
+test('lookup expiry without a draft returns directly to sign-in', async ({
+  page,
+}) => {
+  await mockSending(page, {
+    lookup: () => ({ status: 401, json: { error: 'Sign in to continue.' } }),
+  });
+  await findSarah(page);
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back' }),
+  ).toBeFocused();
+  await expect(
+    page.getByRole('textbox', { name: 'Your unsent message' }),
+  ).toHaveCount(0);
 });

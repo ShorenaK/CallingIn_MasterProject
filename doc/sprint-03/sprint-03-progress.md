@@ -686,3 +686,149 @@ Maybe Later journey), using mocked APIs and their existing accessibility scans.
 Repository lint, frontend/backend type checks, formatting, and whitespace checks
 passed. No full browser/backend suite or live Atlas test was rerun for this copy
 change. Commit/push and independent Claude review remain pending.
+
+### November 2 — Envelope icon follow-up deferred
+
+Shorena clarified that the missing visual was an envelope icon rather than the
+invitation status shapes. Its intended location and the cause remain unconfirmed.
+She explicitly requested bypassing this investigation and retaining it as a
+separate follow-up task. No icon code was changed and no rendering fix was
+verified. The current status labels continue to use text and simple shapes.
+
+- [ ] Confirm where the envelope is expected, reproduce the issue, and agree on
+      a fix before changing the interface.
+
+The 30-day re-invitation feature remains unimplemented; deferring the envelope
+does not also defer or approve implementation of that separate backend feature.
+
+### November 2 — Approved scope deferral before final Sprint 3 verification
+
+Shorena explicitly approved deferring the 30-day re-invitation feature to a
+separate future task so Sprint 3 can proceed to final verification and review.
+The product direction remains recorded; it is not implemented or cancelled.
+The current permanent one-invitation-per-unordered-pair rule remains in force,
+including after decline. No database index migration or live schema change is
+part of this deferral. Keep current decline wording until a separately approved
+copy change or the new policy is implemented; do not display a next-permitted
+date while the backend still blocks repeat invitations permanently.
+
+Future work must explain and obtain approval for server-controlled timing,
+preserved history, authorization/concurrency, API feedback, database migration,
+and tests. The missing envelope icon is also deferred as recorded above. This
+scope decision authorizes proceeding with final verification, not declaring
+Sprint 3 complete, invoking Claude automatically, submitting Git changes, or
+merging into main.
+
+### November 2 — Final local automated verification checkpoint
+
+Verified the implementation at `2f916d6`, with only the documentation follow-ups
+above uncommitted. The following checks were actually rerun at this checkpoint:
+
+- Repository lint, frontend/backend JavaScript type checks, formatting, and
+  whitespace checks passed.
+- All **176 backend tests passed**, zero failures/skips; coverage **100%
+  lines/functions, 98.36% branches**. Database integration uses simulated storage.
+- All **31 Chromium browser tests passed**, including the existing axe scans
+  and Cancel draft keyboard/focus paths. APIs were mocked.
+- Frontend production build passed with output isolated at
+  `/private/tmp/callingin-sprint03-final-20261102`; tracked dist was not updated.
+
+The root/frontend/backend audits reporting zero vulnerabilities earlier on
+November 2 are historical results, not rerun in this checkpoint. No new network
+audit or hosted GitHub Actions status check was performed. No new live Atlas
+verification, Safari/phone check, 200% zoom check, or VoiceOver test was performed.
+Earlier user-reported Atlas updates and manual journeys remain separate evidence;
+backup and twice-per-database restart evidence remain incomplete. The new login
+policy and Cancel draft behavior have not been verified against live accounts.
+
+Sprint 3 remains awaiting independent Claude review, resolution of any findings,
+the remaining manual verification or an explicit documented acceptance of its
+limits, final closeout documentation, and separately approved Git submission/merge.
+The browser accessibility guide still describes the initial setup and needs its
+invitation-test coverage refreshed during closeout documentation. Canonical memory
+also predates Sprint 3 implementation; it must not be treated as current source.
+The 30-day re-invitation feature and envelope icon are explicitly deferred.
+
+### November 2 — Approved final-review fixes and shared journey update
+
+Shorena asked Codex to read Claude's final report, then explicitly approved the
+documentation fixes, both frontend robustness fixes, follow-up tracking, and a
+project journey update. Claude's report remains an independent assessment of
+`2f916d6`; the changes below are subsequent local fixes, not changes to its verdict.
+
+- Findings 1–2: corrected README's stale running-project paragraph, invitation
+  response table, and backend/browser/axe coverage descriptions. Accept records
+  consent; private conversations remain future work. Current permanent pair
+  uniqueness and mocked/simulated testing limits are explicit.
+- Finding 3: refreshed the browser/accessibility guide with the implemented
+  invitation journey, cancellation, expiry, and pagination checks. Added the
+  project-local browser reinstall note after a clean dependency installation.
+- Finding 4: a lookup 401 after Change person preserves any retained message,
+  including whitespace, and displays it in a read-only textarea for copying.
+  Sign in again remains an explicit action after the warning. A lookup expiry
+  with no draft still returns directly to sign-in. No browser storage was added.
+- Finding 5: a successful send remounts only the Sent list with its new version,
+  resetting page/cursor/Show more state. Request generations invalidate older
+  first-page and pagination replies on retry/unmount, including error and 401
+  replies, so stale requests cannot append pages or expire a newer view.
+- Findings 6–8: added deployment login trade-offs and the minimatch override exit
+  condition to main's central deferred list. The approved Maybe Later wording
+  remains unchanged; punctuation/loading interpretation belongs to deferred copy
+  review. No login-policy or dependency changes were made in this follow-up.
+
+The draft-loss regression failed before its fix. The corrected pagination fixture
+reproduced the old loading-state problem before the pagination fix; the initial
+fixture incorrectly depended on one first-page request under React StrictMode and
+was corrected. Five new browser cases now cover retained draft expiry, expiry
+without a draft, and stale Show more success, error, and session-expiry replies.
+
+Verification after the final code changes: **36 Chromium tests passed**, including
+existing and added axe scans. Lint, frontend/backend type checks, formatting,
+whitespace checks, and scratch frontend build passed. Root, frontend, and backend
+audits were freshly rerun and each reported **zero vulnerabilities**. The earlier
+176-test backend pass remains the latest backend evidence; that suite was not
+rerun for these frontend/documentation-only changes.
+
+Hosted status lookup for `2f916d6` was attempted with GitHub CLI and failed with
+HTTP 401 (bad credentials). No hosted pass is claimed, and no credential or
+authentication configuration was changed. No live Atlas, Safari, VoiceOver,
+mobile, or 200% zoom check was performed during these fixes.
+
+On the separate main checkout, updated `doc/deferred-tasks.md` and added a dated
+entry to `doc/project-journey.md`. It records Shorena's actual requests and
+approvals, the audit-vs-test distinction, reviewer/implementer roles, deferred
+scope, evidence limits, and next steps without inventing research measurements.
+These shared edits and the Sprint 3 fixes remain uncommitted. The original Claude
+report is also untracked pending submission. Follow-up independent review of the
+fixes, remaining live/manual checks or explicit accepted limits, hosted CI, Git
+submission, and any merge remain outstanding. Sprint 3 is not declared complete.
+
+### November 2 — Focused follow-up accepted; retained-draft keyboard focus fixed
+
+Claude's separate `quality-review-2026-11-02-focused-followup.md` confirms findings
+4 and 5 resolved without blocking problems and independently reran all 36 Chromium
+tests plus lint, formatting, type checks, and scratch build. Its assessment predates
+the small focus fix below; the report itself was not rewritten.
+
+Shorena approved its low-priority A1 focus fix and explicitly requested recording
+the need for a keyboard check. `RetainedDraft` now focuses its read-only textarea
+on mount, allowing immediate access to the saved message. The existing regression
+test now verifies initial textarea focus, Shift+Tab to Sign in again, Tab back to
+the textarea, and keyboard Enter to reach the focused sign-in heading. Optional
+whitespace handling and test-polish suggestions remain unchanged.
+
+Verification after this small fix: **both targeted lookup-expiry Chromium tests
+passed**, including the retained-draft axe scan and the no-draft sign-in path.
+Lint and frontend/backend type checks passed. The full 36-test run and fresh audits
+above remain earlier evidence; they were not repeated for this focus-only change.
+No human keyboard walkthrough or live test was performed here.
+
+Shorena explicitly moved the remaining live/manual checks into Sprint 4, including
+login limits, Cancel draft, message boundaries, and accessibility. The central
+deferred-task document on main now calls out the **human keyboard-only test**:
+Tab/Shift+Tab/Enter/Space through account screens, lookup/composition, cancellation,
+responses/confirmations, pagination, and expired-session draft recovery, with
+visible focus and a real copying check. Safari, VoiceOver, zoom, phone layout,
+and live backend/Atlas evidence remain unverified until actually checked.
+This is a scope/evidence decision, not a claim that those checks passed.
+Commit/push, hosted Quality confirmation, and any merge still require approval.

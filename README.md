@@ -98,13 +98,13 @@ AI will not send messages on the user's behalf.
 A user will choose a recipient, prepare a message, and send an
 invitation to connect.
 
-The planned responses are:
+The implemented invitation responses are:
 
-| Response          | Behavior                                               |
-| ----------------- | ------------------------------------------------------ |
-| Accept            | Opens a private conversation                           |
-| Maybe Later       | Keeps the invitation available for later consideration |
-| I need some space | Closes the invitation without opening a conversation   |
+| Response          | Behavior                                                     |
+| ----------------- | ------------------------------------------------------------ |
+| Accept            | Records consent to connect; private conversations come later |
+| Maybe Later       | Keeps the invitation available for later consideration       |
+| I need some space | Closes the invitation without opening a conversation         |
 
 The final wording will be reviewed during interface design.
 Choosing not to connect does not create an obligation to respond later.
@@ -379,14 +379,20 @@ The project combines automated quality gates with a manually invoked AI review:
 - **Automated tests:** Node's built-in test runner covers registration, password
   hashing/verification, sessions, login/logout, profile access/updates, request
   protection, rate limiting, safe failure handling, and server startup/shutdown.
+  Invitation tests cover lookup, creation, participant names, lists/pagination,
+  recipient-only responses, duplicate prevention, and validator startup checks.
+  Database integration tests use simulated MongoDB storage and real local HTTP
+  sessions; they do not verify live Atlas behavior.
   `npm run test:coverage` reports backend source coverage; no minimum coverage
   threshold is enforced.
 - **Browser tests — Playwright:** `npm run test:e2e` runs Chromium checks for
   account screens, keyboard field navigation/focus, password guidance/errors,
-  and mock sign-in/sign-out. An isolated frontend server and simulated API
+  mock sign-in/sign-out, and the invitation journey: lookup, composition,
+  the 5,000-character counter, Cancel/Discard draft, lists, Show more, response
+  confirmations, errors, and session expiry. An isolated frontend server and simulated API
   responses keep these checks independent of Atlas and private credentials.
 - **Accessibility scans — axe-core:** `@axe-core/playwright` checks the rendered
-  sign-in, registration, and profile views for common accessibility problems,
+  sign-in, registration, profile, and invitation views for common accessibility problems,
   such as missing labels and insufficient contrast. The current scans use
   supported WCAG 2 A/AA, 2.1 A/AA, and 2.2 AA tags, without rule exclusions.
   Passing scans do not establish full accessibility or WCAG conformance.
@@ -500,12 +506,16 @@ Friday before finals week.
 
 ## Running the Project
 
-The current application includes a React welcome page, an Express health
-endpoint, a Vite development proxy, MongoDB connectivity, and a backend
-registration endpoint with password hashing and unique email storage. Login,
-logout, sessions, profile endpoints, and frontend account forms are not yet
-implemented. AI requests, invitations, and private messaging remain planned;
-Trusted Circle remains future work.
+The current application includes React account and invitation screens, an Express
+API, a Vite development proxy, and MongoDB connectivity. Accounts support
+registration, password hashing, sign-in/out, cookie sessions, optional persistent
+sign-in, and display-name editing. Invitations support exact-email recipient
+lookup, sending messages of up to 5,000 JavaScript code units after trimming,
+Received/Sent lists with participant names and pagination, and recipient responses
+with confirmation for final choices. Accept records consent; it does not open a
+private conversation yet. Only one invitation per account pair is currently
+allowed, permanently. AI requests, private messaging, and Trusted Circle remain
+future work. The 30-day re-invitation policy is deferred.
 
 ### Prerequisites and installation
 
@@ -590,8 +600,11 @@ npm run check
 
 The combined check runs frontend/backend linting, repository formatting,
 JavaScript type checks, backend tests, and the frontend build. It stops if a
-step fails. Tests cover health routes, registration, database failures, and
-startup/shutdown using temporary localhost servers and controlled dependencies.
+step fails. Backend tests cover health routes, registration, login/logout,
+sessions, profiles, request protection, rate limits, invitation lookup/creation,
+lists/pagination, participant names, recipient responses, duplicate prevention,
+validator preparation, database failures, and startup/shutdown. They use temporary
+localhost servers and simulated database dependencies.
 They do not create live Atlas accounts or require private database settings.
 
 Run `npm run test:coverage` separately for a backend coverage report. Dependency
