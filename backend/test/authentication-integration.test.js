@@ -22,7 +22,11 @@ before(async () => {
 });
 
 const indexOnlyStorage = { createIndex: async () => {} };
-const startupCollections = new Set(['invitations', 'conversations']);
+const startupCollections = new Set([
+  'invitations',
+  'conversations',
+  'messages',
+]);
 
 function simulatedDatabase() {
   const records = new Map();
@@ -70,7 +74,7 @@ function simulatedDatabase() {
     databaseName: 'auth_integration_test',
     listCollections: () => ({ next: async () => null }),
     createCollection: async (name) =>
-      assert.ok(['invitations', 'conversations'].includes(name)),
+      assert.ok(['invitations', 'conversations', 'messages'].includes(name)),
     collection(name) {
       if (name === 'users') return users;
       if (startupCollections.has(name)) return indexOnlyStorage;

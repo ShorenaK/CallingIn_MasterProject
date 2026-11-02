@@ -1,3 +1,4 @@
+import { messageStorage } from '../test-support/messages.js';
 import assert from 'node:assert/strict';
 import { before, test } from 'node:test';
 import { EventEmitter } from 'node:events';
@@ -93,6 +94,15 @@ function invitationStorage() {
 function conversationStorage() {
   const rooms = new Map();
   return {
+    async findOne(filter) {
+      return (
+        [...rooms.values()].find(
+          (room) =>
+            room._id.equals(filter._id) &&
+            room.participantIds.some((id) => id.equals(filter.participantIds)),
+        ) ?? null
+      );
+    },
     createIndex: async () => {},
     async findOneAndUpdate(filter, update, settings) {
       assert.deepEqual(settings, { upsert: true, returnDocument: 'after' });
@@ -111,6 +121,7 @@ function conversationStorage() {
 async function setup(t) {
   const collections = {
     conversations: conversationStorage(),
+    messages: messageStorage({ messages: [] }),
     sessions: sessionStorage(),
     invitations: invitationStorage(),
     users: {
@@ -329,4 +340,52 @@ test('cookie-authenticated acceptance opens one shared room and excludes outside
   const replay = await request('POST', path, {}, recipientCookie);
   assert.equal(replay.status, 401);
   await replay.arrayBuffer();
+});
+
+test('real cookie sessions connect invitation acceptance to private message sending and reading', async (t) => {
+  const request = await setup(t);
+  const senderCookie = await signIn(request, users[0].email);
+  const recipientCookie = await signIn(request, users[1].email);
+  const outsiderCookie = await signIn(request, users[2].email);
+  const invitation = await createThroughLookup(request, senderCookie);
+  await respond(request, recipientCookie, invitation.id, 'accepted');
+  const opened = await request(
+    'POST',
+    `/api/invitations/${invitation.id}/conversation`,
+    {},
+    senderCookie,
+  );
+  assert.equal(opened.status, 200);
+  const { conversation } = await opened.json();
+  const path = `/api/conversations/${conversation.id}/messages`;
+  for (const cookie of [senderCookie, recipientCookie]) {
+    const sent = await request('POST', path, { text: 'Hello there' }, cookie);
+    assert.equal(sent.status, 201);
+    assert.equal((await sent.json()).message.text, 'Hello there');
+  }
+  const history = await request('GET', path, undefined, recipientCookie);
+  assert.equal(history.status, 200);
+  assert.equal((await history.json()).messages.length, 2);
+  for (const method of ['GET', 'POST']) {
+    const denied = await request(
+      method,
+      path,
+      method === 'POST' ? { text: 'intrusion' } : undefined,
+      outsiderCookie,
+    );
+    assert.equal(denied.status, 404);
+    await denied.arrayBuffer();
+  }
+  const logout = await request('POST', '/api/auth/logout', {}, recipientCookie);
+  assert.equal(logout.status, 204);
+  for (const method of ['GET', 'POST']) {
+    const replay = await request(
+      method,
+      path,
+      method === 'POST' ? { text: 'replay' } : undefined,
+      recipientCookie,
+    );
+    assert.equal(replay.status, 401);
+    await replay.arrayBuffer();
+  }
 });

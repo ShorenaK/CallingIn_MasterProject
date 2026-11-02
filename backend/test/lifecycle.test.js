@@ -17,6 +17,7 @@ function setup() {
     env: {},
     prepareInvitations: async () => {},
     prepareConversations: async () => {},
+    prepareMessages: async () => {},
     prepareAuthentication: async () => {
       state.authPrepared = true;
       return {
@@ -330,4 +331,37 @@ test('conversation setup failure prevents serving and safely closes storage', as
   assert.equal(state.closes, 1);
   assert.equal(state.authPrepared, false);
   assert.deepEqual(state.logs, []);
+});
+
+test('message storage prepares after conversations and before authentication', async (t) => {
+  const { options } = setup();
+  const events = [];
+  const authentication = options.prepareAuthentication;
+  options.prepareConversations = async () => {
+    events.push('conversations');
+  };
+  options.prepareMessages = async () => {
+    events.push('messages');
+  };
+  options.prepareAuthentication = async () => {
+    events.push('authentication');
+    return authentication();
+  };
+  const running = await startBackend(options);
+  t.after(running.stop);
+  assert.deepEqual(events, ['conversations', 'messages', 'authentication']);
+});
+
+test('message storage failure prevents serving and safely closes the connection', async () => {
+  const { options, state } = setup();
+  options.prepareMessages = async () => {
+    throw new Error('private message schema');
+  };
+  options.makeApp = () => assert.fail('Must not serve');
+  await assert.rejects(startBackend(options), {
+    message:
+      'Message storage setup failed. Check database access and validation; schema differences require an administrator update.',
+  });
+  assert.equal(state.closes, 1);
+  assert.equal(state.authPrepared, false);
 });

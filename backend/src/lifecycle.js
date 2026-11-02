@@ -1,3 +1,4 @@
+import { prepareMessages } from './message-storage.js';
 import { createApp } from './app.js';
 import { connectDatabase } from './database.js';
 import { prepareUsers } from './registration.js';
@@ -96,6 +97,7 @@ const defaults = {
   prepare: prepareUsers,
   prepareInvitations,
   prepareConversations,
+  prepareMessages,
   makeApp: createApp,
   prepareAuthentication,
   env: process.env,
@@ -112,6 +114,7 @@ export async function startBackend(options = {}) {
     prepare,
     prepareInvitations,
     prepareConversations,
+    prepareMessages,
     makeApp,
     prepareAuthentication,
     env,
@@ -133,6 +136,9 @@ export async function startBackend(options = {}) {
     stage =
       'Conversation storage setup failed. Check database access and validation; schema differences require an administrator update.';
     await prepareConversations(database.db);
+    stage =
+      'Message storage setup failed. Check database access and validation; schema differences require an administrator update.';
+    await prepareMessages(database.db);
     stage =
       'Authentication setup failed. Check SESSION_SECRET, APP_ORIGIN, and session storage permissions.';
     const authentication = await prepareAuthentication(database.db, env);
