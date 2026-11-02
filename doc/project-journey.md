@@ -375,6 +375,61 @@ them as the only record of this conversation.
 This reflection is a new documentation edit on main. The memory files are
 already pushed, but this new journey entry is not yet staged, committed, or pushed.
 
+## November 2, 2026 — Sprint 3 review and deciding what comes next
+
+I want to finish Sprint 3 and begin Sprint 4, but I also want a clear record of
+what is complete and what still needs attention. I asked for one shared list
+instead of leaving follow-up ideas scattered through the conversation. The list
+is now `doc/deferred-tasks.md` on main, committed and pushed as `6088395`.
+It includes design colors, the envelope icon and emoji, displayed messages,
+unnecessary hyphens, the 30-day re-invitation idea, and remaining verification.
+I approved deferring the 30-day feature; the application still permits only one
+invitation between each pair of accounts. Deferral does not mean it is implemented.
+
+I also asked why GitHub showed a failed check when the tests passed. We separated
+the test result from the dependency audit: the failing step was `npm audit`, and
+`npm audit fix --force` was a suggestion in its output, not a command the workflow
+had run. After an explanation and my approval, Codex applied a targeted dependency
+override and verified it. The security fix was pushed on the Sprint 3 branch as
+`4b41fd7`. This helped make the difference between submitting code and passing all
+checks concrete. A successful push is not proof that the hosted workflow passed.
+
+For the independent review, I asked Claude to examine Sprint 3 and save its
+findings. Its November 2 report reviewed `2f916d6`, found no blocking defects in
+that snapshot, and recorded 176 backend tests and 31 Chromium tests passing.
+It also identified stale documentation and two smaller frontend problems: a
+written draft could be lost when changing recipients after session expiry, and
+an older Show more request could interfere with a refreshed Sent list.
+I asked Codex to read the report, explain the findings, and address them, including
+updates to the project journey. Claude reviewed; Codex is implementing the
+approved follow-up. Both fixes are now implemented locally, with five additional
+browser cases; all 36 Chromium tests passed, along with lint, type checks,
+formatting, and a scratch build. These roles do not make either review or tests
+a guarantee.
+
+My process remains one explained, approved step at a time. I asked for short,
+ordinary-language explanations and found the life analogies useful. For example,
+the login limits were explained as individual apartment locks plus a building
+entrance limit. The implemented change separates failed attempts for one email
+from a higher limit shared by one connection. The remaining trade-offs belong
+in deployment planning, rather than being forgotten when a test passes.
+
+I am keeping local automated checks, my reported live tests, and work not checked
+as separate kinds of evidence. Mocked browser APIs and simulated database tests
+cannot establish live Atlas permissions, Safari behavior, or full accessibility.
+The three fresh audits each reported zero vulnerabilities; hosted GitHub checks remain unverified
+because the CLI returned an authentication error. No private credentials were
+read to resolve it. Remaining live/manual checks and any accepted limits still
+need an explicit decision before declaring Sprint 3 complete.
+
+The Sprint 3 implementation remains separate from main. This journey entry and
+the latest follow-up-list edits are local documentation changes on main, not yet
+committed or pushed. The current review fixes also await separate Git approval;
+no Sprint 3 merge has taken place. I have not measured time or token savings from
+this workflow and am not treating the review as research proof of effectiveness.
+My next step is to assess the verified fixes and remaining checks, then approve
+the closeout and Sprint 4 scope separately.
+
 ## Weekly entry template
 
 Copy this section for each update and replace the placeholders.

@@ -97,10 +97,47 @@ before any separately approved migration; no index change is authorized here.
 This was previously recorded as future work. It is not part of Sprint 3 closeout
 or automatically part of Sprint 4.
 
+### 7. Review deployment protections and the dependency override
+
+- [ ] Revisit the login policy before deployment: ten failures can temporarily
+      block a known email across IPs, and the connection ceiling is shared by
+      people on the same network. Consider alternative delays or recovery flows
+      in a separately approved design; the current limits remain approved.
+- [ ] Plan a shared rate-limit store and trusted-proxy settings if deployment
+      uses multiple backend processes or a proxy. Do not enable proxy trust blindly.
+- [ ] Remove the targeted minimatch 11.0.1 overrides when ESLint and
+      @eslint/config-array support a patched compatible dependency range.
+      Check the advisory, resolved dependency tree, lint, and all three audits
+      before removing them; a newer ESLint version alone is not sufficient.
+
+**Purpose:** Carry the accepted login trade-offs and temporary dependency fix
+into deployment planning. These are review findings, not newly approved changes
+to the login policy or permission to suppress security checks.
+
 ## Remaining verification and closeout work
 
 These are evidence gaps and closeout tasks, not claims that the application failed.
 Keep them visible until completed or explicitly accepted as limitations.
+
+**Sprint 4 assignment approved November 2:** Shorena carried the remaining
+live/manual login, Cancel draft, message-boundary, and accessibility checks into
+Sprint 4. They remain unverified; automated tests do not replace them.
+
+### Required human keyboard-only check in Sprint 4
+
+- [ ] Use Tab, Shift+Tab, Enter, and Space without a mouse through account screens,
+      recipient lookup, message composition, Cancel/Keep writing/Discard draft,
+      response confirmations, and Show more pagination.
+- [ ] Check visible focus and logical order throughout, including error notices
+      and session expiry. The retained unsent message should receive focus and
+      allow text selection/copying before an explicit Sign in again action.
+- [ ] Record browser, tested paths, actual outcomes, and any failures. Pair this
+      with the separate VoiceOver, 200% zoom, phone-width, and Safari checks.
+
+The retained-draft automated check now covers focus, Tab/Shift+Tab, and Enter;
+this does not complete the human walkthrough or real-session copying check.
+
+### Other remaining evidence and closeout tasks
 
 - [ ] Verify the new login rules with live test accounts after restarting the
       backend: 10 failed attempts per email and 100 total attempts per connection
@@ -113,16 +150,24 @@ Keep them visible until completed or explicitly accepted as limitations.
       `callingin_sprint03_verify`: saved 5,000 rules were user-reported;
       backup evidence and two startups per database remain incomplete. Do not
       claim that a backup or migration check happened without evidence.
-- [ ] Obtain Claude's independent final Sprint 3 review and address findings
-      through separately approved changes.
+- [x] Obtain Claude's independent final Sprint 3 review: report saved on
+      `sprint-03-invitations` as `doc/sprint-03/quality-review-2026-11-02-final.md`,
+      reviewing `2f916d6`. It found no blocking defects in that snapshot.
+- [x] Prepare the approved review fixes and obtain Claude's focused confirmation
+      that findings 4 and 5 are resolved. The later approved focus-only fix passed
+      targeted tests; all changes still await Git submission.
 - [ ] Refresh closeout documentation, including the browser accessibility guide,
       and save an accurate session handoff. Older memory snapshots predate Sprint 3.
 - [ ] Check the hosted GitHub Quality result before an approved merge.
 - [ ] Review completion with Shorena; Git submissions and merge require explicit
       authorization. Do not label Sprint 3 complete solely because local tests pass.
 
-**Latest local checkpoint, November 2:** 176 backend tests and 31 Chromium
-browser tests passed, plus lint, type checks, formatting, and a scratch build.
+**Latest local checkpoint, November 2:** 36 Chromium browser tests passed after
+the approved review fixes, plus lint, type checks, formatting, and a scratch build.
+The earlier 176-test backend pass remains the latest backend result; that suite
+was not rerun for the frontend/documentation-only fixes. All three npm audits
+were freshly rerun and reported zero vulnerabilities. Hosted GitHub status lookup
+failed with CLI HTTP 401, so no hosted pass is claimed.
 Backend storage was simulated and browser APIs were mocked. This is not proof
 of live Atlas behavior, Safari support, or complete accessibility.
 
@@ -130,6 +175,23 @@ of live Atlas behavior, Safari support, or complete accessibility.
 or conclusively explained. Shared browser session cookies were one possible
 explanation. Shorena requested moving on, and no lookup code changed. Revisit if
 it recurs; use separate browser profiles and verify the actual signed-in identity.
+
+**November 2 review follow-up:** Shorena approved correcting stale documentation,
+preserving a draft when a lookup finds an expired session, guarding stale Show
+more replies after a Sent refresh, and updating this list and the project journey.
+The fixes and documentation updates are prepared locally on their respective
+branches and await commit/push; the focused follow-up review is now recorded below. No Sprint 3
+merge has occurred. Claude's approved Maybe Later wording remains unchanged; review
+its punctuation and the possible loading interpretation during the deferred copy
+cleanup, rather than changing approved text incidentally.
+
+**Focused review update:** Claude's
+`doc/sprint-03/quality-review-2026-11-02-focused-followup.md` on the Sprint 3 branch
+confirms draft preservation and stale-pagination findings resolved, with 36
+Chromium tests passing. Shorena then approved moving focus to the retained draft;
+both targeted expiry tests, lint, and type checks passed after that small fix.
+The focused review predates this focus-only change. Reports and changes remain
+local pending submission; no new live verification or Sprint 3 merge is claimed.
 
 ## Tracking updates
 
