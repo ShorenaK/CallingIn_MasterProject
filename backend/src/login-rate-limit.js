@@ -1,40 +1,53 @@
 import { rateLimit } from 'express-rate-limit';
+import { validEmail } from './account-policy.js';
+
+const sharedOptions = {
+  windowMs: 15 * 60 * 1000,
+  standardHeaders: /** @type {const} */ ('draft-8'),
+  legacyHeaders: false,
+  passOnStoreError: false,
+  statusCode: 429,
+};
 
 /**
- * Create one limiter per application instance and reuse it for the login route.
- * Mount after request-origin protection but before password verification, so
- * repeated login attempts cannot trigger unlimited expensive scrypt operations.
+ * Mount both checks before session/database work and password verification.
+ * The IP ceiling bounds total work, including successes and invalid input.
+ * The email allowance counts credential failures (401) across all client IPs;
+ * unknown accounts follow the same rules as existing ones. Other completed
+ * responses are refunded, so invalid input and service errors do not lock an email.
+ * In-flight requests reserve a slot until completion; simultaneous requests can
+ * temporarily reach the limit even if some later succeed. Aborted requests may
+ * retain a reservation until expiry. A success does not erase earlier failures.
  *
- * Count every attempt, including successful logins: this keeps the resource
- * limit predictable and avoids refunding requests while others are in flight.
- * Users behind the same public IP share this allowance. The package's default
- * key generator also groups IPv6 addresses to reduce address-rotation bypasses.
- *
- * The default memory store is appropriate for our single backend process.
- * Counters reset on restart and are not shared between processes. Deployment
- * with multiple instances requires a shared store before relying on this limit.
- * Keep Express proxy trust disabled until the actual proxy topology is known;
- * blindly trusting forwarded headers can allow attackers to spoof client IPs.
- * @returns {import('express-rate-limit').RateLimitRequestHandler}
+ * Each app has independent memory stores. Restart resets counters; multiple
+ * backend processes require a shared store. Keep proxy trust disabled until
+ * deployment topology is known. The default IP key groups IPv6 subnets.
+ * @returns {import('express-rate-limit').RateLimitRequestHandler[]}
  */
 export function createLoginRateLimiter() {
-  return rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 10,
-
-    // Publish the standardized quota/reset headers. The middleware also sends
-    // Retry-After when blocked, so clients know when they may try again.
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
-
-    // If a future external store fails, reject rather than silently disabling
-    // protection. Express error handling must return a safe response.
-    passOnStoreError: false,
-    statusCode: 429,
+  const ipLimiter = rateLimit({
+    ...sharedOptions,
+    identifier: 'login-ip',
+    requestPropertyName: 'loginIpRateLimit',
+    limit: 100,
     message: {
-      error: 'Too many login attempts. Please try again later.',
+      error:
+        'Too many login attempts from this connection. Please try again later.',
     },
   });
+  const emailLimiter = rateLimit({
+    ...sharedOptions,
+    identifier: 'login-email',
+    requestPropertyName: 'loginEmailRateLimit',
+    limit: 10,
+    skip: (request) => !validEmail(request.body?.email),
+    keyGenerator: (request) => request.body.email.trim().toLowerCase(),
+    skipSuccessfulRequests: true,
+    requestWasSuccessful: (_request, response) => response.statusCode !== 401,
+    message: {
+      error:
+        'Too many failed login attempts for this email. Please try again later.',
+    },
+  });
+  return [ipLimiter, emailLimiter];
 }

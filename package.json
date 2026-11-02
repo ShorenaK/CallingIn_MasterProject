@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "husky",
     "precommit": "lint-staged",
-    "lint": "eslint frontend backend --max-warnings 0",
+    "lint": "eslint frontend backend playwright.config.js --max-warnings 0",
     "format:check": "prettier --check .",
     "test": "npm --prefix backend test",
     "build": "npm --prefix frontend run build",
@@ -13,10 +13,14 @@
     "lint:frontend": "eslint frontend --max-warnings 0",
     "lint:backend": "eslint backend --max-warnings 0",
     "test:coverage": "npm --prefix backend run test:coverage",
-    "typecheck": "tsc -p frontend/tsconfig.json && tsc -p backend/tsconfig.json"
+    "typecheck": "tsc -p frontend/tsconfig.json && tsc -p backend/tsconfig.json",
+    "test:e2e": "playwright test",
+    "test:e2e:report": "playwright show-report"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.5",
     "eslint": "^10.11.0",

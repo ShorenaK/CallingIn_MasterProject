@@ -7,7 +7,11 @@ import prettier from 'eslint-config-prettier';
 export default [
   { ignores: ['**/node_modules/**', '**/dist/**', '**/coverage/**'] },
   {
-    files: ['frontend/**/*.{js,jsx}', 'backend/**/*.js'],
+    files: [
+      'frontend/**/*.{js,jsx}',
+      'backend/**/*.js',
+      'playwright.config.js',
+    ],
     rules: {
       ...js.configs.recommended.rules,
       complexity: ['error', 10],
@@ -42,7 +46,12 @@ export default [
     },
   },
   {
-    files: ['backend/**/*.js', 'frontend/vite.config.js'],
+    files: [
+      'backend/**/*.js',
+      'frontend/vite.config.js',
+      'frontend/e2e/**/*.js',
+      'playwright.config.js',
+    ],
     languageOptions: { globals: globals.node },
   },
   prettier,

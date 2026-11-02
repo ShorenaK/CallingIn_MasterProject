@@ -71,6 +71,14 @@ responsible design.
 Users will be able to register, sign in, sign out, and maintain
 a basic profile.
 
+Password policy updated October 30, 2026: new passwords must contain **8–18
+characters** and must not contain the account's full email address (case-insensitive).
+Spaces, tabs, and other whitespace are not allowed in new passwords; a
+letter/number combination is not required. The email, whitespace, and 18-character maximum rules apply at registration;
+existing accounts can still sign in with their original passwords (up to 128 characters). The reduced
+minimum is a user-approved usability tradeoff; it is below current NIST guidance
+for password-only sign-in.
+
 ### 2. AI Communication Coach
 
 Users will explain why they want to reach out and request help
@@ -90,13 +98,13 @@ AI will not send messages on the user's behalf.
 A user will choose a recipient, prepare a message, and send an
 invitation to connect.
 
-The planned responses are:
+The implemented invitation responses are:
 
-| Response          | Behavior                                               |
-| ----------------- | ------------------------------------------------------ |
-| Accept            | Opens a private conversation                           |
-| Maybe Later       | Keeps the invitation available for later consideration |
-| I need some space | Closes the invitation without opening a conversation   |
+| Response          | Behavior                                                     |
+| ----------------- | ------------------------------------------------------------ |
+| Accept            | Records consent to connect; private conversations come later |
+| Maybe Later       | Keeps the invitation available for later consideration       |
+| I need some space | Closes the invitation without opening a conversation         |
 
 The final wording will be reviewed during interface design.
 Choosing not to connect does not create an obligation to respond later.
@@ -168,6 +176,10 @@ or treat mental health conditions or replace professional care.
 
 The following features are possibilities for later development and are
 outside the Fall 2026 MVP.
+
+**Google sign-in** is planned future work, outside the current invitation sprint
+and the committed Fall 2026 MVP. It is not implemented. It will need provider setup,
+secure account linking, and separate design, approval, and testing.
 
 The planned evolution of CallingIn is:
 
@@ -348,26 +360,67 @@ See the [Sprint Plan](doc/sprint-plan.md) for dates and deliverables.
 
 ## Code Quality
 
-The project uses:
+The project combines automated quality gates with a manually invoked AI review:
 
-- **ESLint:** Detect potential mistakes and enforce coding rules.
-- **Prettier:** Keep formatting consistent.
-- **Complexity checks:** Identify functions that are difficult
-  to understand or test.
-- **Pre-commit hooks:** Run selected fast checks before commits.
-- **Automated tests:** Verify important behavior and failure paths.
-- **Dependency scanning:** Review known vulnerabilities in packages.
+- **Cyclomatic complexity:** ESLint's `complexity` rule limits cyclomatic
+  complexity to **10 per function**. This measures branching through code and
+  helps identify functions that are difficult to understand or test. Exceeding
+  the limit fails linting. Additional rules limit nesting depth to 4, parameters
+  to 4, and function length to 60 lines, excluding comments and blank lines.
+- **ESLint:** `npm run lint` detects potential mistakes and enforces coding and
+  React Hooks rules with zero warnings allowed. Rules live in `eslint.config.mjs`.
+- **Type checking:** `npm run typecheck` runs TypeScript's JavaScript checker
+  (`tsc`) with strict `checkJs`, JSDoc, and `noEmit`. Application code remains
+  JavaScript. Type checking is separate from ESLint and currently covers frontend
+  and backend application source, not tests or tooling configuration.
+- **Formatting and pre-commit checks:** Prettier checks consistent formatting.
+  Husky and lint-staged run ESLint and Prettier on matching staged files before
+  commits; this fast hook does not run the full test suite or type checker.
+- **Automated tests:** Node's built-in test runner covers registration, password
+  hashing/verification, sessions, login/logout, profile access/updates, request
+  protection, rate limiting, safe failure handling, and server startup/shutdown.
+  Invitation tests cover lookup, creation, participant names, lists/pagination,
+  recipient-only responses, duplicate prevention, and validator startup checks.
+  Database integration tests use simulated MongoDB storage and real local HTTP
+  sessions; they do not verify live Atlas behavior.
+  `npm run test:coverage` reports backend source coverage; no minimum coverage
+  threshold is enforced.
+- **Browser tests — Playwright:** `npm run test:e2e` runs Chromium checks for
+  account screens, keyboard field navigation/focus, password guidance/errors,
+  mock sign-in/sign-out, and the invitation journey: lookup, composition,
+  the 5,000-character counter, Cancel/Discard draft, lists, Show more, response
+  confirmations, errors, and session expiry. An isolated frontend server and simulated API
+  responses keep these checks independent of Atlas and private credentials.
+- **Accessibility scans — axe-core:** `@axe-core/playwright` checks the rendered
+  sign-in, registration, profile, and invitation views for common accessibility problems,
+  such as missing labels and insufficient contrast. The current scans use
+  supported WCAG 2 A/AA, 2.1 A/AA, and 2.2 AA tags, without rule exclusions.
+  Passing scans do not establish full accessibility or WCAG conformance.
+  See the [browser/accessibility guide](doc/sprint-03/browser-accessibility-testing.md)
+  for browser installation, commands, reports, and verification limits.
+- **GitHub Actions continuous integration (CI):** The Quality workflow in
+  `.github/workflows/quality.yml` runs on pushes to `main` and sprint branches,
+  pull requests to `main`, and manual dispatch. It installs locked dependencies,
+  then checks linting (including cyclomatic complexity), formatting, JavaScript
+  types, backend tests with coverage, the frontend build, Playwright/axe browser
+  checks (with Chromium installation), and dependency security
+  audits for all three packages. Failed checks fail the workflow. Deployment is
+  separate; required merge checks depend on GitHub branch-protection settings.
+  The `.git` directory stores repository metadata, not the CI workflow.
+- **Claude quality-review skill:** The project-local
+  [quality-review skill](.claude/skills/quality-review/SKILL.md) is invoked manually
+  with `/quality-review` or `/quality-review full`. It runs project checks and
+  reviews duplication, documentation accuracy, meaningful tests, and guardrail
+  gaps. It reports measured results separately from review judgments and proposes
+  fixes for human approval. It is read-only and is not an automatic CI gate or
+  a replacement for tests and human review.
 
-Shared root tooling includes ESLint, Prettier, TypeScript's JavaScript checker,
-and Husky with lint-staged. ESLint limits cyclomatic complexity to 10, nesting
-depth to 4, parameters to 4, and function length to 60 lines excluding comments
-and blank lines. Accessibility linting remains deferred due to plugin compatibility.
-
-Node's built-in test suite covers health routes, registration validation and
-password hashing, database failure handling, and server startup/shutdown.
-`npm run test:coverage` reports backend source coverage; no minimum threshold
-is enforced yet. Frontend browser tests are not configured. GitHub's Quality
-workflow also runs checks and dependency audits after pushes/pull requests.
+The separate JSX accessibility lint plugin remains deferred due to compatibility;
+Playwright and axe-core are now configured. Human checks still cover keyboard-only
+operation, clearly visible focus, zoom/reflow, and screen-reader behavior.
+Automated scans and keyboard smoke tests support these checks rather than replace
+them. Browser tests currently use Chromium only; other-browser behavior remains
+outside that automated coverage.
 
 The professor's Rust checklist is retained as reference material.
 Its Rust commands do not apply to this JavaScript application.
@@ -453,12 +506,16 @@ Friday before finals week.
 
 ## Running the Project
 
-The current application includes a React welcome page, an Express health
-endpoint, a Vite development proxy, MongoDB connectivity, and a backend
-registration endpoint with password hashing and unique email storage. Login,
-logout, sessions, profile endpoints, and frontend account forms are not yet
-implemented. AI requests, invitations, and private messaging remain planned;
-Trusted Circle remains future work.
+The current application includes React account and invitation screens, an Express
+API, a Vite development proxy, and MongoDB connectivity. Accounts support
+registration, password hashing, sign-in/out, cookie sessions, optional persistent
+sign-in, and display-name editing. Invitations support exact-email recipient
+lookup, sending messages of up to 5,000 JavaScript code units after trimming,
+Received/Sent lists with participant names and pagination, and recipient responses
+with confirmation for final choices. Accept records consent; it does not open a
+private conversation yet. Only one invitation per account pair is currently
+allowed, permanently. AI requests, private messaging, and Trusted Circle remain
+future work. The 30-day re-invitation policy is deferred.
 
 ### Prerequisites and installation
 
@@ -543,8 +600,11 @@ npm run check
 
 The combined check runs frontend/backend linting, repository formatting,
 JavaScript type checks, backend tests, and the frontend build. It stops if a
-step fails. Tests cover health routes, registration, database failures, and
-startup/shutdown using temporary localhost servers and controlled dependencies.
+step fails. Backend tests cover health routes, registration, login/logout,
+sessions, profiles, request protection, rate limits, invitation lookup/creation,
+lists/pagination, participant names, recipient responses, duplicate prevention,
+validator preparation, database failures, and startup/shutdown. They use temporary
+localhost servers and simulated database dependencies.
 They do not create live Atlas accounts or require private database settings.
 
 Run `npm run test:coverage` separately for a backend coverage report. Dependency

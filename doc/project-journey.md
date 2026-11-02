@@ -430,6 +430,28 @@ this workflow and am not treating the review as research proof of effectiveness.
 My next step is to assess the verified fixes and remaining checks, then approve
 the closeout and Sprint 4 scope separately.
 
+## November 2, 2026 — Closing Sprint 3 with explicit carry-over work
+
+After the focused review confirmed both frontend fixes, I approved the small
+keyboard-focus improvement and asked for the human keyboard test to remain on
+our task list. I then approved merging Sprint 3. I explicitly moved the remaining
+live/manual checks into Sprint 4; I did not claim that they had passed.
+
+Before the merge, Codex confirmed both parent commits passed GitHub Quality and
+matched their remote branches. The CLI's earlier authentication error was not
+the only way to read the result: a public read-only request to GitHub's API
+confirmed the successful checks without changing credentials. The merge had no
+conflicts and kept the shared journey and deferred-task document on main.
+The combined checkout passed 176 backend tests, 36 mocked Chromium tests,
+lint, type checks, formatting, a scratch build, and three zero-vulnerability audits.
+
+This closes the agreed Sprint 3 implementation scope while keeping unfinished
+verification visible. A future hosted run still needs its own result, and local
+tests do not establish live Atlas behavior or complete accessibility. The next
+step is to define Sprint 4 from the actual plan and explicitly include its
+carried checks, rather than treating every deferred idea as a new sprint commitment.
+No branch deletion or production deployment is part of this closeout.
+
 ## Weekly entry template
 
 Copy this section for each update and replace the placeholders.

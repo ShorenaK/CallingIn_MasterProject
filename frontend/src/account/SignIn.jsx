@@ -1,14 +1,23 @@
+import { useEffect, useRef } from 'react';
 import { Field, Feedback } from './Fields.jsx';
+import { PasswordField } from './PasswordField.jsx';
 import { useSignIn } from './useSignIn.js';
 
-/** @param {{submit: (path: string, body: unknown) => Promise<void>}} props */
-export function SignIn({ submit }) {
-  const { register, busy, error, notice, handleSubmit, switchMode } =
-    useSignIn(submit);
+/** @param {{submit: (path: string, body: unknown) => Promise<void>, sessionNotice?: string}} props */
+export function SignIn({ submit, sessionNotice = '' }) {
+  const { register, busy, error, notice, handleSubmit, switchMode } = useSignIn(
+    submit,
+    sessionNotice,
+  );
+  const title = useRef(/** @type {HTMLHeadingElement | null} */ (null));
+  // After an expired session the previous view disappears; give focus a home.
+  useEffect(() => {
+    if (sessionNotice) title.current?.focus();
+  }, [sessionNotice]);
   return (
     <section className="account-card" aria-labelledby="account-title">
       <p className="eyebrow">Your CallingIn account</p>
-      <h2 id="account-title">
+      <h2 id="account-title" ref={title} tabIndex={-1}>
         {register ? 'Create your account' : 'Welcome back'}
       </h2>
       <Feedback error={error} notice={notice} />
@@ -53,15 +62,8 @@ function SignInFields({ register }) {
         autoComplete="email"
         maxLength={254}
       />
-      <Field
-        name="password"
-        label="Password"
-        type="password"
-        autoComplete={register ? 'new-password' : 'current-password'}
-        minLength={15}
-        maxLength={128}
-      />
-      <p className="field-hint">Use 15–128 characters. Spaces are allowed.</p>
+      <PasswordField register={register} />
+      <PasswordGuidance register={register} />
       {!register && (
         <label className="checkbox-field">
           <input type="checkbox" name="keepSignedIn" /> Keep me signed in
@@ -74,5 +76,26 @@ function SignInFields({ register }) {
         </p>
       )}
     </>
+  );
+}
+
+/** @param {{register: boolean}} props */
+function PasswordGuidance({ register }) {
+  return (
+    <div id="password-guidance" className="field-hint">
+      {register ? (
+        <>
+          <p>Your password must:</p>
+          <ul>
+            <li>Contain at least 8 characters.</li>
+            <li>Contain no more than 18 characters.</li>
+            <li>Don’t use your email address.</li>
+            <li>Contain no spaces.</li>
+          </ul>
+        </>
+      ) : (
+        <p>Enter the password you used to create your account.</p>
+      )}
+    </div>
   );
 }

@@ -1,5 +1,11 @@
 import { hashPassword } from './password.js';
-import { validName, validEmail, validPassword } from './account-policy.js';
+import {
+  validName,
+  validEmail,
+  validPassword,
+  passwordContainsEmail,
+  REGISTRATION_PASSWORD_MAX_LENGTH,
+} from './account-policy.js';
 import { logAccountFailure } from './safe-logging.js';
 
 export { hashPassword };
@@ -12,8 +18,14 @@ export function validateRegistration(body) {
     return 'Display name must be 1–80 characters.';
   if (!validEmail(body.email))
     return 'Provide a valid email address of at most 254 characters.';
-  if (!validPassword(body.password))
-    return 'Password must be 15–128 characters.';
+  if (
+    !validPassword(body.password) ||
+    body.password.length > REGISTRATION_PASSWORD_MAX_LENGTH
+  )
+    return 'Password must be 8–18 characters.';
+  if (/\s/u.test(body.password)) return 'Password must not contain spaces.';
+  if (passwordContainsEmail(body.password, body.email))
+    return 'Password must not contain your email address.';
   return null;
 }
 

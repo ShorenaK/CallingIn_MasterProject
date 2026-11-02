@@ -7,12 +7,12 @@ Shorena approved creating this document on `main`. Listing a task does not
 authorize its implementation: explain WHAT, WHY, HOW, WHERE, IMPACT, and
 RECOMMENDATION, then obtain approval for each step.
 
-The Sprint 3 implementation currently lives on `sprint-03-invitations`, last
-checked at `2f916d6`; it has not been merged into `main`. Behavior described
-below refers to that implementation, not the older application on `main`.
-Consult the latest dated entries in the
-[Sprint 3 progress notes](sprint-03/sprint-03-progress.md) on that branch for
-implementation evidence. The inherited copy on `main` may be older until merge.
+Sprint 3 is closed for its approved implementation scope with the November 2
+merge of `sprint-03-invitations` at `2b9912c` into `main`. Both branches are
+retained. The deferred work and explicitly carried live/manual checks below
+remain unfinished. Consult the latest dated
+[Sprint 3 progress notes](sprint-03/sprint-03-progress.md) for implementation
+and merge-verification evidence; earlier pending-state notes are historical.
 
 ## Deferred product and design work
 
@@ -156,11 +156,15 @@ this does not complete the human walkthrough or real-session copying check.
 - [x] Prepare the approved review fixes and obtain Claude's focused confirmation
       that findings 4 and 5 are resolved. The later approved focus-only fix passed
       targeted tests; all changes still await Git submission.
-- [ ] Refresh closeout documentation, including the browser accessibility guide,
-      and save an accurate session handoff. Older memory snapshots predate Sprint 3.
-- [ ] Check the hosted GitHub Quality result before an approved merge.
-- [ ] Review completion with Shorena; Git submissions and merge require explicit
-      authorization. Do not label Sprint 3 complete solely because local tests pass.
+- [x] Refresh closeout documentation, including the browser accessibility guide.
+- [ ] Save an accurate session handoff when requested. Older memory snapshots
+      predate Sprint 3 and must not override current code or closeout notes.
+- [x] Verify hosted GitHub Quality before the approved merge: both `2b9912c`
+      (Sprint 3) and `1c2c40e` (main) passed, independently read from GitHub's API.
+- [x] Review completion with Shorena and obtain explicit merge approval.
+      Implementation scope is closed with live/manual checks carried into Sprint 4.
+- [ ] Confirm the new post-merge GitHub Quality run; parent-commit success is not
+      a claim that the new merge commit has already passed its hosted run.
 
 **Latest local checkpoint, November 2:** 36 Chromium browser tests passed after
 the approved review fixes, plus lint, type checks, formatting, and a scratch build.
@@ -192,6 +196,14 @@ Chromium tests passing. Shorena then approved moving focus to the retained draft
 both targeted expiry tests, lint, and type checks passed after that small fix.
 The focused review predates this focus-only change. Reports and changes remain
 local pending submission; no new live verification or Sprint 3 merge is claimed.
+
+**Merge checkpoint superseding earlier pending-state notes:** Shorena approved
+the Sprint 3 merge on November 2. The combined checkout passed 176 backend tests,
+36 Chromium tests, lint, type checks, formatting, scratch build, and all three
+audits (zero vulnerabilities). The old CLI authentication failure was worked
+around using a public read-only HTTPS request to GitHub's API; no credentials
+or authentication settings were changed. Live/manual checks remain carried into
+Sprint 4. This file is preserved on main as the central unfinished-work list.
 
 ## Tracking updates
 

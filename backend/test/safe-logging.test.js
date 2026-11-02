@@ -72,7 +72,7 @@ test('registration storage errors are safely logged without request data', async
   request.body = {
     displayName: 'Test',
     email: 'private@example.com',
-    password: 'Public test registration password',
+    password: 'PublicTest123',
   };
   request.app.locals.db = {
     collection: () => ({
@@ -95,6 +95,6 @@ test('registration storage errors are safely logged without request data', async
   assert.equal(logs[0][1].operation, 'registration');
   assert.doesNotMatch(
     JSON.stringify(logs),
-    /mongodb|passwordHash|private@example|Public test/,
+    /mongodb|passwordHash|private@example|PublicTest/,
   );
 });

@@ -367,7 +367,7 @@ Those conversations deserve more than another chat window.
 
 ![tem](public/images/template2.png)
 
-![tem](public/images/templaye.png)
+![Application UI freemium concept](../../public/images/appUIfreemium.png)
 
 ![tem](public/images/thebesttempalte.png)
 
