@@ -240,3 +240,118 @@ test('Change person returns to the email field with the address kept', async ({
   await expect(email).toBeFocused();
   await expect(email).toHaveValue('Sarah@Example.com');
 });
+
+test('Cancel clears an empty draft and focuses email without sending', async ({
+  page,
+}) => {
+  const requests = await mockSending(page, { lookup: found });
+  const panel = await findSarah(page);
+  await panel.getByRole('button', { name: 'Cancel', exact: true }).click();
+  const email = panel.getByLabel('Their email address', { exact: true });
+  await expect(email).toBeFocused();
+  await expect(email).toHaveValue('');
+  await expect(
+    panel.getByText('Discard this invitation draft?', { exact: false }),
+  ).toHaveCount(0);
+  expect(requests).toHaveLength(1);
+  await expectAccessible(page);
+});
+
+test('Cancel confirms written text, keeps it on request, and discards with keyboard', async ({
+  page,
+}) => {
+  const requests = await mockSending(page, { lookup: found });
+  const panel = await findSarah(page);
+  const message = panel.getByRole('textbox', { name: 'Your message' });
+  await message.fill('Words I may want to keep');
+  const cancel = panel.getByRole('button', { name: 'Cancel', exact: true });
+  await cancel.focus();
+  await page.keyboard.press('Enter');
+  const question = panel.getByText(
+    'Discard this invitation draft? Your message will be cleared.',
+  );
+  await expect(question).toBeFocused();
+  await expect(
+    panel.getByRole('button', { name: 'Send invitation' }),
+  ).toHaveCount(0);
+  await expectAccessible(page);
+  await page.keyboard.press('Tab');
+  await expect(
+    panel.getByRole('button', { name: 'Keep writing' }),
+  ).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(cancel).toBeFocused();
+  await expect(message).toHaveValue('Words I may want to keep');
+  await expect(panel.getByText('Sending to Sarah')).toBeVisible();
+  await page.keyboard.press('Space');
+  await expect(question).toBeFocused();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await expect(
+    panel.getByRole('button', { name: 'Discard draft' }),
+  ).toBeFocused();
+  await page.keyboard.press('Enter');
+  const email = panel.getByLabel('Their email address', { exact: true });
+  await expect(email).toBeFocused();
+  await expect(email).toHaveValue('');
+  expect(requests).toHaveLength(1);
+  await findSarah(page);
+  await expect(message).toHaveValue('');
+  expect(
+    requests.every((request) => request.path === '/api/users/lookup'),
+  ).toBe(true);
+});
+
+test('Cancel also confirms whitespace-only text and clears validation feedback', async ({
+  page,
+}) => {
+  const requests = await mockSending(page, { lookup: found });
+  const panel = await findSarah(page);
+  await panel.getByRole('textbox', { name: 'Your message' }).fill('   ');
+  await panel.getByRole('button', { name: 'Send invitation' }).click();
+  await expect(panel.getByRole('alert')).toContainText(
+    'Write a message before sending.',
+  );
+  await panel.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await panel.getByRole('button', { name: 'Discard draft' }).click();
+  await expect(panel.getByRole('alert')).toHaveCount(0);
+  await expect(
+    panel.getByLabel('Their email address', { exact: true }),
+  ).toBeFocused();
+  expect(requests).toHaveLength(1);
+});
+
+test('Cancel is disabled while the invitation is being sent', async ({
+  page,
+}) => {
+  let release;
+  const waitForRelease = new Promise((resolve) => {
+    release = resolve;
+  });
+  const requests = await mockSending(page, {
+    lookup: found,
+    create: async (body) => {
+      await waitForRelease;
+      return { status: 201, json: { invitation: created(body.message) } };
+    },
+  });
+  const panel = await findSarah(page);
+  await panel
+    .getByRole('textbox', { name: 'Your message' })
+    .fill('Hello Sarah');
+  await panel.getByRole('button', { name: 'Send invitation' }).click();
+  try {
+    await expect(
+      panel.getByRole('button', { name: 'Cancel', exact: true }),
+    ).toBeDisabled();
+    await expect(
+      panel.getByRole('button', { name: 'Change person' }),
+    ).toBeDisabled();
+  } finally {
+    release();
+  }
+  await expect(panel.getByText('Invitation sent to Sarah.')).toBeVisible();
+  expect(
+    requests.filter((request) => request.path === '/api/invitations'),
+  ).toHaveLength(1);
+});

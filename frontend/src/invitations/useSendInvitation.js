@@ -68,9 +68,14 @@ export function useSendInvitation(onSent, onSessionExpired) {
     setProblem(null);
     setReturning(true);
   }
+  function cancel() {
+    changePerson();
+    setMessage('');
+    setEmail('');
+  }
   return {
     ...{ email, setEmail, recipient, message, setMessage },
-    ...{ busy, problem, sentTo, returning, find, send, changePerson },
+    ...{ busy, problem, sentTo, returning, find, send, changePerson, cancel },
   };
 }
 

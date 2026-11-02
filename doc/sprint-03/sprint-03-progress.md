@@ -631,3 +631,43 @@ lines/functions and 98.36% branches**. Lint and frontend/backend type checks pas
 No dependency changes were needed. Prior browser tests and audits are historical;
 they were not rerun for this backend-only change. Commit/push, live verification,
 and independent Claude review remain pending.
+
+### November 2 — Keep existing colors; lookup investigation set aside
+
+Shorena chose to keep the application's existing palette; the alternative HTML
+preview remains a reference only and no palette change is planned. During the
+lookup investigation, Codex inspected the current handler and tests: missing and
+self lookups deliberately share a 404 response, and browser tabs in one profile
+share session cookies. Shared sign-in state was raised as a possible explanation
+for the earlier asymmetric lookup report, not a confirmed cause. Shorena said
+everything was good and requested moving on before the proposed separate-profile
+live check. No lookup code changed and no new live lookup result was established.
+
+### November 2 — Approved Cancel action for unsent drafts
+
+Added Cancel beside Send invitation using existing button styles. An empty draft
+cancels immediately. Any written text, including whitespace-only text, opens an
+inline confirmation: "Discard this invitation draft? Your message will be cleared."
+Keep writing preserves the recipient/message and restores focus to Cancel;
+Discard draft clears the selected recipient, email, message, and draft feedback,
+then returns focus to the email field. No invitation creation request is sent by
+either cancellation path. Cancel and Change person remain disabled during an
+in-flight send. This does not withdraw an already-sent invitation.
+
+Changed `frontend/src/invitations/SendInvitation.jsx`,
+`frontend/src/invitations/useSendInvitation.js`, and the sending browser tests.
+Extracted message fields and action buttons within the existing form file to
+keep components within the repository's function-size rule. Confirmation follows
+the existing inline pattern and uses keyboard focus rather than a modal dialog.
+No backend, database, dependency manifest, or palette changes were made.
+
+Verification: **31 Chromium browser tests passed**, including four new cases for
+empty cancellation, keeping/discarding text using the keyboard, whitespace/error
+cleanup, and disabled cancellation during sending. Existing axe scans and new
+confirmation/lookup scans passed. Lint, frontend/backend type checks, formatting,
+and a scratch frontend build passed. The initial browser run could not launch
+because the earlier clean dependency install removed project-local Chromium;
+restored the existing configured browser download and reran successfully.
+Browser APIs were mocked; no new Atlas, Safari, or VoiceOver verification was
+performed. Backend tests were not rerun for this frontend-only change.
+Commit/push and independent Claude review remain pending.

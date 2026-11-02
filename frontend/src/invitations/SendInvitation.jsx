@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MESSAGE_MAX } from './api.js';
 import { Problem } from './Problem.jsx';
 import { useSendInvitation } from './useSendInvitation.js';
@@ -49,7 +49,7 @@ function SentNotice({ name }) {
 /** @param {{send: SendState}} props */
 function FindPerson({ send }) {
   const input = useRef(/** @type {HTMLInputElement | null} */ (null));
-  // Returning from "Change person" puts the cursor back in the email field.
+  // Returning from Change person or Cancel focuses the email field.
   useEffect(() => {
     if (send.returning) input.current?.focus();
   }, [send.returning]);
@@ -88,11 +88,24 @@ function FindPerson({ send }) {
 
 /** @param {{send: SendState}} props */
 function ComposeMessage({ send }) {
+  const [confirming, setConfirming] = useState(false);
+  const cancelButton = useRef(/** @type {HTMLButtonElement | null} */ (null));
+  const previous = useRef(false);
   const found = useRef(/** @type {HTMLParagraphElement | null} */ (null));
   useEffect(() => {
     found.current?.focus();
   }, []);
-  const length = send.message.trim().length;
+  useEffect(() => {
+    if (previous.current && !confirming) cancelButton.current?.focus();
+    previous.current = confirming;
+  }, [confirming]);
+  if (confirming)
+    return (
+      <DiscardConfirmation
+        onDiscard={send.cancel}
+        onKeep={() => setConfirming(false)}
+      />
+    );
   return (
     <form
       onSubmit={(event) => {
@@ -114,31 +127,85 @@ function ComposeMessage({ send }) {
         Change person
       </button>
       <fieldset disabled={send.busy}>
-        <label className="form-field" htmlFor="invitation-message">
-          <span>Your message</span>
-          <textarea
-            id="invitation-message"
-            rows={6}
-            aria-describedby="message-hint message-count"
-            aria-invalid={length > MESSAGE_MAX || undefined}
-            value={send.message}
-            onChange={(event) => send.setMessage(event.target.value)}
-          />
-        </label>
-        <p id="message-hint" className="field-hint">
-          Write in your own words. Up to {numbers.format(MESSAGE_MAX)}{' '}
-          characters; some emoji count as two.
-        </p>
-        <MessageCounter length={length} />
-        <button type="submit">
-          {send.busy ? 'Sending…' : 'Send invitation'}
-        </button>
+        <MessageFields send={send} />
+        <ComposeActions
+          busy={send.busy}
+          cancelRef={cancelButton}
+          onCancel={() =>
+            send.message.length ? setConfirming(true) : send.cancel()
+          }
+        />
         <p className="field-hint">
           You choose when to connect. They can accept, choose Maybe Later, or
           say they need some space.
         </p>
       </fieldset>
     </form>
+  );
+}
+
+/** @param {{busy: boolean, cancelRef: import('react').RefObject<HTMLButtonElement | null>, onCancel: () => void}} props */
+function ComposeActions({ busy, cancelRef, onCancel }) {
+  return (
+    <div className="invitation-actions">
+      <button type="submit">{busy ? 'Sending…' : 'Send invitation'}</button>
+      <button
+        type="button"
+        className="secondary-button"
+        ref={cancelRef}
+        onClick={onCancel}
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+/** @param {{send: SendState}} props */
+function MessageFields({ send }) {
+  const length = send.message.trim().length;
+  return (
+    <>
+      <label className="form-field" htmlFor="invitation-message">
+        <span>Your message</span>
+        <textarea
+          id="invitation-message"
+          rows={6}
+          aria-describedby="message-hint message-count"
+          aria-invalid={length > MESSAGE_MAX || undefined}
+          value={send.message}
+          onChange={(event) => send.setMessage(event.target.value)}
+        />
+      </label>
+      <p id="message-hint" className="field-hint">
+        Write in your own words. Up to {numbers.format(MESSAGE_MAX)} characters;
+        some emoji count as two.
+      </p>
+      <MessageCounter length={length} />
+    </>
+  );
+}
+
+/** @param {{onDiscard: () => void, onKeep: () => void}} props */
+function DiscardConfirmation({ onDiscard, onKeep }) {
+  const question = useRef(/** @type {HTMLParagraphElement | null} */ (null));
+  useEffect(() => {
+    question.current?.focus();
+  }, []);
+  return (
+    <div className="invitation-confirm">
+      <p ref={question} tabIndex={-1}>
+        Discard this invitation draft? Your message will be cleared.
+      </p>
+      <div className="invitation-actions">
+        <button type="button" className="secondary-button" onClick={onKeep}>
+          Keep writing
+        </button>
+        <button type="button" onClick={onDiscard}>
+          Discard draft
+        </button>
+      </div>
+    </div>
   );
 }
 
