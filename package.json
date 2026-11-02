@@ -29,6 +29,14 @@
     "prettier": "3.9.9",
     "typescript": "^7.0.2"
   },
+  "overrides": {
+    "eslint": {
+      "minimatch": "11.0.1"
+    },
+    "@eslint/config-array": {
+      "minimatch": "11.0.1"
+    }
+  },
   "engines": {
     "node": ">=26.0.0 <27"
   }
