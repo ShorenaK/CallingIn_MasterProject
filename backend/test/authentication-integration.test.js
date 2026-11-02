@@ -173,7 +173,7 @@ test('untrusted writes and non-JSON bodies are rejected before authentication', 
   assert.equal(records.size, 0);
 });
 
-test('wrong credentials create no session and repeated requests reach the limiter', async (t) => {
+test('wrong credentials create no session and invalid requests reach the IP ceiling', async (t) => {
   const { url, records } = await setup(t);
   const wrong = await post(url, '/api/auth/login', {
     email: account.email,
@@ -182,9 +182,8 @@ test('wrong credentials create no session and repeated requests reach the limite
   assert.equal(wrong.status, 401);
   assert.equal(wrong.headers.get('set-cookie'), null);
   await wrong.arrayBuffer();
-  // Invalid inputs still consume quota; do not run ten expensive hashes merely
-  // to verify that the actual login route is behind its rate limiter.
-  for (let attempt = 2; attempt <= 10; attempt += 1) {
+  // Invalid inputs consume only the IP quota; avoid unnecessary expensive hashes.
+  for (let attempt = 2; attempt <= 100; attempt += 1) {
     const result = await post(url, '/api/auth/login', {});
     assert.equal(result.status, 400);
     await result.arrayBuffer();
@@ -360,4 +359,33 @@ test('real startup wires origin protection, Mongo-backed sessions, and account r
   await running.stop();
   assert.equal(closed, 1);
   assert.equal(running.server.listening, false);
+});
+
+test('unknown email failures are limited without blocking a real account on the same IP', async (t) => {
+  const { url, records } = await setup(t);
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const result = await post(url, '/api/auth/login', {
+      email: attempt % 2 ? ' UNKNOWN@EXAMPLE.COM ' : 'unknown@example.com',
+      password,
+    });
+    assert.equal(result.status, 401);
+    assert.equal(result.headers.get('set-cookie'), null);
+    await result.arrayBuffer();
+  }
+  const blocked = await post(url, '/api/auth/login', {
+    email: 'unknown@example.com',
+    password,
+  });
+  assert.equal(blocked.status, 429);
+  assert.ok(Number(blocked.headers.get('retry-after')) > 0);
+  await blocked.arrayBuffer();
+  assert.equal(records.size, 0);
+  const allowed = await post(url, '/api/auth/login', {
+    email: account.email,
+    password,
+  });
+  assert.equal(allowed.status, 200);
+  assert.ok(allowed.headers.get('set-cookie'));
+  await allowed.arrayBuffer();
+  assert.equal(records.size, 1);
 });

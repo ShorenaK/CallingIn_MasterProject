@@ -50,8 +50,8 @@ export function createApp(db, authentication) {
 
   if (authentication) {
     // Limit login attempts before session/database work and password hashing.
-    // One limiter is shared by all login requests to this application instance.
-    app.use('/api/auth/login', createLoginRateLimiter());
+    // Separate shared-IP and failed-per-email allowances for POST login only.
+    app.post('/api/auth/login', ...createLoginRateLimiter());
     app.use('/api/auth', authentication.sessionMiddleware);
     app.post('/api/auth/login', login);
     app.post('/api/auth/logout', logout);

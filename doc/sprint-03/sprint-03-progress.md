@@ -588,3 +588,46 @@ All 27 Chromium browser tests passed, including the existing axe scans, using
 mocked APIs. A frontend build passed using scratch output under /private/tmp.
 These checks do not establish live Atlas behavior or a hosted GitHub Actions pass.
 Commit and push remain separately authorized actions.
+
+### November 2 — Approved login-limit fix completed locally
+
+Supersedes the October 31 proposed login-limit follow-up. Shorena approved
+10 failed credential attempts per normalized email per 15 minutes, plus
+100 total login attempts per client IP per 15 minutes. Two limiter instances now
+protect POST login before session storage, account lookup, and password hashing.
+Email normalization matches login (trim and lowercase). Unknown email addresses
+use the same failure policy; the limiter does not query whether an account exists.
+Different email addresses have independent failure allowances, even on one IP;
+the same email shares its failure allowance across different IPs.
+
+Only completed 401 responses remain charged to the email allowance. Successful
+logins, invalid input (400), and service failures (503) refund their email slots;
+all attempts reaching the limiters still count toward the IP ceiling. Successful
+logins do not clear earlier failures. After ten failures, even correct credentials
+must wait until that email's window expires. Distinct error messages identify the
+email or connection limit; HTTP 429 responses retain Retry-After and standardized
+quota headers. Blocked retries do not extend the window.
+
+In-flight requests reserve email slots before password work, so simultaneous
+requests can temporarily exhaust the allowance before their results are known.
+Aborted requests may retain slots until expiry. This conservative behavior avoids
+unbounded concurrent password work for one email. Counters are process-local,
+reset on backend restart, and need a shared store for multiple backend instances.
+Proxy trust remains disabled and the default IP key retains IPv6 subnet grouping.
+No database, password, frontend, invitation, or registration policy was changed.
+Restart a running backend to activate this change; no live account test was run.
+
+Changed `backend/src/login-rate-limit.js`, POST limiter wiring in `app.js`, and
+the limiter/authentication integration tests. Tests cover email normalization,
+isolation on a shared IP, shared email limits across distinct test IPs, successful
+login refunds without erasing failures, invalid input/service errors, the 100-hit
+IP ceiling, retry timing, 15-minute expiry, process isolation, and simultaneous
+slot reservations. Real HTTP authentication integration also checks unknown-email
+blocking and a real account signing in on the same IP afterward, using simulated
+database/session storage rather than Atlas.
+
+Verification: **176 backend tests passed**, zero failures/skips, with **100%
+lines/functions and 98.36% branches**. Lint and frontend/backend type checks passed.
+No dependency changes were needed. Prior browser tests and audits are historical;
+they were not rerun for this backend-only change. Commit/push, live verification,
+and independent Claude review remain pending.
