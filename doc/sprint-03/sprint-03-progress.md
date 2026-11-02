@@ -563,3 +563,28 @@ sender-facing deferred status. This supersedes the earlier proposed
 “You chose Maybe Later” unchanged. The invitation remains open with no promise
 or obligation that the recipient will respond. This records approved wording;
 UI implementation and affected browser assertions remain pending.
+
+### November 2 — Approved ESLint dependency security fix
+
+GitHub's shared dependency audit failed on GHSA-g3hv-75wg-m249 while the
+169 backend tests passed. The workflow ran `npm audit`; the suggested
+`npm audit fix --force` command was not executed by the workflow or by Codex.
+The advisory marks minimatch versions below 11.0.1 as affected:
+[GitHub security advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249).
+
+After read-only research and explicit implementation approval, added targeted
+root npm overrides for minimatch 11.0.1 under ESLint and @eslint/config-array.
+Updated the root lockfile; installation scripts were disabled during the update.
+ESLint remains 10.13.0 and @eslint/config-array remains 0.23.5. The latest published
+versions checked during research still requested minimatch 10, so a normal ESLint
+update alone would not resolve the advisory. This override crosses a dependency
+major version and should be revisited when upstream supports a patched version.
+No application source, database rules, or CI security gates were changed.
+
+Verification run locally on Node 26.0.0: root, frontend, and backend npm audits
+each reported zero vulnerabilities; lint, formatting, and frontend/backend type
+checks passed. All 169 backend tests passed (100% lines/functions, 98.35% branches).
+All 27 Chromium browser tests passed, including the existing axe scans, using
+mocked APIs. A frontend build passed using scratch output under /private/tmp.
+These checks do not establish live Atlas behavior or a hosted GitHub Actions pass.
+Commit and push remain separately authorized actions.
