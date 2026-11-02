@@ -671,3 +671,18 @@ restored the existing configured browser download and reran successfully.
 Browser APIs were mocked; no new Atlas, Safari, or VoiceOver verification was
 performed. Backend tests were not rerun for this frontend-only change.
 Commit/push and independent Claude review remain pending.
+
+### November 2 — Approved sender-facing Maybe Later wording
+
+Implemented the previously selected Sent-list deferred label:
+"Your invitation is still open; please wait." This replaces "They chose Maybe
+Later" in `frontend/src/invitations/format.js` and the affected browser assertion.
+The recipient-facing "You chose Maybe Later" label, status symbol, existing
+colors, backend rules, and response choices remain unchanged. Decline wording
+and the proposed 30-day re-invitation behavior were not changed in this step.
+
+Verification: both targeted Chromium tests passed (status cards and the recipient's
+Maybe Later journey), using mocked APIs and their existing accessibility scans.
+Repository lint, frontend/backend type checks, formatting, and whitespace checks
+passed. No full browser/backend suite or live Atlas test was rerun for this copy
+change. Commit/push and independent Claude review remain pending.

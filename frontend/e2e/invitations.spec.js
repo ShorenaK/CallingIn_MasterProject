@@ -134,7 +134,7 @@ test('invitation cards show names, text status labels, and messages', async ({
     'Closed — they need some space',
   );
   await expect(sent.getByRole('article', { name: 'To Emma' })).toContainText(
-    'They chose Maybe Later',
+    'Your invitation is still open; please wait.',
   );
   await expectAccessible(page);
 });

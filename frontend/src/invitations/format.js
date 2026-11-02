@@ -12,7 +12,10 @@ const STATUS_LABELS = {
   },
   outgoing: {
     pending: { symbol: '●', text: 'Waiting for a reply' },
-    deferred: { symbol: '◐', text: 'They chose Maybe Later' },
+    deferred: {
+      symbol: '◐',
+      text: 'Your invitation is still open; please wait.',
+    },
     accepted: { symbol: '✓', text: 'Accepted' },
     declined: { symbol: '○', text: 'Closed — they need some space' },
   },
