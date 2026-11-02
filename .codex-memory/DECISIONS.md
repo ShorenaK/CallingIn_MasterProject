@@ -45,3 +45,52 @@ history. Revalidate version-compatibility findings when they are revisited.
   verification limits rather than claiming independent live Atlas certification.
 - Current save/meeting/setup approval does not grant new commit/push permission,
   ongoing Git delegation, multi-agent spawning, AWS access, or business automation.
+
+## November 2, 2026 — Sprint 3 closeout and superseding decisions
+
+- Sprint 3 merged and pushed to main as **0921e62** with explicit approval.
+  Both branches retained. Post-merge GitHub Quality success was independently
+  confirmed during session 003 save. Planned dates are not actual completion dates.
+- D11 superseded: Playwright + axe are installed, run in Chromium with mocked
+  APIs, and included in CI. JSX accessibility lint remains deferred. Automated
+  scans do not replace human keyboard/screen-reader/browser checks.
+- Password decision supersedes October 29 deferral for registration policy:
+  8–18 characters, no whitespace or full email substring, case-insensitively.
+  No composition requirement. Existing sign-in remains compatible with 8–128
+  characters including whitespace. Google sign-in remains a future feature.
+- Login uses approved 10 failed credentials/email/15 min across IPs, plus
+  100 total attempts/IP/15 min. Successes refund email slots without erasing
+  previous failures. In-flight/aborted reservations and temporary email lockout
+  are accepted trade-offs, documented for later deployment design. Stores remain
+  process-local; no blind proxy trust or new shared-store implementation.
+- Invitations use verified session identity, exact-email lookup, recipient-only
+  choices, final response protection, and a 5,000 UTF-16-unit trimmed message
+  limit. Accept records consent; conversations are still future work.
+- Current permanent unique unordered pair rule remains implemented. Shorena
+  approved a future 30-day-after-decline direction but explicitly deferred its
+  implementation; preserve history and design server timing/migration separately.
+- Cancel applies to an unsent draft only. Confirm before discarding written text,
+  preserve Keep writing, return focus to email after discard, disable while sending.
+  Retained drafts on lookup expiry stay copyable and focused before explicit sign-in.
+- Approved sender deferred wording remains "Your invitation is still open; please
+  wait." Recipient wording unchanged. Broader copy/hyphen cleanup, decline wording,
+  envelope/emoji, and palette changes are recorded for later approval. The latest
+  palette request reopens future review without approving a new palette now.
+- Shorena explicitly carried remaining live/manual verification into Sprint 4:
+  login limits, draft cancellation/recovery, message boundaries, human keyboard-only
+  walkthrough, VoiceOver, Safari, zoom, phone layout, and incomplete Atlas evidence.
+  They remain unverified; closing implementation scope is not claiming they passed.
+- A targeted cross-major minimatch 11.0.1 override under ESLint and its config
+  helper is accepted after lint/tests/audits. Revisit when upstream supports a
+  compatible patched range. Do not use force remediation or suppress audit gates.
+- Shared `doc/deferred-tasks.md` and project journey live on main. Sprint 3
+  records retain dated history; later closeout entries supersede old pending notes.
+- Sprint 4 planning follows the actual plan: Conversations, participant-only
+  messaging, basic Social Battery, invitation-to-conversation tests. AI Coach is
+  planned Sprint 5. No Sprint 4 implementation or branch switch is approved by
+  this save. Deferred ideas do not all automatically enter Sprint 4 scope.
+- D12/D13/D14/D19 retained: explain six headings, wait for approval, one editor,
+  independent review, bounded Git delegations, curated memory on main. Simple
+  practical explanations and life analogies are the user's preference. No full
+  transcript or measured research benefits are claimed. This save is not submission
+  approval; local memory needs a separately approved commit/push for durable sharing.
