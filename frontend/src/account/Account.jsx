@@ -24,7 +24,7 @@ export function Account() {
   return account.user ? (
     <>
       <Profile user={account.user} submit={account.submit} />
-      <Invitations onSessionExpired={account.expire} />
+      <Invitations userId={account.user.id} onSessionExpired={account.expire} />
     </>
   ) : (
     <SignIn submit={account.submit} sessionNotice={account.sessionNotice} />

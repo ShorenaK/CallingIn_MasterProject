@@ -28,15 +28,34 @@ passed. Pre-commit checks passed for both commits, and both were pushed.
 Database behavior was simulated; this does not certify live Atlas behavior.
 GitHub Quality for these Sprint 4 commits has not been checked in this session.
 
-## Remaining implementation
+## Conversation screens — approved and built November 2
 
-- [ ] Propose and obtain approval for conversation screens: open a conversation,
-      display message history, load older messages, compose/send replies, and
-      handle loading, errors, and expired sessions with accessible focus.
+- [x] Add Open conversation to accepted invitations for either participant.
+- [x] Display message history, load older messages, and compose/send replies.
+- [x] Add manual Refresh messages to retrieve new replies.
+- [x] Preserve the invitation form while viewing a conversation, retain unsent
+      replies after errors or session expiry, and confirm before discarding a
+      written reply when returning to invitations.
+- [x] Add keyboard focus handling, message counts, and responsive layouts using
+      the existing interface styles. No new package was installed.
 
-Conversation screens are not implemented yet. Browser messaging tests and the
-full manual UI journey depend on this work. The request to postpone checks does
-not itself approve frontend implementation.
+Current UI verification: lint, frontend/backend type checks, changed-file
+formatting, whitespace checks, and a scratch frontend build passed. The existing
+36 Chromium regression tests passed; two assertions were updated for the new
+Open conversation button replacing the old future-feature notice.
+
+A temporary mocked Chromium smoke script exercised opening, reading, sending,
+older-history focus, draft confirmation, failed-send recovery, session-expiry
+retention, an axe scan, and phone-width overflow. Desktop and phone-width
+screenshots were inspected. The script and screenshots are scratch artifacts,
+not committed regression coverage or a substitute for human/live testing.
+The initial smoke harness needed its browser context setup corrected for axe;
+the corrected smoke run passed. No Atlas, human keyboard-only, Safari,
+VoiceOver, or actual phone check was performed during this UI work.
+
+These UI changes are local and uncommitted at this checkpoint. The dedicated
+messaging browser regression tests, live/manual checks, Claude review, and
+GitHub Quality verification below remain pending for the next session.
 
 **Social Battery remains undecided.** Do not implement it without a separate
 scope decision and approval. Other deferred product/design ideas are not
@@ -45,7 +64,7 @@ implicitly included in this sprint.
 ## Tomorrow — 2. Browser tests
 
 - [ ] Add browser tests for opening an accepted conversation, sending replies,
-      reading history, and loading older messages once the screens exist.
+      reading history, and loading older messages using the new screens.
 - [ ] Cover message boundaries, empty text, send failures, sending limits,
       expired sessions, and preservation of unsent text as agreed for the UI.
 - [ ] Cover keyboard focus and interaction, plus automated accessibility scans.

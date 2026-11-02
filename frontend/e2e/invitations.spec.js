@@ -127,9 +127,9 @@ test('invitation cards show names, text status labels, and messages', async ({
     name: 'Account unavailable',
   });
   await expect(unavailable).toContainText('You accepted');
-  await expect(unavailable).toContainText(
-    'Private conversations are coming in a future update.',
-  );
+  await expect(
+    unavailable.getByRole('button', { name: 'Open conversation' }),
+  ).toBeVisible();
   await expect(sent.getByRole('article', { name: 'To Michael' })).toContainText(
     'Closed — they need some space',
   );
@@ -412,10 +412,10 @@ test('Accept asks once, Go back saves nothing, and confirming is final', async (
   const status = card.locator('.status-label');
   await expect(status).toHaveText(/You accepted/);
   await expect(status).toBeFocused();
-  await expect(card.getByRole('button')).toHaveCount(0);
-  await expect(card).toContainText(
-    'Private conversations are coming in a future update.',
-  );
+  await expect(card.getByRole('button')).toHaveCount(1);
+  await expect(
+    card.getByRole('button', { name: 'Open conversation' }),
+  ).toBeVisible();
   expect(requests).toEqual([{ id: sarahId, body: { status: 'accepted' } }]);
 });
 

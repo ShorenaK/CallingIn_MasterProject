@@ -17,14 +17,19 @@ const LIST_COPY = {
   },
 };
 
-/** @param {{direction: import('./api.js').Direction, onSessionExpired: () => void}} props */
-export function InvitationList({ direction, onSessionExpired }) {
+/** @param {{direction: import('./api.js').Direction, onSessionExpired: () => void, onOpenConversation: (invitation: import('./api.js').Invitation) => void}} props */
+export function InvitationList({
+  direction,
+  onSessionExpired,
+  onOpenConversation,
+}) {
   const list = useInvitationList(direction, onSessionExpired);
   const copy = LIST_COPY[direction];
   const actions = {
     update: list.update,
     refresh: list.retry,
     onSessionExpired,
+    onOpenConversation,
   };
   return (
     <section
