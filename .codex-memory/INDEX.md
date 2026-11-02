@@ -13,16 +13,36 @@ against source/Git. Canonical copies are maintained on main.
 
 ## Sessions
 
-| ID  | Saved date | Topics                                                                                                                  | Branch context                             | Record                                                                                 |
-| --- | ---------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
-| 001 | 2026-10-17 | Sprint 01 handoff; Sprint 02 database, registration, quality checks, Claude audit/skill, research journey, memory setup | main and unmerged sprint-02-authentication | [001 — foundation and quality](sessions/001-sprint-02-foundation-and-quality.md)       |
-| 002 | 2026-10-29 | Sprint 2 implementation/review fixes, live-check reports, merge, Sprint 3 setup, Meeting 4 questions                    | main at 38a9a3c; local Sprint 3 branch     | [002 — closeout and handoff](sessions/002-sprint-02-closeout-and-sprint-03-handoff.md) |
+| ID  | Saved date | Topics                                                                                                                     | Branch context                                | Record                                                                                                   |
+| --- | ---------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 001 | 2026-10-17 | Sprint 01 handoff; Sprint 02 database, registration, quality checks, Claude audit/skill, research journey, memory setup    | main and unmerged sprint-02-authentication    | [001 — foundation and quality](sessions/001-sprint-02-foundation-and-quality.md)                         |
+| 002 | 2026-10-29 | Sprint 2 implementation/review fixes, live-check reports, merge, Sprint 3 setup, Meeting 4 questions                       | main at 38a9a3c; local Sprint 3 branch        | [002 — closeout and handoff](sessions/002-sprint-02-closeout-and-sprint-03-handoff.md)                   |
+| 003 | 2026-11-02 | Sprint 3 merge, quality fixes/reviews, dependency security, draft/keyboard/pagination, deferred tasks and Sprint 4 handoff | main at 0921e62; retained Sprint 3 at 2b9912c | [003 — Sprint 3 closeout and Sprint 4 handoff](sessions/003-sprint-03-closeout-and-sprint-04-handoff.md) |
 
-Next session ID: **003**, provided it remains unused when saving.
+Next session ID: **004**, provided it remains unused when saving.
 
 ## Fast continuation
 
-Say **CX Restore Session: 002 — Sprint 3 invitations**. Read AGENTS.md, current
-state, decisions, and session 002; inspect current Git/source before proposing
-implementation. Current shared handoff records are local until separately approved
-for commit/push. No full transcript was archived.
+Latest handoff: **CX Restore Session: 003 — Sprint 3 complete; Sprint 4 planning**.
+
+```text
+CX Restore Session: 003 — Sprint 3 closeout and Sprint 4 handoff.
+Read AGENTS.md. Use git worktree list to locate the main checkout and read its
+actual .codex-memory/INDEX.md, PROJECT_STATE.md, DECISIONS.md, and session 003.
+The memory save may still be uncommitted, so do not rely only on git show main.
+Read doc/deferred-tasks.md, doc/sprint-plan.md, README.md, and the latest Sprint 3
+closeout notes from main. Inspect current Git status, worktrees, commits, and source.
+Sprint 3 was merged as 0921e62 and its GitHub Quality passed at the save checkpoint.
+Explain what is complete, what carries into Sprint 4, and the first proposed
+backend step using WHAT, WHY, HOW, WHERE, IMPACT, and RECOMMENDATION.
+Use short practical explanations and everyday analogies. Wait for my approval
+before edits, installations, branch/worktree changes, Git submissions, or merging.
+```
+
+Main checkout at the original save: `/private/tmp/CallingIn-main-followups-20261102`;
+locate again before use. After saving, Shorena requested Sprint 4 setup. Desktop
+now uses `sprint-04-conversations` at merged main `0921e62` and contains a local
+copy of this handoff. Read its current PROJECT_STATE first; session 003 preserves
+its earlier save-checkpoint history. Main's originals remain intact. The memory
+files remain uncommitted, and the new branch has not been pushed.
+No full transcript was archived.
