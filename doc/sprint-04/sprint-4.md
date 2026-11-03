@@ -5,10 +5,11 @@
 **Branch:** `sprint-04-conversations`
 
 **Current work:** Claude reviewed `fd0b855`, then the complete Sprint 4 source at
-`589032c`. Approved follow-up fixes and 13 new browser regressions are complete
-locally; the full combined suite passed 92 Chromium tests. Live/manual limits and
-Sprint closeout remain pending. See the
-[latest review](quality-review-2026-11-03-589032c.md).
+`589032c`, then confirmed the approved fixes at `a4bc652`, independently passing
+267 backend and 92 mocked Chromium tests. Three minor polish suggestions from that
+follow-up are implemented locally. Live/manual limits and Sprint closeout remain pending. See the
+[full review](quality-review-2026-11-03-589032c.md) and
+[focused follow-up](quality-review-2026-11-03-a4bc652.md).
 
 See [Sprint 4 progress notes](sprint-04-progress.md) for implementation history,
 commits, verification evidence, and the planned testing/editing/review sequence.

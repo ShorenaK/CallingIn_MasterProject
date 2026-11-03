@@ -62,7 +62,7 @@ The build writes to `frontend/dist/`. For review, use a scratch directory to
 preserve the tracked build output, for example from the repository root:
 
 ```bash
-npm --prefix frontend run build -- --outDir /private/tmp/callingin-review-build
+npm --prefix frontend run build -- --outDir /private/tmp/callingin-review-build --emptyOutDir
 ```
 
 ## Code quality

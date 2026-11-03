@@ -84,10 +84,11 @@ button {
   cursor: pointer;
   font-weight: 650;
 }
-button:hover:enabled {
+button:hover:enabled:not([aria-disabled='true']) {
   background: #064c59;
 }
-button:disabled {
+button:disabled,
+button[aria-disabled='true'] {
   opacity: 0.65;
   cursor: wait;
 }
@@ -169,7 +170,7 @@ fieldset {
   padding: 12px 0;
   margin-top: 12px;
 }
-.text-button:hover:enabled {
+.text-button:hover:enabled:not([aria-disabled='true']) {
   background: transparent;
   color: #064c59;
 }
@@ -275,7 +276,7 @@ fieldset {
   color: #076573;
   border: 1px solid #076573;
 }
-.secondary-button:hover:enabled {
+.secondary-button:hover:enabled:not([aria-disabled='true']) {
   background: #e6f3ef;
   color: #064c59;
 }
@@ -310,7 +311,7 @@ fieldset {
   background: #007d89;
   color: white;
 }
-.response-accepted:hover:enabled {
+.response-accepted:hover:enabled:not([aria-disabled='true']) {
   background: #006874;
 }
 .response-deferred {
@@ -318,7 +319,7 @@ fieldset {
   color: #153b50;
   border: 1px solid #ffe8b8;
 }
-.response-deferred:hover:enabled {
+.response-deferred:hover:enabled:not([aria-disabled='true']) {
   background: #f8d99b;
   color: #153b50;
 }
@@ -327,7 +328,7 @@ fieldset {
   color: #153b50;
   border: 1px solid #b9dcda;
 }
-.response-declined:hover:enabled {
+.response-declined:hover:enabled:not([aria-disabled='true']) {
   background: #ffe3dc;
   color: #153b50;
 }

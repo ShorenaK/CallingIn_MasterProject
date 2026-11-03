@@ -22,6 +22,9 @@ test('refresh keeps keyboard focus while pending, ignores repeat activation and 
   const state = await mockConversation(page, { messages: [message(1)] });
   const panel = await openRoom(page);
   await expect(panel.getByRole('list')).toContainText('Message 1');
+  await expect(
+    panel.getByRole('status').filter({ hasText: 'Messages loaded.' }),
+  ).toHaveText('Messages loaded.');
   const pending = gate();
   const started = gate();
   state.historyHandler = async (route) => {
@@ -33,11 +36,19 @@ test('refresh keeps keyboard focus while pending, ignores repeat activation and 
   };
   try {
     const refresh = panel.getByRole('button', { name: 'Refresh messages' });
+    await page.mouse.move(0, 0);
+    const background = await refresh.evaluate(
+      (button) => globalThis.getComputedStyle(button).backgroundColor,
+    );
     await refresh.focus();
     await page.keyboard.press('Enter');
     await started.promise;
     await expect(refresh).toBeFocused();
     await expect(refresh).toHaveAttribute('aria-disabled', 'true');
+    await refresh.hover();
+    await expect(refresh).toHaveCSS('cursor', 'wait');
+    await expect(refresh).toHaveCSS('opacity', '0.65');
+    await expect(refresh).toHaveCSS('background-color', background);
     await page.keyboard.press('Enter');
     pending.release();
     await expect(panel.getByRole('list')).toContainText('Message 2');

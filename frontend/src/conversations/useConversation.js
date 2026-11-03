@@ -68,7 +68,11 @@ export function useMessageHistory(roomId, onExpired) {
   const morePending = useRef(false);
   const loading = useRef(true);
   useEffect(
-    () => startHistory({ roomId, onExpired, setState, generation, loading }),
+    () =>
+      startHistory(
+        { roomId, onExpired, setState, generation, loading },
+        attempt > 0,
+      ),
     [roomId, onExpired, attempt],
   );
   async function loadOlder() {
@@ -85,14 +89,7 @@ export function useMessageHistory(roomId, onExpired) {
     try {
       const page = await listMessages(roomId, state.nextCursor);
       if (version !== generation.current) return;
-      setState((current) => ({
-        ...current,
-        messages: mergeMessages(current.messages, page.messages),
-        nextCursor: page.nextCursor,
-        busy: false,
-        notice: `Loaded ${page.messages.length} older messages.`,
-        focusId: page.messages.at(-1)?.id ?? null,
-      }));
+      setState((current) => appendOlderPage(current, page));
     } catch (failure) {
       if (version !== generation.current) return;
       if (sessionExpired(failure)) onExpired();
@@ -135,8 +132,13 @@ function mergeMessages(current, incoming) {
   );
 }
 
-/** @param {{roomId?: string, onExpired: () => void, setState: import('react').Dispatch<import('react').SetStateAction<HistoryState>>, generation: import('react').RefObject<number>, loading: import('react').RefObject<boolean>}} options */
-function startHistory({ roomId, onExpired, setState, generation, loading }) {
+/** @param {{roomId?: string, onExpired: () => void, setState: import('react').Dispatch<import('react').SetStateAction<HistoryState>>, generation: import('react').RefObject<number>, loading: import('react').RefObject<boolean>}} options
+ * @param {boolean} refreshed
+ */
+function startHistory(
+  { roomId, onExpired, setState, generation, loading },
+  refreshed,
+) {
   const version = ++generation.current;
   loading.current = true;
   setState(initial);
@@ -148,7 +150,7 @@ function startHistory({ roomId, onExpired, setState, generation, loading }) {
             ...initial,
             ...page,
             status: 'ready',
-            notice: 'Messages updated.',
+            notice: refreshed ? 'Messages updated.' : 'Messages loaded.',
           });
       })
       .catch((failure) => {
@@ -172,5 +174,17 @@ function startHistory({ roomId, onExpired, setState, generation, loading }) {
       });
   return () => {
     generation.current += 1;
+  };
+}
+
+/** @param {HistoryState} current @param {import('./api.js').MessagePage} page @returns {HistoryState} */
+function appendOlderPage(current, page) {
+  return {
+    ...current,
+    messages: mergeMessages(current.messages, page.messages),
+    nextCursor: page.nextCursor,
+    busy: false,
+    notice: `Loaded ${page.messages.length} older messages.`,
+    focusId: page.messages.at(-1)?.id ?? null,
   };
 }

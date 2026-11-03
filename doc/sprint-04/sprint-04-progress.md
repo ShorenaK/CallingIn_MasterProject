@@ -451,3 +451,33 @@ keyboard/VoiceOver/Safari/zoom/actual-phone gaps remain open. Main README cleanu
 is still planned with the approved merge workflow; optional database-query reuse
 and shared storage-preparation refactors remain deferred. No Git submission or
 merge is included in this implementation approval.
+
+## November 3 — Minor polish after Claude's `a4bc652` follow-up
+
+Claude's [focused follow-up](quality-review-2026-11-03-a4bc652.md) confirmed the
+previous fixes, independently passed 267 backend and 92 mocked Chromium tests,
+and found no blockers. Its three remaining low/very-low suggestions were approved
+by Shorena and implemented locally:
+
+- Busy `aria-disabled` buttons now share the faded/wait styling of disabled
+  buttons, and hover rules exclude them. They remain keyboard-focusable;
+  request guards continue to ignore repeat activation.
+- The initial successful history request announces **Messages loaded.** Subsequent
+  refresh/retry requests announce **Messages updated.**
+- The frontend README scratch-build command includes `--emptyOutDir`.
+
+The existing focus regression now checks initial/refresh wording, busy cursor and
+opacity, and unchanged background on hover. A small older-page state helper keeps
+the history hook within the existing function-length limit without changing page
+ordering or request guards. No lint rule was weakened. The final focused run
+passed **28 Chromium review/resilience tests**, including the extended styling
+and announcement assertions; APIs were mocked and axe scans included.
+
+Lint, frontend/backend type checks, whole-repository formatting, whitespace and
+scratch build passed. Build output used
+`/private/tmp/callingin-minor-review-build.K4JkDx`; tracked dist was unchanged.
+The earlier combined 92-browser result and Claude's 267-backend rerun remain
+separate from this minor follow-up. No new live, network, human-accessibility,
+backend-suite, or hosted CI check was performed here. These three edits have not
+received another independent Claude review. No commit/push/merge was performed
+as part of the implementation approval.
