@@ -1,3 +1,7 @@
+import {
+  invisibleMessages,
+  contentMessages,
+} from '../test-support/message-content.js';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { ObjectId } from 'mongodb';
@@ -218,5 +222,26 @@ for (const [message, expected] of [
       assert.equal(body.invitation.message, message.trim());
       assert.equal([...f.records.values()][0].message, message.trim());
     } else assert.equal(f.records.size, 0);
+  });
+}
+
+for (const [index, message] of invisibleMessages.entries()) {
+  test(`invisible-only invitation ${index} is rejected before storage`, async (t) => {
+    const f = await setup(t);
+    const result = await f.post({ ...input, message });
+    assert.equal(result.status, 400);
+    assert.match((await result.json()).error, /visible content/);
+    assert.equal(f.records.size, 0);
+    assert.ok(!f.events.includes('insert'));
+  });
+}
+
+for (const [index, message] of contentMessages.entries()) {
+  test(`multilingual/emoji invitation ${index} preserves content`, async (t) => {
+    const f = await setup(t);
+    const result = await f.post({ ...input, message });
+    assert.equal(result.status, 201);
+    assert.equal((await result.json()).invitation.message, message.trim());
+    assert.equal([...f.records.values()][0].message, message.trim());
   });
 }

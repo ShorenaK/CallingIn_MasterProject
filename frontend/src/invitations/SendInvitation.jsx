@@ -202,8 +202,8 @@ function MessageFields({ send }) {
         />
       </label>
       <p id="message-hint" className="field-hint">
-        Write in your own words. Up to {numbers.format(MESSAGE_MAX)} characters;
-        some emoji count as two.
+        Write in your own words and include visible content. Up to{' '}
+        {numbers.format(MESSAGE_MAX)} characters; some emoji count as two.
       </p>
       <MessageCounter length={length} />
     </>

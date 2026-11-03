@@ -1,3 +1,4 @@
+import { hasMessageContent } from '../message-content.js';
 import { useEffect, useRef, useState } from 'react';
 import { errorMessage } from '../account/api.js';
 import { MESSAGE_MAX, sendMessage } from './api.js';
@@ -56,5 +57,5 @@ export function useReply(options) {
 /** @param {string} text */
 function validReply(text) {
   const length = text.trim().length;
-  return length > 0 && length <= MESSAGE_MAX;
+  return hasMessageContent(text) && length <= MESSAGE_MAX;
 }

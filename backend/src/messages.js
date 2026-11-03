@@ -1,3 +1,4 @@
+import { hasMessageContent } from './message-content.js';
 import { ObjectId } from 'mongodb';
 import { parseMessageQuery, messageCursor } from './message-pagination.js';
 import { logAccountFailure } from './safe-logging.js';
@@ -9,7 +10,7 @@ function validMessage(body) {
   return (
     Object.keys(body).length === 1 &&
     typeof input.text === 'string' &&
-    input.text.trim().length >= 1 &&
+    hasMessageContent(input.text) &&
     input.text.trim().length <= 5000
   );
 }
@@ -30,9 +31,9 @@ function publicMessage(message) {
  */
 export async function sendMessage(request, response) {
   if (!validMessage(request.body)) {
-    response
-      .status(400)
-      .json({ error: 'Provide only text of 1–5000 characters.' });
+    response.status(400).json({
+      error: 'Provide only text of 1–5000 characters with visible content.',
+    });
     return;
   }
   try {

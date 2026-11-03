@@ -310,8 +310,8 @@ function ReplyFields({ reply, expired, ready }) {
         />
       </label>
       <p id="reply-hint" className="field-hint">
-        Up to 5,000 characters; some emoji count as two. Enter adds a new line.
-        Choose Send reply to send.
+        Include visible content. Up to 5,000 characters; some emoji count as
+        two. Enter adds a new line. Choose Send reply to send.
       </p>
       <p
         id="reply-count"

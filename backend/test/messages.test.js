@@ -1,3 +1,7 @@
+import {
+  invisibleMessages,
+  contentMessages,
+} from '../test-support/message-content.js';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { ObjectId } from 'mongodb';
@@ -301,4 +305,24 @@ test('history uses timestamps before IDs and returns older timestamps after the 
     ['1', '2'],
   );
   assert.equal(next.body.nextCursor, null);
+});
+
+test('invisible-only replies are rejected before storage, including direct API requests', async (t) => {
+  const f = await setup(t);
+  for (const text of invisibleMessages) {
+    const result = await f.request('POST', { body: { text } });
+    assert.equal(result.status, 400, JSON.stringify(text));
+    assert.match(result.body.error, /visible content/);
+  }
+  assert.equal(f.state.messages.length, 0);
+});
+
+test('multilingual replies and emoji preserve their joiners, selectors and content', async (t) => {
+  const f = await setup(t);
+  for (const text of contentMessages) {
+    const result = await f.request('POST', { body: { text } });
+    assert.equal(result.status, 201, JSON.stringify(text));
+    assert.equal(result.body.message.text, text.trim());
+    assert.equal(f.state.messages.at(-1).text, text.trim());
+  }
 });

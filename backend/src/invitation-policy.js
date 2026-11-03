@@ -1,3 +1,4 @@
+import { hasMessageContent } from './message-content.js';
 /** @typedef {'pending' | 'deferred' | 'accepted' | 'declined'} InvitationStatus */
 /**
  * @typedef {object} Invitation
@@ -18,7 +19,7 @@ export const INVITATION_MESSAGE_MAX = 5000;
 export function validInvitationMessage(message) {
   if (typeof message !== 'string') return false;
   const length = message.trim().length;
-  return length >= 1 && length <= INVITATION_MESSAGE_MAX;
+  return hasMessageContent(message) && length <= INVITATION_MESSAGE_MAX;
 }
 
 /**

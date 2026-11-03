@@ -238,3 +238,37 @@ test('partner availability refresh is informational and does not erase a draft',
   ).toBe(true);
   await expectAccessible(page);
 });
+
+test('invisible-only replies cannot send while multilingual text and emoji stay intact', async ({
+  page,
+}) => {
+  const state = await mockConversation(page);
+  const panel = await openRoom(page);
+  const input = panel.getByRole('textbox', { name: 'Your reply', exact: true });
+  const send = panel.getByRole('button', { name: 'Send reply' });
+  await expect(panel).toContainText('No messages yet.');
+  for (const text of [
+    '\u200b',
+    '\u200c\u200d\ufe0f',
+    ' \n\u2060\u200e\u0001 ',
+  ]) {
+    await input.fill(text);
+    await expect(send).toBeDisabled();
+    await expect(input).toHaveValue(text);
+    expect(state.sends).toHaveLength(0);
+  }
+  for (const text of [
+    'ქართული',
+    'می\u200cخواهم',
+    'क्\u200dष',
+    '👨\u200d👩\u200d👧\u200d👦',
+    '❤️',
+  ]) {
+    await input.fill(text);
+    await expect(send).toBeEnabled();
+    await send.click();
+    await expect(input).toBeEmpty();
+    expect(state.sends.at(-1)).toEqual({ text });
+    await expect(panel.getByRole('list')).toContainText(text);
+  }
+});
