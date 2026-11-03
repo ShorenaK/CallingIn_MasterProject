@@ -171,7 +171,7 @@ function ComposeMessage({ send }) {
 /** @param {{busy: boolean, cancelRef: import('react').RefObject<HTMLButtonElement | null>, onCancel: () => void}} props */
 function ComposeActions({ busy, cancelRef, onCancel }) {
   return (
-    <div className="invitation-actions">
+    <div className="invitation-actions compose-actions">
       <button type="submit">{busy ? 'Sending…' : 'Send invitation'}</button>
       <button
         type="button"

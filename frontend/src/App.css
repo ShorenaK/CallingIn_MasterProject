@@ -298,6 +298,14 @@ fieldset {
   flex-wrap: wrap;
   gap: 10px;
 }
+.compose-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.compose-actions > button {
+  min-height: 48px;
+  margin-top: 0;
+}
 .response-accepted {
   background: #007d89;
   color: white;
@@ -376,6 +384,9 @@ fieldset {
   border-left: 3px solid #b07a1a;
 }
 @media (max-width: 700px) {
+  .compose-actions {
+    grid-template-columns: 1fr;
+  }
   .invitation-columns {
     grid-template-columns: 1fr;
   }

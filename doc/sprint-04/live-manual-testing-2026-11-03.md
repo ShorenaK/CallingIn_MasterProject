@@ -26,6 +26,15 @@ in this record.
 | Cancel invitation draft             | Cancel works.                                                                                                                          | Empty/written-draft distinctions, focus, and pending-send behavior were not separately reported. |
 | Discard invitation draft            | Discard works.                                                                                                                         | Keep writing, focus restoration, and expired-draft copying are not yet confirmed live.           |
 
+## Subsequent outsider-test report
+
+After receiving the outsider-test instructions, Shorena reported: “everything
+works, I ran the test.” Record this as a general user-reported outsider-test pass
+at the `d581e7d` checkpoint. The individual read/send/battery HTTP responses,
+conversation ID, account/profile mapping, and logged-out result were not supplied;
+Codex did not independently execute or observe those live requests. This broad
+report does not confirm every remaining checklist item.
+
 ## Duplicate-invitation report — corrected
 
 Shorena initially suspected that two invitations could be sent between the same
@@ -46,8 +55,9 @@ independently proven. No duplicate-protection code or database records were chan
   completed results have been reported yet. These invitation responses are
   separate from the Social Battery choice Taking Personal Space.
 - Battery and message persistence after reload/restart; message pagination.
-- Live outsider/logged-out access checks, message boundaries, invisible-only
-  input rejection, sending limits, and carried login-limit checks.
+- Detailed outsider per-request results and logged-out access checks; live message
+  boundaries, invisible-only input rejection, sending limits, and carried
+  login-limit checks. The general outsider-test report is recorded above.
 - Keep writing, session-expiry recovery, and real retained-text copying.
 - Human keyboard-only, VoiceOver, Safari, 200% zoom, and actual phone checks.
 - Remaining Atlas validator/index/startup/backup evidence.
