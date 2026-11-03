@@ -1,19 +1,23 @@
 # Sprint 4 — Conversations progress
 
-**Recorded:** November 2, 2026 (America/New_York)
+**Recorded:** November 2, 2026. **Last updated:** November 3, 2026 (America/New_York).
 
 **Branch:** `sprint-04-conversations`
 
-**Implementation checkpoint:** `ccce3c4`, pushed; clean working tree before
-this documentation update. This update itself is local until separately submitted.
+**Historical November 2 UI checkpoint:** `ccce3c4`. Later changes are listed below.
 
-**Current status (November 3, live-testing update):** Implementation and approved
-follow-up fixes are pushed through `251ffbc`. Claude's independent review covered
-`fd0b855`; later fixes were checked locally. User-guided live testing is in progress.
-See the [live/manual test record](live-manual-testing-2026-11-03.md) for reported
-passes and the corrected duplicate-invitation observation. This new test record
-and its documentation links are local until separately submitted. Sprint 4 is not
-complete or merged. Earlier checkpoints below are historical.
+**Current status (November 3, closeout preparation):** Implementation and approved
+follow-ups were pushed through `9eb4bea`. The approved account-navigation fix,
+welcome punctuation change, and detailed live verification are included with this
+progress update. The final combined automated run passed **267 backend tests and
+79 Chromium tests**; independent live verification passed **101 assertions**.
+Claude's review covered `fd0b855`, so it predates the later fixes and UI changes.
+Sprint 4 is not merged or declared complete: remaining human, restart/database,
+backup, and final-review/CI items are listed in the dated follow-up below.
+
+Evidence is separated into the [user-reported manual record](live-manual-testing-2026-11-03.md)
+and [independent live verification](live-verification-2026-11-03.md).
+Earlier checkpoints and measurements below are historical.
 
 ## Working agreement
 
@@ -34,8 +38,9 @@ the outstanding checks explicitly carried forward remain on this sprint's list.
 | `62ea395` | Sprint 4 testing checklist and November 3 meeting agenda, including all five question sections copied from Meeting 4.                                    |
 | `ccce3c4` | Conversation screens, reply composer, draft/error/expiry handling, responsive styles, existing browser assertion updates, and progress checklist update. |
 
-Each commit was separately approved, committed with normal pre-commit checks,
-and pushed. GitHub Quality for these commits has not been checked in this session.
+Each listed historical implementation commit was separately approved, committed,
+and pushed. Hosted CI evidence is recorded only for the exact checked commit;
+see the dated follow-up for the later `828ea32` result.
 
 ### 1. Conversation opening
 
@@ -286,3 +291,100 @@ and draft checks, human keyboard/VoiceOver/Safari/zoom/phone checks, independent
 Claude review, and separately approved Git/merge steps. Shared README/landing-page
 future-feature wording remains a documented follow-up. Freemium/Premium and the
 AI Coach are future planning; this step adds no subscription or payment behavior.
+
+## November 3 — Review follow-ups, UI cleanup, navigation, and live verification
+
+This section supersedes earlier current-state/pending descriptions while retaining
+the historical test counts and observations above.
+
+### Approved implementation follow-ups
+
+| Commit/checkpoint         | Work                                                                                                                                                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `69c3fbe`                 | Teal/yellow/aqua invitation response palette, later personal-space color updated below.                                                                                                       |
+| `fd0b855`                 | Social Battery persistence/partner visibility and permanent conversation/browser tests; Claude's reviewed checkpoint.                                                                         |
+| `11ee203`                 | Clear first-history loading state on expiry, avoid duplicate conversation expiry announcements, and strengthen the then-current Busy color.                                                   |
+| `828ea32`                 | Reject invisible-only invitations/replies in frontend and backend while preserving multilingual text, emoji, and joiners; regression coverage.                                                |
+| `44ef40b`                 | Match the approved horizontal mockup: three green/amber/coral battery segments with half-filled Busy, wider cards, and full-width Save Status; pale blush personal-space invitation response. |
+| `251ffbc`                 | Remove obsolete Sprint 2/connection panel, frontend health-request code, and panel CSS; link the welcome CTA to the account area; retain review/design references.                            |
+| `d581e7d`                 | Simple © 2026 CallingIn footer and user-reported live-test record.                                                                                                                            |
+| `9eb4bea`                 | Equal-sized Send invitation/Cancel buttons, aligned desktop row and stacked phone layout, neutral white/teal Cancel; updated manual observations.                                             |
+| Included with this update | Welcome comma in place of the dash; guarded account navigation and ten new browser tests; independent live verification and progress documentation.                                           |
+
+Both **Your account** and **Go to your account** now close an empty conversation
+and focus the profile. Any unsent reply requires **Keep writing / Discard and go
+to account**; Keep writing focuses the retained reply. An in-flight send blocks
+account navigation. Existing Back to invitations behavior and separate invitation
+drafts remain intact. Navigation requests pass through small frontend hooks;
+no routing package, backend permission change, or database migration was added.
+
+Claude's [November 3 review](quality-review-2026-11-03.md) found no blockers at
+`fd0b855`. Approved fixes and invisible-only validation were implemented afterward.
+The optional query reuse and shared storage-preparation refactors remain deferred.
+Claude has not independently reviewed every later change or this navigation fix.
+
+### Verification performed after the latest source changes
+
+| Evidence type                        | Actual result                                                                                                                                                                                               |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Simulated backend HTTP/storage tests | **267 passed**, zero failures/skips; **100% lines/functions, 98.35% branches**.                                                                                                                             |
+| Mocked-API browser suite             | **79 Chromium tests passed in one combined run**, including ten account-navigation tests and existing account/invitation/conversation/battery tests, with axe scans.                                        |
+| Independent live run                 | **101 assertions passed**, zero failures, against the running frontend/backend and configured MongoDB using three isolated accounts. No API mocks or simulated storage.                                     |
+| Static checks                        | ESLint, frontend/backend type checks, whole-repository formatting, and whitespace checks passed. Documentation formatting/links were checked after this update.                                             |
+| Final scratch production build       | Passed into `/tmp/callingin-account-navigation-final.6ewi1K`; tracked dist unchanged.                                                                                                                       |
+| Earlier network checks               | Root, frontend, and backend npm audits reported zero vulnerabilities. GitHub Quality for `828ea32` completed successfully. These are historical checkpoint results, not fresh checks of the new submission. |
+
+[Checked GitHub run for `828ea32`](https://github.com/ShorenaK/CallingIn_MasterProject/actions/runs/41719672211).
+
+The [independent live report](live-verification-2026-11-03.md) records registration,
+real browser sign-in, duplicate/reverse invitation rejection, Maybe Later, final
+acceptance, personal-space decline, two-way messaging, partner battery changes,
+page-reload persistence, pagination, Cancel/Keep writing/Discard, account navigation,
+message validation boundaries, revoked-session recovery, and dedicated-account
+sending/failed-login limits. Live axe found zero violations; a 390px viewport
+showed no horizontal overflow. These do not replace human accessibility checks.
+
+Outsider verification is now independently confirmed: C received 404 for A–B
+message read/send, battery read, conversation opening, and invitation response.
+Logged-out message/battery requests received 401. C remained unable to read A–B
+after accepting a separate B–C room. This resolves the earlier verification gap;
+opening C's own room with B was never proof of A–B outsider protection.
+
+The user's earlier duplicate-invitation concern was explicitly corrected by her
+and was not a confirmed defect. Live duplicate/reverse attempts returned 409.
+No duplicate-protection code or existing records were changed in response to the
+initial report.
+
+### Live test data and boundaries
+
+Dedicated batch `72239c9d` left three generated test accounts, three invitations,
+two rooms, and generated message history for review. Passwords were generated in
+memory and not retained. No user account data, database settings, or schema was
+changed directly. The dedicated C account intentionally reached temporary rate
+limits. No automatic record deletion or cleanup was performed.
+
+Live checks used the existing configured database through the running app; no
+private environment file was opened. No direct database metadata inspection or
+backup certification is implied by successful writes. The repeated concurrent
+open test used an already created room, not an initial creation race.
+
+### Remaining before closeout/merge
+
+- Backend restart and persistence evidence; raw validator/index/startup checks
+  and backup evidence, including the previously listed database-specific items.
+- Initial simultaneous room-creation race and the live 5,000-unit invitation
+  acceptance boundary. Its 5,001-unit rejection and message boundaries passed.
+- Shared-IP 100-request login limit, cross-IP failures, and process-restart/reset
+  checks. Only the isolated-account email failure budget was saturated live.
+- Natural idle expiry, Change person/lookup expiry recovery, and real OS clipboard
+  copying. Server-revoked-session retention/focus/sign-in passed live.
+- Human keyboard-only walkthrough, VoiceOver, Safari, 200% zoom, and an actual phone.
+- Card/font alignment remains deferred. AI Coach/Freemium/Premium remain future
+  planning; no subscription or payment implementation is included.
+- Focused independent review of later fixes/navigation, current submitted-commit
+  GitHub Quality verification, final documentation cleanup, and explicit merge
+  approval. The shared README still needs implementation-status updates when the
+  approved merge brings Sprint 4 onto main.
+
+User-reported, automated simulated/mocked, and independently measured live results
+remain distinct. Neither coverage nor a green live batch proves every scenario.

@@ -15,6 +15,11 @@ for Shorena’s reported passes, the corrected duplicate-invitation report, and
 remaining checks. Broad live checklist items below stay open where only part of
 their scope has been confirmed.
 
+Independent live follow-up: [101 live assertions passed](live-verification-2026-11-03.md)
+through the running frontend/backend and configured database using isolated accounts.
+This is separate from the mocked suites. Partial broad checklist items remain open
+where restart, metadata, backup, or human checks have not been completed.
+
 ## Completed backend work
 
 - [x] Open or retrieve one participant-only conversation from an accepted
@@ -95,10 +100,11 @@ passed. See the [progress record](sprint-04-progress.md) for scope and limitatio
 - [ ] With separate browser profiles for separate accounts, verify acceptance,
       opening the same room, sending both ways, reading history, and persistence
       after reload/restart against the running backend and Atlas.
-- [ ] Verify outsiders and logged-out accounts cannot read or send messages.
-- [ ] Verify message history pagination and live 5,000/5,001 UTF-16-unit boundaries;
+- [x] Verify outsiders and logged-out accounts cannot read or send messages.
+      Independent live run: 404 for C and 401 for logged-out clients.
+- [x] Verify message history pagination and live 5,000/5,001 UTF-16-unit boundaries;
       distinguish text validation from the separate JSON body-size limit.
-- [ ] Verify the 60-attempt message sending limit with dedicated test accounts.
+- [x] Verify the 60-attempt message sending limit with dedicated test accounts.
 - [ ] Verify conversation/message collection validation, indexes, and repeat
       startup behavior; obtain approval before live database checks or changes.
 - [ ] Finish outstanding backup evidence and two startup checks per database
@@ -154,11 +160,12 @@ passed. See the [progress record](sprint-04-progress.md) for scope and limitatio
 
 ## 4. Independent review and closeout
 
-- [ ] Have Claude manually run the repository's
+- [x] Have Claude manually run the repository's
       [quality-review skill](../../.claude/skills/quality-review/SKILL.md)
       against the Sprint 4 changes. This is an independent review, not merely
       another test run; record the reviewed commit and checks actually run.
-- [ ] Record findings and obtain approval for fixes, then verify those fixes.
+      Reviewed `fd0b855`; later changes still need focused follow-up.
+- [x] Record findings and obtain approval for fixes, then verify those fixes.
 - [ ] Run final relevant backend/browser checks, lint, formatting, type checks,
       and a scratch frontend build without modifying tracked dist output.
 - [ ] Ask before new network audits/checks; verify Sprint 4 GitHub Quality and

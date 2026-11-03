@@ -1,5 +1,6 @@
+import { useConversationLeave } from './useConversationLeave.js';
 import { PartnerBattery } from '../social-battery/PartnerBattery.jsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Problem } from '../invitations/Problem.jsx';
 import { formatDate } from '../invitations/format.js';
 import { MESSAGE_MAX } from './api.js';
@@ -7,7 +8,7 @@ import { useConversation, useMessageHistory } from './useConversation.js';
 import { useReply } from './useReply.js';
 import './conversations.css';
 
-/** @typedef {{invitation: import('../invitations/api.js').Invitation, userId: string, expired: boolean, onExpired: () => void, onSignIn: () => void, onBack: () => void}} ConversationProps */
+/** @typedef {{invitation: import('../invitations/api.js').Invitation, userId: string, expired: boolean, onExpired: () => void, onSignIn: () => void, onBack: () => void, accountNavigation: import('../invitations/useAccountNavigation.js').NavigationRef, onGoToAccount: () => void}} ConversationProps */
 
 /** @param {ConversationProps} props */
 export function Conversation(props) {
@@ -21,18 +22,19 @@ export function Conversation(props) {
     onExpired,
     onSent: history.add,
   });
-  const [confirming, setConfirming] = useState(false);
+  const leave = useConversationLeave({
+    navigationRef: props.accountNavigation,
+    text: reply.text,
+    busy: reply.busy,
+    onBack: props.onBack,
+    onGoToAccount: props.onGoToAccount,
+  });
   return (
     <section
       className="invitation-panel conversation-panel"
       aria-labelledby="conversation-title"
     >
-      <ConversationHeading
-        {...props}
-        reply={reply}
-        confirming={confirming}
-        setConfirming={setConfirming}
-      />
+      <ConversationHeading {...props} reply={reply} leave={leave} />
       <details className="conversation-context">
         <summary>Invitation message</summary>
         <p className="invitation-message">{invitation.message}</p>
@@ -57,7 +59,9 @@ export function Conversation(props) {
         reply={reply}
         expired={expired}
         ready={
-          Boolean(opening.room) && history.status === 'ready' && !confirming
+          Boolean(opening.room) &&
+          history.status === 'ready' &&
+          !leave.destination
         }
       />
     </section>
@@ -156,8 +160,8 @@ function ReplyComposer({ reply, expired, ready }) {
   );
 }
 
-/** @param {{onKeep: () => void, onLeave: () => void}} props */
-function LeaveConfirmation({ onKeep, onLeave }) {
+/** @param {{onKeep: () => void, onLeave: () => void, destination: import('./useConversationLeave.js').LeaveDestination}} props */
+function LeaveConfirmation({ onKeep, onLeave, destination }) {
   const question = useRef(/** @type {HTMLParagraphElement | null} */ (null));
   useEffect(() => {
     question.current?.focus();
@@ -169,40 +173,44 @@ function LeaveConfirmation({ onKeep, onLeave }) {
       aria-labelledby="leave-conversation-question"
     >
       <p id="leave-conversation-question" ref={question} tabIndex={-1}>
-        Discard this unsent reply and return to invitations?
+        {destination === 'account'
+          ? 'Discard this unsent reply and go to your account?'
+          : 'Discard this unsent reply and return to invitations?'}
       </p>
       <div className="invitation-actions">
         <button type="button" className="secondary-button" onClick={onKeep}>
           Keep writing
         </button>
         <button type="button" onClick={onLeave}>
-          Discard reply and go back
+          {destination === 'account'
+            ? 'Discard and go to account'
+            : 'Discard reply and go back'}
         </button>
       </div>
     </div>
   );
 }
 
-/** @param {ConversationProps & {reply: ReturnType<typeof useReply>, confirming: boolean, setConfirming: (value: boolean) => void}} props */
-function ConversationHeading({
-  invitation,
-  expired,
-  onSignIn,
-  onBack,
-  reply,
-  confirming,
-  setConfirming,
-}) {
+/** @param {ConversationProps & {reply: ReturnType<typeof useReply>, leave: ReturnType<typeof useConversationLeave>}} props */
+function ConversationHeading({ invitation, expired, onSignIn, reply, leave }) {
   const title = useRef(/** @type {HTMLHeadingElement | null} */ (null));
   const back = useRef(/** @type {HTMLButtonElement | null} */ (null));
-  const previous = useRef(false);
+  const previous = useRef(
+    /** @type {import('./useConversationLeave.js').LeaveDestination | null} */ (
+      null
+    ),
+  );
   useEffect(() => {
     title.current?.focus();
   }, []);
   useEffect(() => {
-    if (previous.current && !confirming) back.current?.focus();
-    previous.current = confirming;
-  }, [confirming]);
+    if (previous.current && !leave.destination) {
+      if (previous.current === 'account')
+        document.getElementById('conversation-reply')?.focus();
+      else back.current?.focus();
+    }
+    previous.current = leave.destination;
+  }, [leave.destination]);
   return (
     <>
       <h3 id="conversation-title" ref={title} tabIndex={-1}>
@@ -214,14 +222,16 @@ function ConversationHeading({
         className="secondary-button"
         ref={back}
         disabled={reply.busy}
-        onClick={() => (reply.text.length ? setConfirming(true) : onBack())}
+        onClick={leave.requestBack}
       >
         Back to invitations
       </button>
-      {confirming && (
+      {leave.destination && (
         <LeaveConfirmation
-          onKeep={() => setConfirming(false)}
-          onLeave={onBack}
+          key={leave.destination}
+          destination={leave.destination}
+          onKeep={leave.keep}
+          onLeave={leave.discard}
         />
       )}
       {expired && (

@@ -1,18 +1,19 @@
 # Social Battery — Sprint 4
 
-**Implemented locally:** November 3, 2026 (America/New_York).
+**Implemented:** November 3, 2026 (America/New_York). Visual palette updated to
+match the approved horizontal reference in `44ef40b`.
 
 ## Agreed behavior
 
 Social Battery is availability chosen by the account owner. It does not estimate
 energy, diagnose mood, count people, or block invitations or messages.
 
-| Stored value | Label                 | Icon                        |
-| ------------ | --------------------- | --------------------------- |
-| `open`       | Open to Conversations | Full teal battery           |
-| `busy`       | Busy                  | Partly filled golden yellow |
-| `space`      | Taking Personal Space | Low aqua battery            |
-| Absent       | Not set               | No assumed availability     |
+| Stored value | Label                 | Icon                      |
+| ------------ | --------------------- | ------------------------- |
+| `open`       | Open to Conversations | Full green battery        |
+| `busy`       | Busy                  | Half-filled amber battery |
+| `space`      | Taking Personal Space | Low soft-coral battery    |
+| Absent       | Not set               | No assumed availability   |
 
 The owner selects a labeled radio option and chooses **Save Status**. The saved
 status is shown separately from the selection, persists on the account, and stays

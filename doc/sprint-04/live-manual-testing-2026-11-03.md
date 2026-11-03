@@ -35,6 +35,12 @@ conversation ID, account/profile mapping, and logged-out result were not supplie
 Codex did not independently execute or observe those live requests. This broad
 report does not confirm every remaining checklist item.
 
+A later supplied screenshot showed an accepted C–B invitation. That supports
+C–B conversation access but does not establish that C was denied access to A–B's
+original conversation. The specific cross-conversation outsider check remains
+unverified until its per-request outcome is confirmed. C can participate in its
+own room with B while remaining an outsider to the separate A–B room.
+
 ## Duplicate-invitation report — corrected
 
 Shorena initially suspected that two invitations could be sent between the same
@@ -49,7 +55,19 @@ notice. Record duplicate rejection as a user-reported live pass. Do not treat th
 earlier suspicion as a confirmed defect, or the different-account explanation as
 independently proven. No duplicate-protection code or database records were changed.
 
-## Still pending
+## Outstanding scope after the later independent live run
+
+Codex subsequently completed an explicitly approved independent live run:
+[101 live assertions passed](live-verification-2026-11-03.md), including Maybe Later,
+personal-space decline, cross-conversation outsider rejection, logged-out access,
+message boundaries, pagination, page-reload persistence, cancellation, and account
+navigation. Those results supersede the earlier pending status for those checks;
+the original user-reported observations above remain historical evidence.
+
+The items below preserve the earlier outstanding list for context; consult the
+independent record's **Remaining limits and checks** for the current live gaps.
+
+### Earlier pending list (before independent live verification)
 
 - Maybe Later and I need some space: Shorena said she was testing them, but no
   completed results have been reported yet. These invitation responses are
@@ -78,3 +96,39 @@ passed on a targeted rerun. These were separate runs, not one all-green 69-test 
 
 Sprint 4 remains open for unfinished testing and closeout. Recording these results
 does not approve a merge. This record is local until separately submitted.
+
+## Account-navigation fix and independent local checks
+
+Shorena reported that the account links left the conversation open and approved
+closing it, focusing the profile, confirming before discarding unsent replies,
+and preventing account navigation during a send. The welcome dash was separately
+approved for replacement with a comma.
+
+The local implementation connects both **Your account** and **Go to your
+account** to the guarded leave flow. With no reply, the conversation closes and
+the profile heading receives focus after the invitation view is restored. With
+any unsent text, **Keep writing / Discard and go to account** is shown. Keep
+writing returns focus to the reply, including a retained read-only reply after
+expiry. Pending sends block the account-link action. Existing Back to invitations
+behavior and a separate invitation draft are preserved. This is a frontend
+change; no live accounts, database settings, or schemas were changed.
+
+Measured after the final source changes, November 3 (America/New_York):
+
+| Check                    | Actual result and scope                                                                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full browser suite       | **79 Chromium tests passed** in one combined run, including ten new navigation tests and existing account/invitation/conversation/battery tests. APIs are mocked; axe scans included. |
+| Backend regression suite | **267 passed**, zero failures/skips; **100% lines/functions, 98.35% branches** with simulated storage.                                                                                |
+| Static checks            | ESLint, frontend/backend type checks, whole-repository formatting, and whitespace checks passed.                                                                                      |
+| Final production build   | Passed into `/tmp/callingin-account-navigation-final.6ewi1K`; tracked dist unchanged.                                                                                                 |
+
+Initial lint checks required splitting the invitation-list rendering and moving
+opener-focus handling into the navigation hook to meet the existing 60-line
+function limit. No lint rules were weakened. An earlier ten-test navigation-only
+run also passed; the final 79-test result includes those tests together with the
+existing suite after the last source adjustment.
+
+No further failures were found in these checks. No new network audit, live Atlas,
+Safari, VoiceOver, actual phone, or human keyboard-only certification is claimed.
+The card/font alignment request remains deferred; these navigation changes and
+this record update are local until separately submitted. No merge was performed.
