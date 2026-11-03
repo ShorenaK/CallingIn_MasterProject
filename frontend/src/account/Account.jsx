@@ -1,3 +1,4 @@
+import { SocialBattery } from '../social-battery/SocialBattery.jsx';
 import { useAccount } from './useAccount.js';
 import { SignIn } from './SignIn.jsx';
 import { Profile } from './Profile.jsx';
@@ -24,6 +25,7 @@ export function Account() {
   return account.user ? (
     <>
       <Profile user={account.user} submit={account.submit} />
+      <SocialBattery key={account.user.id} onSignIn={account.expire} />
       <Invitations userId={account.user.id} onSessionExpired={account.expire} />
     </>
   ) : (

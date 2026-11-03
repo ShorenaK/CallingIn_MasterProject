@@ -7,10 +7,11 @@
 **Implementation checkpoint:** `ccce3c4`, pushed; clean working tree before
 this documentation update. This update itself is local until separately submitted.
 
-**Status:** Conversation and messaging backend plus conversation screens are
-implemented. Full messaging browser coverage, live/manual verification, Social
-Battery decisions/implementation, requested edits, and independent review remain.
-Sprint 4 is not complete or merged.
+**Current status (November 3):** Conversation/messaging and Social Battery are
+implemented. Dedicated messaging and Social Battery regression tests pass locally.
+The November 3 battery/test/documentation changes are uncommitted. Live/manual
+verification and independent review remain; Sprint 4 is not complete or merged.
+The original November 2 implementation checkpoint below is historical.
 
 ## Working agreement
 
@@ -153,16 +154,16 @@ requested changes, make approved edits/corrections, then have Claude run the
 quality-review skill. If review finds issues, approve fixes and recheck affected
 behavior. Completion depends on actual evidence, not the planned date.
 
-### Automated messaging coverage still to add
+### Automated messaging coverage — completed locally November 3
 
-- [ ] Commit dedicated browser tests for opening from both invitation lists,
+- [x] Commit dedicated browser tests for opening from both invitation lists,
       reading/sending, older messages, refresh, and empty history.
-- [ ] Cover text boundaries, sending limits, errors/retries, expired sessions,
+- [x] Cover text boundaries, sending limits, errors/retries, expired sessions,
       retained text, and discard/keep behavior.
-- [ ] Cover stale history/send replies after refresh, navigation, or unmount,
+- [x] Cover stale history/send replies after refresh, navigation, or unmount,
       plus preservation of existing invitation drafts.
-- [ ] Add keyboard/focus and accessibility assertions for the new controls.
-- [ ] Run new and existing suites together after the final edits.
+- [x] Add keyboard/focus and accessibility assertions for the new controls.
+- [x] Run new and existing suites together after the final edits.
 
 ### Live/manual work still outstanding
 
@@ -186,10 +187,10 @@ behavior. Completion depends on actual evidence, not the planned date.
 
 ### Social Battery and requested edits
 
-- [ ] Discuss the intended Social Battery behavior, who sees it, and whether it
+- [x] Discuss the intended Social Battery behavior, who sees it, and whether it
       is informational or changes contact/messaging behavior. Explain the design
       and obtain approval before implementing.
-- [ ] Implement and test the agreed Social Battery step if approved.
+- [x] Implement and test the agreed Social Battery step if approved.
 - [ ] Gather Shorena's other requested changes, explain each proposed edit, and
       make only approved corrections. Do not automatically adopt every deferred idea.
 - [ ] Add the additional questions Shorena wants for the November 3 meeting.
@@ -209,6 +210,77 @@ behavior. Completion depends on actual evidence, not the planned date.
       limitations honestly. Obtain separate Git/merge approval when ready.
 
 The [detailed checklist](sprint-4.md) remains the task-by-task companion to this
-progress record. Social Battery behavior is undecided until discussed. AI Coach,
+progress record. Social Battery behavior was approved and implemented November 3; see the dated update below. AI Coach,
 attachments, message editing/deletion, read receipts, and unrelated deferred
 product/design features are not implemented by the work recorded here.
+
+## November 3 — Social Battery and automated testing
+
+Shorena approved the explained implementation and local testing scope. Her earlier
+color update was separately committed/pushed as `69c3fbe`. This step began with a
+clean `sprint-04-conversations` working tree at that commit. No branch switch,
+installation, live database operation, Git submission, or merge was performed for
+this implementation. Curated memory files were not updated.
+
+### Implemented
+
+- Three playful SVG batteries replace the face concept: full teal **Open to
+  Conversations**, partly filled golden yellow **Busy**, low aqua **Taking
+  Personal Space**. Labels, native radios, visible focus, and segment counts
+  support keyboard use and avoid color-only communication. No external image,
+  animation, energy calculation, or people count.
+- The account owner explicitly saves a status; it persists in the optional
+  `users.socialBattery` field. Existing accounts start Not set, without backfill.
+  Only the three supported values can be written, only for the verified owner.
+- Accepted conversation partners see availability inside their private room and
+  can refresh it manually. Outsiders cannot read it. No email or credentials are
+  returned. Status does not block invitations or message sending and has no
+  automatic expiry. Other account fields are unchanged.
+- Loading/error/success states, reload/retry, preserved selection on failed saves,
+  response validation, and explicit sign-in handling are implemented. An owner's
+  delayed status expiry does not unmount an open reply; conversation availability
+  expiry uses the existing retained-reply flow. Late unmounted responses are ignored.
+- Added permanent conversation browser coverage for both invitation lists,
+  chronological reading, sending, empty history, older pages, refresh, errors,
+  429 responses, UTF-16 boundaries, expiry, keep/discard, invitation draft
+  preservation, disabled duplicate sending, stale results after refresh/navigation,
+  and late send results after sign-out. Existing invitation tests run alongside it.
+
+[Social Battery behavior, storage, and API reference](social-battery.md).
+
+Main changes: `backend/src/social-battery.js`, route/logging wiring,
+`backend/test/social-battery.test.js`, `frontend/src/social-battery/`, account and
+conversation integration, browser mock helper, and three new browser suites with
+a conversation fixture helper. Sprint documentation is updated locally.
+
+### Verification actually run November 3
+
+| Check                        | Result and scope                                                                                                                                                                                 |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Final backend suite/coverage | **241 passed**, zero failures/skips; **100% lines/functions, 98.34% branches**. New Social Battery module: 100% lines/branches/functions. HTTP/storage behavior uses simulated database methods. |
+| Final combined browser suite | **64 Chromium tests passed**, including existing account/invitation tests, new Social Battery tests, and permanent conversation tests. All APIs mocked; axe scans included.                      |
+| Static checks                | Repository ESLint and frontend/backend type checks passed.                                                                                                                                       |
+| Production build             | Passed into `/tmp/callingin-sprint04-battery-build.f17OnI`; tracked `dist` output unchanged.                                                                                                     |
+| Phone-width check            | Automated 390px viewport overflow checks passed. Battery screenshot inspected: stacked readable options and visible selection. This was not an actual phone or human accessibility walkthrough.  |
+
+The first targeted HTTP run could not bind localhost under the sandbox (EPERM).
+Its permitted rerun passed. Initial lint findings about component size/complexity
+were resolved by splitting rendering helpers; browser-only globals in test
+callbacks were made explicit. No lint rules were weakened or dependencies added.
+A later UI adjustment avoids falsely showing Not set before a status read succeeds;
+the final combined run includes it.
+
+Coverage is execution evidence, not proof of live database behavior. Browser
+storage persistence in these tests is mocked; live persistence and any externally
+configured users validator still need verification. No frontend coverage
+percentage, Safari, VoiceOver, 200% zoom, actual phone, live Atlas, new network
+audit, hosted CI result, or Claude independent review is claimed.
+
+### Remaining before Sprint 4 closeout
+
+Use the [updated checklist](sprint-4.md) for real-account invitation/message/battery
+checks, live persistence and database startup/backup evidence, outstanding login
+and draft checks, human keyboard/VoiceOver/Safari/zoom/phone checks, independent
+Claude review, and separately approved Git/merge steps. Shared README/landing-page
+future-feature wording remains a documented follow-up. Freemium/Premium and the
+AI Coach are future planning; this step adds no subscription or payment behavior.

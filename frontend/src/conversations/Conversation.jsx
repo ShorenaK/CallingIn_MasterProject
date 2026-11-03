@@ -1,3 +1,4 @@
+import { PartnerBattery } from '../social-battery/PartnerBattery.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Problem } from '../invitations/Problem.jsx';
 import { formatDate } from '../invitations/format.js';
@@ -37,6 +38,12 @@ export function Conversation(props) {
         <p className="invitation-message">{invitation.message}</p>
       </details>
       <OpeningStatus opening={opening} expired={expired} />
+      <ConversationAvailability
+        opening={opening}
+        invitation={invitation}
+        expired={expired}
+        onExpired={onExpired}
+      />
       {opening.room && (
         <MessageHistory
           history={history}
@@ -316,5 +323,18 @@ function ReplyFields({ reply, expired, ready }) {
         {over ? 'Your reply is over the 5,000-character limit.' : ''}
       </p>
     </>
+  );
+}
+
+/** @param {{opening: ReturnType<typeof useConversation>, invitation: ConversationProps['invitation'], expired: boolean, onExpired: () => void}} props */
+function ConversationAvailability({ opening, invitation, expired, onExpired }) {
+  if (!opening.room) return null;
+  return (
+    <PartnerBattery
+      roomId={opening.room.id}
+      name={invitation.otherPerson?.displayName || 'Other participant'}
+      expired={expired}
+      onExpired={onExpired}
+    />
   );
 }

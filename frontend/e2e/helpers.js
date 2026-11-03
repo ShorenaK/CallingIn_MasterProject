@@ -9,6 +9,11 @@ export async function mockApi(page, handler, { user } = {}) {
     const url = new URL(route.request().url());
     const path = url.pathname;
     if (handler && (await handler(route, path, url))) return;
+    if (
+      path === '/api/users/me/social-battery' &&
+      route.request().method() === 'GET'
+    )
+      return route.fulfill({ json: { status: null } });
     if (path === '/api/health')
       return route.fulfill({ json: { status: 'ok' } });
     if (path === '/api/auth/me')

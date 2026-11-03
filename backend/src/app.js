@@ -1,3 +1,8 @@
+import {
+  readBattery,
+  saveBattery,
+  readPartnerBattery,
+} from './social-battery.js';
 import { requireConversation } from './conversation-access.js';
 import { sendMessage, listMessages } from './messages.js';
 import { createMessageRateLimiter } from './message-rate-limit.js';
@@ -63,6 +68,13 @@ export function createApp(db, authentication) {
     app.get('/api/auth/me', currentUser);
     app.patch('/api/auth/me', updateProfile);
     app.use(accountRoutes, authentication.sessionMiddleware, requireAccount);
+    app.get('/api/users/me/social-battery', readBattery);
+    app.patch('/api/users/me/social-battery', saveBattery);
+    app.get(
+      '/api/conversations/:id/social-battery',
+      requireConversation,
+      readPartnerBattery,
+    );
     app.get(
       '/api/conversations/:id/messages',
       requireConversation,

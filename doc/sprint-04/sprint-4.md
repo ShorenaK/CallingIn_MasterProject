@@ -1,10 +1,10 @@
 # Sprint 4 — Conversations
 
-**Updated:** November 2, 2026 (America/New_York)
+**Updated:** November 3, 2026 (America/New_York)
 
 **Branch:** `sprint-04-conversations`
 
-**Next review/testing session:** November 3, 2026 (tomorrow)
+**Current work:** November 3 implementation and local automated testing; live/manual verification and independent review remain.
 
 See [Sprint 4 progress notes](sprint-04-progress.md) for implementation history,
 commits, verification evidence, and the planned testing/editing/review sequence.
@@ -56,26 +56,33 @@ The initial smoke harness needed its browser context setup corrected for axe;
 the corrected smoke run passed. No Atlas, human keyboard-only, Safari,
 VoiceOver, or actual phone check was performed during this UI work.
 
-These UI changes were subsequently committed and pushed as `ccce3c4`. The dedicated
-messaging browser regression tests, live/manual checks, Claude review, and
-GitHub Quality verification below remain pending for the next session.
+These conversation UI changes were committed and pushed as `ccce3c4`. Dedicated
+messaging browser regression tests have now been added locally on November 3.
+Live/manual checks, Claude review, and GitHub Quality verification remain pending.
 
-**Social Battery behavior remains undecided.** Shorena plans to discuss it
-tomorrow and implement the agreed behavior after an explained design and approval. Other deferred product/design ideas are not
-implicitly included in this sprint.
+**Social Battery is implemented locally with Shorena's November 3 approval.**
+Three SVG battery choices (teal/full, golden yellow/partly filled, aqua/low) are
+saved explicitly and visible only to accepted conversation partners. Existing
+accounts start Not set. Status does not restrict invitations or messages.
+See the [behavior and API reference](social-battery.md).
 
-## Tomorrow — 2. Browser tests
+## 2. Browser tests
 
-- [ ] Add browser tests for opening an accepted conversation, sending replies,
+**November 3 local result:** 64 Chromium tests passed with mocked APIs, including
+axe scans. Backend coverage: 241 tests passed, 100% lines/functions, 98.34%
+branches, using simulated storage. Lint/type checks and a scratch production build
+passed. See the [progress record](sprint-04-progress.md) for scope and limitations.
+
+- [x] Add browser tests for opening an accepted conversation, sending replies,
       reading history, and loading older messages using the new screens.
-- [ ] Cover message boundaries, empty text, send failures, sending limits,
+- [x] Cover message boundaries, empty text, send failures, sending limits,
       expired sessions, and preservation of unsent text as agreed for the UI.
-- [ ] Cover keyboard focus and interaction, plus automated accessibility scans.
-- [ ] Run the existing browser regression suite alongside the new tests.
-- [ ] Record whether APIs are mocked or live and which browsers were tested.
+- [x] Cover keyboard focus and interaction, plus automated accessibility scans.
+- [x] Run the existing browser regression suite alongside the new tests.
+- [x] Record whether APIs are mocked or live and which browsers were tested.
       Automated browser checks do not complete the human walkthrough below.
 
-## Tomorrow — 3. Live and human checks
+## 3. Live and human checks
 
 ### Messaging and database
 
@@ -124,16 +131,22 @@ implicitly included in this sprint.
 - [ ] 200% zoom: readable content and usable controls.
 - [ ] Phone-width layout and an actual phone check; record which was performed.
 
-## Tomorrow — Social Battery and requested edits
+## Social Battery and requested edits
 
-- [ ] Discuss Social Battery behavior and visibility, explain the implementation,
+- [x] Implement and locally test the approved Social Battery: explicit save,
+      persistent account field, partner-only visibility, no communication blocking,
+      keyboard controls, responsive SVG icons, error/expiry handling.
+- [ ] Verify Social Battery using real accounts: save/reload/restart, partner
+      visibility, outsider rejection, and compatibility with Atlas user validators.
+
+- [x] Discuss Social Battery behavior and visibility, explain the implementation,
       and obtain approval before building it.
 - [ ] Gather Shorena's other requested changes and make approved corrections.
 - [ ] Add more questions to the November 3 meeting agenda.
 - [ ] Complete affected tests before Claude's independent review; approve and
       verify any fixes identified by that review.
 
-## Tomorrow — 4. Independent review and closeout
+## 4. Independent review and closeout
 
 - [ ] Have Claude manually run the repository's
       [quality-review skill](../../.claude/skills/quality-review/SKILL.md)
@@ -149,8 +162,9 @@ implicitly included in this sprint.
 - [ ] Review any unresolved checks or limitations with Shorena.
 - [ ] Obtain separate approval for Git submissions and the final Sprint 4 merge.
 
-No Claude review, live checks, new browser tests, or merge was performed while
-creating this checklist. Items 2–4 are planned for tomorrow, not marked complete.
+Historical note: no Claude review, live checks, new browser tests, or merge was
+performed when this checklist was first created on November 2. November 3 local
+implementation/testing updates are recorded above and in the progress notes.
 The carried verification items are drawn from the existing
 [unfinished-checks record](../deferred-tasks.md); original historical records
 remain intact. Palette, icons, wording changes, re-invitation policy, and Google
