@@ -446,26 +446,45 @@ distinguish observed findings from assumptions and limitations.
 
 ## Design References
 
-These updated PNG concepts illustrate the intended interface and communication
-flow. They are design references, not screenshots of the current main-branch
-implementation. AI Coach and Freemium/Premium features shown are future concepts;
-paid subscriptions remain outside the Fall 2026 MVP. Mockup wording and colors
-may differ from the implemented interface.
+The original and updated designs below show how CallingIn's interface and
+communication flow have evolved. These PNG concepts document the design journey;
+they are not screenshots of the current main-branch implementation.
 
-### Interface Concept — Horizontal Social Battery
+### Original Design
+
+These earlier explorations capture the initial interface and application
+wireframe. They include Trusted Circle and other ideas outside the current
+semester scope.
+
+#### Original Interface Concept
+
+![Original CallingIn interface concept](public/images/callingin_concept.png)
+
+#### Original Application Wireframe
+
+![Original CallingIn application wireframe](public/images/figma_wire_frame.png)
+
+### Updated Design
+
+The updated concepts show the horizontal Social Battery design and the revised
+communication flow. AI Coach and Freemium/Premium features shown are future
+concepts; paid subscriptions remain outside the Fall 2026 MVP. Mockup wording
+and colors may differ from the implemented interface.
+
+#### Updated Interface — Horizontal Social Battery
 
 The horizontal battery design uses visible fill levels alongside written labels
 for Open to Conversations, Busy, and Taking Personal Space.
 
-![CallingIn interface concept with horizontal Social Battery icons](public/images/social-battery-horizontal.png)
+![Updated CallingIn interface concept with horizontal Social Battery icons](public/images/social-battery-horizontal.png)
 
-### Communication Flow Wireframe
+#### Updated Communication Flow Wireframe
 
 The wireframe outlines the planned account, message preparation, AI suggestion,
-invitation, Social Battery, and Freemium/Premium flows. It is a PNG reference,
-not an editable Figma project or an implementation file map.
+invitation, Social Battery, and Freemium/Premium flows. Both wireframes are PNG
+references, not editable Figma projects or implementation file maps.
 
-![CallingIn communication flow wireframe](public/images/communication-flow-wireframe.png)
+![Updated CallingIn communication flow wireframe](public/images/communication-flow-wireframe.png)
 
 ## Project Documentation
 
