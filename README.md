@@ -446,21 +446,26 @@ distinguish observed findings from assumptions and limitations.
 
 ## Design References
 
-The following images are earlier concept explorations.
-They include Trusted Circle and other details that are outside
-the current semester scope.
+These updated PNG concepts illustrate the intended interface and communication
+flow. They are design references, not screenshots of the current main-branch
+implementation. AI Coach and Freemium/Premium features shown are future concepts;
+paid subscriptions remain outside the Fall 2026 MVP. Mockup wording and colors
+may differ from the implemented interface.
 
-### Interface Concept
+### Interface Concept — Horizontal Social Battery
 
-![CallingIn interface concept](public/images/callingin_concept.png)
+The horizontal battery design uses visible fill levels alongside written labels
+for Open to Conversations, Busy, and Taking Personal Space.
 
-### Application Wireframe
+![CallingIn interface concept with horizontal Social Battery icons](public/images/social-battery-horizontal.png)
 
-![CallingIn wireframe](public/images/figma_wire_frame.png)
+### Communication Flow Wireframe
 
-Updated visuals will reflect the AI-focused MVP and the final
-invitation wording. The wireframe is a PNG concept, not an
-editable Figma project.
+The wireframe outlines the planned account, message preparation, AI suggestion,
+invitation, Social Battery, and Freemium/Premium flows. It is a PNG reference,
+not an editable Figma project or an implementation file map.
+
+![CallingIn communication flow wireframe](public/images/communication-flow-wireframe.png)
 
 ## Project Documentation
 
