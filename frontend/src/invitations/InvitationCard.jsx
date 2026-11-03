@@ -6,6 +6,7 @@ import { InvitationResponse } from './InvitationResponse.jsx';
  * @typedef {object} CardActions
  * @property {(updated: import('./api.js').Invitation) => void} update
  * @property {() => void} refresh
+ * @property {(invitation: import('./api.js').Invitation) => void} onOpenConversation
  * @property {() => void} onSessionExpired
  */
 
@@ -52,11 +53,10 @@ export function InvitationCard({
           {formatDate(invitation.createdAt)}
         </time>
       </p>
-      {invitation.status === 'accepted' && (
-        <p className="field-hint">
-          Private conversations are coming in a future update.
-        </p>
-      )}
+      <ConversationAction
+        invitation={invitation}
+        onOpen={actions.onOpenConversation}
+      />
       {canRespond && (
         <InvitationResponse
           invitation={invitation}
@@ -70,5 +70,19 @@ export function InvitationCard({
         />
       )}
     </article>
+  );
+}
+
+/** @param {{invitation: import('./api.js').Invitation, onOpen: CardActions['onOpenConversation']}} props */
+function ConversationAction({ invitation, onOpen }) {
+  if (invitation.status !== 'accepted') return null;
+  return (
+    <button
+      type="button"
+      className="secondary-button"
+      onClick={() => onOpen(invitation)}
+    >
+      Open conversation
+    </button>
   );
 }

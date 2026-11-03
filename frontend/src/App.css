@@ -67,34 +67,13 @@ h1 {
   margin-left: 12px;
   color: #b7440d;
 }
-.project-status {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 40px;
-  background: #e6f3ef;
-  border-radius: 24px;
-  padding: 36px;
-}
 h2 {
   font-size: 27px;
   line-height: 1.25;
 }
-.project-status p:last-child {
-  margin-bottom: 0;
-}
-.connection-panel {
-  padding-left: 32px;
-  border-left: 1px solid #b8d6cf;
-}
 h3 {
   font-size: 16px;
   margin-bottom: 10px;
-}
-.connection {
-  min-height: 3.2em;
-}
-.connection.error {
-  color: #953d18;
 }
 button {
   border: 0;
@@ -105,18 +84,17 @@ button {
   cursor: pointer;
   font-weight: 650;
 }
-button:hover:enabled {
+button:hover:enabled:not([aria-disabled='true']) {
   background: #064c59;
 }
-button:disabled {
+button:disabled,
+button[aria-disabled='true'] {
   opacity: 0.65;
   cursor: wait;
 }
-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 32px 0;
+.site-footer {
+  padding: 24px 0;
+  text-align: center;
   font-size: 13px;
   color: #46646a;
 }
@@ -135,20 +113,6 @@ footer {
   .brand-image {
     max-width: 320px;
     margin: auto;
-  }
-  .project-status {
-    grid-template-columns: 1fr;
-    padding: 24px;
-    gap: 24px;
-  }
-  .connection-panel {
-    padding: 24px 0 0;
-    border-left: 0;
-    border-top: 1px solid #b8d6cf;
-  }
-  footer {
-    flex-direction: column;
-    gap: 4px;
   }
 }
 
@@ -206,7 +170,7 @@ fieldset {
   padding: 12px 0;
   margin-top: 12px;
 }
-.text-button:hover:enabled {
+.text-button:hover:enabled:not([aria-disabled='true']) {
   background: transparent;
   color: #064c59;
 }
@@ -295,16 +259,16 @@ fieldset {
   color: #1f4e79;
 }
 .status-deferred {
-  background: #efe4ec;
-  color: #5c3d55;
+  background: #ffe8b8;
+  color: #153b50;
 }
 .status-accepted {
-  background: #d5ece5;
-  color: #064c59;
+  background: #007d89;
+  color: white;
 }
 .status-declined {
-  background: #fff6cc;
-  color: #5a4300;
+  background: #feecea;
+  color: #153b50;
 }
 .secondary-button {
   margin-top: 16px;
@@ -312,7 +276,7 @@ fieldset {
   color: #076573;
   border: 1px solid #076573;
 }
-.secondary-button:hover:enabled {
+.secondary-button:hover:enabled:not([aria-disabled='true']) {
   background: #e6f3ef;
   color: #064c59;
 }
@@ -335,23 +299,38 @@ fieldset {
   flex-wrap: wrap;
   gap: 10px;
 }
-.response-deferred {
-  background: #efe4ec;
-  color: #5c3d55;
-  border: 1px solid #8e6a86;
+.compose-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.response-deferred:hover:enabled {
-  background: #e6d5e1;
-  color: #5c3d55;
+.compose-actions > button {
+  min-height: 48px;
+  margin-top: 0;
+}
+.response-accepted {
+  background: #007d89;
+  color: white;
+}
+.response-accepted:hover:enabled:not([aria-disabled='true']) {
+  background: #006874;
+}
+.response-deferred {
+  background: #ffe8b8;
+  color: #153b50;
+  border: 1px solid #ffe8b8;
+}
+.response-deferred:hover:enabled:not([aria-disabled='true']) {
+  background: #f8d99b;
+  color: #153b50;
 }
 .response-declined {
-  background: #fff6cc;
-  color: #5a4300;
-  border: 1px solid #a87412;
+  background: #feecea;
+  color: #153b50;
+  border: 1px solid #b9dcda;
 }
-.response-declined:hover:enabled {
-  background: #fbeaa6;
-  color: #5a4300;
+.response-declined:hover:enabled:not([aria-disabled='true']) {
+  background: #ffe3dc;
+  color: #153b50;
 }
 .invitation-confirm {
   padding: 14px;
@@ -406,6 +385,9 @@ fieldset {
   border-left: 3px solid #b07a1a;
 }
 @media (max-width: 700px) {
+  .compose-actions {
+    grid-template-columns: 1fr;
+  }
   .invitation-columns {
     grid-template-columns: 1fr;
   }

@@ -8,7 +8,7 @@ in the **M.S. in Computer Science (ALIGN)** program.
 - **Student:** Shorena K. Anzhilov
 - **Faculty Advisor:** Professor Albert Lionelle
 - **Project period:** September–December 2026
-- **Status:** Planning and initial development
+- **Status:** Sprint 4 Conversations implemented; remaining verification is tracked in the sprint records
 
 ## Overview
 
@@ -100,30 +100,36 @@ invitation to connect.
 
 The implemented invitation responses are:
 
-| Response          | Behavior                                                     |
-| ----------------- | ------------------------------------------------------------ |
-| Accept            | Records consent to connect; private conversations come later |
-| Maybe Later       | Keeps the invitation available for later consideration       |
-| I need some space | Closes the invitation without opening a conversation         |
+| Response          | Behavior                                                                 |
+| ----------------- | ------------------------------------------------------------------------ |
+| Accept            | Records consent; either participant can then open a private conversation |
+| Maybe Later       | Keeps the invitation available for later consideration                   |
+| I need some space | Closes the invitation without opening a conversation                     |
 
 The final wording will be reviewed during interface design.
 Choosing not to connect does not create an obligation to respond later.
 
 ### 4. Private One-to-One Messaging
 
-After an invitation is accepted, the two participants will be able
-to exchange text messages in a private conversation.
+After an invitation is accepted, either participant can choose Open conversation
+to enter the same private room and exchange text messages. The interface supports
+reply composition, older history, and manual refresh for new messages.
 
-Access will be restricted to the participants through server-side
-permission checks.
+Server-side permission checks restrict every message/history request to the
+participants. Message text must include visible content and fit 1–5,000 UTF-16
+code units after trimming; the separate JSON request limit is 16 KB.
 
 ### 5. Social Battery
 
-Users will be able to share their communication availability:
+Users explicitly choose and save their communication availability:
 
-- Open to conversations.
+- Open to Conversations.
 - Busy.
-- Taking personal space.
+- Taking Personal Space.
+
+Accepted conversation partners can see the saved choice and refresh it manually.
+Existing accounts start Not set. Availability stays until changed and does not
+block invitations or messages.
 
 Social Battery describes availability for contact, not a diagnosis
 or an automatic assessment of someone's emotions.
@@ -381,6 +387,9 @@ The project combines automated quality gates with a manually invoked AI review:
   protection, rate limiting, safe failure handling, and server startup/shutdown.
   Invitation tests cover lookup, creation, participant names, lists/pagination,
   recipient-only responses, duplicate prevention, and validator startup checks.
+  Conversation/message tests cover authorization, shared-room opening, text
+  validation, cursor history, and sending limits. Social Battery tests cover
+  owner writes and private partner reads.
   Database integration tests use simulated MongoDB storage and real local HTTP
   sessions; they do not verify live Atlas behavior.
   `npm run test:coverage` reports backend source coverage; no minimum coverage
@@ -389,10 +398,12 @@ The project combines automated quality gates with a manually invoked AI review:
   account screens, keyboard field navigation/focus, password guidance/errors,
   mock sign-in/sign-out, and the invitation journey: lookup, composition,
   the 5,000-character counter, Cancel/Discard draft, lists, Show more, response
-  confirmations, errors, and session expiry. An isolated frontend server and simulated API
-  responses keep these checks independent of Atlas and private credentials.
+  confirmations, errors, and session expiry. Conversation and Social Battery
+  tests cover message history, replies, draft preservation, account navigation,
+  refresh focus/announcements, failures, and stale responses. An isolated frontend
+  server and mocked APIs keep these checks independent of Atlas and credentials.
 - **Accessibility scans — axe-core:** `@axe-core/playwright` checks the rendered
-  sign-in, registration, profile, and invitation views for common accessibility problems,
+  account, invitation, conversation, and Social Battery views for common accessibility problems,
   such as missing labels and insufficient contrast. The current scans use
   supported WCAG 2 A/AA, 2.1 A/AA, and 2.2 AA tags, without rule exclusions.
   Passing scans do not establish full accessibility or WCAG conformance.
@@ -536,10 +547,18 @@ registration, password hashing, sign-in/out, cookie sessions, optional persisten
 sign-in, and display-name editing. Invitations support exact-email recipient
 lookup, sending messages of up to 5,000 JavaScript code units after trimming,
 Received/Sent lists with participant names and pagination, and recipient responses
-with confirmation for final choices. Accept records consent; it does not open a
-private conversation yet. Only one invitation per account pair is currently
-allowed, permanently. AI requests, private messaging, and Trusted Circle remain
-future work. The 30-day re-invitation policy is deferred.
+with confirmation for final choices. Acceptance permits either participant to
+open a private room, send replies, load older messages, and refresh history.
+Owners can save Social Battery availability, privately visible to room partners.
+Unsent replies remain in page memory, with error/expiry retention and confirmation
+before discarding through the conversation/account navigation controls.
+Only one invitation per account pair is currently allowed, permanently. AI
+requests and Trusted Circle remain future work; the 30-day re-invitation policy
+is deferred.
+
+See the [Sprint 4 progress notes](doc/sprint-04/sprint-04-progress.md) and
+[verification checklist](doc/sprint-04/sprint-4.md) for automated/live evidence and
+remaining human, database/startup/backup, and other verification limits.
 
 ### Prerequisites and installation
 
@@ -608,13 +627,14 @@ In a second terminal, from the repository root:
 npm --prefix frontend run dev
 ```
 
-Open <http://127.0.0.1:5173/>. The page checks `/api/health` through Vite,
-which forwards the request to Express at <http://127.0.0.1:3001>.
-Both servers must be running for a connected status. Stop each server
+Open <http://127.0.0.1:5173/>. Vite forwards `/api` requests to Express at
+<http://127.0.0.1:3001>. Both servers must be running for account, invitation,
+and conversation actions. The old welcome-page connection panel has been
+removed; `/api/health` remains available for an explicit check. Stop each server
 with Ctrl+C in its terminal. The backend also supports
 `npm --prefix backend start` without automatic restart.
 
-### Verify the starter
+### Verify the application
 
 Run from the repository root:
 
@@ -627,7 +647,8 @@ JavaScript type checks, backend tests, and the frontend build. It stops if a
 step fails. Backend tests cover health routes, registration, login/logout,
 sessions, profiles, request protection, rate limits, invitation lookup/creation,
 lists/pagination, participant names, recipient responses, duplicate prevention,
-validator preparation, database failures, and startup/shutdown. They use temporary
+validator preparation, conversations, private messages, Social Battery, database
+failures, and startup/shutdown. They use temporary
 localhost servers and simulated database dependencies.
 They do not create live Atlas accounts or require private database settings.
 

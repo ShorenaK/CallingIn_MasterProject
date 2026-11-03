@@ -181,7 +181,7 @@ test('counter matches the 5,000 limit, never truncates, and blocks overlong send
   await message.fill('   ');
   await panel.getByRole('button', { name: 'Send invitation' }).click();
   await expect(panel.getByRole('alert')).toContainText(
-    'Write a message before sending.',
+    'Write a message with visible content before sending.',
   );
   expect(requests.filter((item) => item.path === '/api/invitations')).toEqual(
     [],
@@ -310,7 +310,7 @@ test('Cancel also confirms whitespace-only text and clears validation feedback',
   await panel.getByRole('textbox', { name: 'Your message' }).fill('   ');
   await panel.getByRole('button', { name: 'Send invitation' }).click();
   await expect(panel.getByRole('alert')).toContainText(
-    'Write a message before sending.',
+    'Write a message with visible content before sending.',
   );
   await panel.getByRole('button', { name: 'Cancel', exact: true }).click();
   await panel.getByRole('button', { name: 'Discard draft' }).click();
@@ -503,4 +503,43 @@ test('lookup expiry without a draft returns directly to sign-in', async ({
   await expect(
     page.getByRole('textbox', { name: 'Your unsent message' }),
   ).toHaveCount(0);
+});
+
+test('invisible-only invitation is blocked locally and multilingual emoji content is preserved', async ({
+  page,
+}) => {
+  const requests = await mockSending(page, {
+    lookup: found,
+    create: (body) => ({
+      status: 201,
+      json: { invitation: created(body.message) },
+    }),
+  });
+  const panel = await findSarah(page);
+  const input = panel.getByRole('textbox', {
+    name: 'Your message',
+    exact: true,
+  });
+  for (const text of [
+    '\u200b',
+    '\u200c\u200d\ufe0f',
+    ' \n\u2060\u200e\u0001 ',
+  ]) {
+    await input.fill(text);
+    await panel.getByRole('button', { name: 'Send invitation' }).click();
+    await expect(panel.getByRole('alert')).toContainText(
+      'Write a message with visible content before sending.',
+    );
+    await expect(input).toHaveValue(text);
+    expect(
+      requests.filter((request) => request.path === '/api/invitations'),
+    ).toHaveLength(0);
+  }
+  const text = 'ქართული می\u200cخواهم 👨\u200d👩\u200d👧\u200d👦 ❤️';
+  await input.fill(text);
+  await panel.getByRole('button', { name: 'Send invitation' }).click();
+  await expect(
+    panel.getByRole('status').filter({ hasText: 'Invitation sent to Sarah.' }),
+  ).toBeVisible();
+  expect(requests.at(-1).body.message).toBe(text);
 });

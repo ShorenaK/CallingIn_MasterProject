@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Field, Feedback } from './Fields.jsx';
 import { errorMessage } from './api.js';
 
-/** @param {{user: import('./api.js').User, submit: (path: string, body: unknown, method?: string) => Promise<void>}} props */
-export function Profile({ user, submit }) {
+/** @param {{user: import('./api.js').User, submit: (path: string, body: unknown, method?: string) => Promise<void>, headingRef: import('react').RefObject<HTMLHeadingElement | null>}} props */
+export function Profile({ user, submit, headingRef }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -32,7 +32,9 @@ export function Profile({ user, submit }) {
   return (
     <section className="account-card" aria-labelledby="profile-title">
       <p className="eyebrow">Your space</p>
-      <h2 id="profile-title">Hello, {user.displayName}</h2>
+      <h2 id="profile-title" ref={headingRef} tabIndex={-1}>
+        Hello, {user.displayName}
+      </h2>
       <Feedback error={error} notice={notice} />
       <form onSubmit={save} aria-busy={busy}>
         <fieldset disabled={busy}>

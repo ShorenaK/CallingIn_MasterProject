@@ -171,7 +171,7 @@ function ComposeMessage({ send }) {
 /** @param {{busy: boolean, cancelRef: import('react').RefObject<HTMLButtonElement | null>, onCancel: () => void}} props */
 function ComposeActions({ busy, cancelRef, onCancel }) {
   return (
-    <div className="invitation-actions">
+    <div className="invitation-actions compose-actions">
       <button type="submit">{busy ? 'Sending…' : 'Send invitation'}</button>
       <button
         type="button"
@@ -202,8 +202,8 @@ function MessageFields({ send }) {
         />
       </label>
       <p id="message-hint" className="field-hint">
-        Write in your own words. Up to {numbers.format(MESSAGE_MAX)} characters;
-        some emoji count as two.
+        Write in your own words and include visible content. Up to{' '}
+        {numbers.format(MESSAGE_MAX)} characters; some emoji count as two.
       </p>
       <MessageCounter length={length} />
     </>

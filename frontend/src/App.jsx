@@ -1,68 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useRef } from 'react';
 import logo from '../../public/images/logo1.png';
 import './App.css';
 import { Account } from './account/Account.jsx';
 
-/** @typedef {'loading' | 'connected' | 'error'} ConnectionStatus */
-
-function useBackendConnection() {
-  const [connection, setConnection] = useState(
-    /** @type {ConnectionStatus} */ ('loading'),
-  );
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    let active = true;
-
-    async function checkHealth() {
-      try {
-        const response = await fetch('/api/health', {
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error('Health request failed');
-        const data = await response.json();
-        if (data.status !== 'ok') throw new Error('Unexpected health response');
-        if (active) setConnection('connected');
-      } catch {
-        if (active) setConnection('error');
-      } finally {
-        clearTimeout(timeout);
-      }
-    }
-
-    checkHealth();
-    return () => {
-      active = false;
-      clearTimeout(timeout);
-      controller.abort();
-    };
-  }, [attempt]);
-
-  function retry() {
-    setConnection('loading');
-    setAttempt((value) => value + 1);
-  }
-  return { connection, retry };
-}
-
-function Welcome() {
+/** @param {{onAccountNavigate: (event: import('react').MouseEvent<HTMLAnchorElement>) => void}} props */
+function Welcome({ onAccountNavigate }) {
   return (
     <section className="welcome" aria-labelledby="welcome-title">
       <div>
         <p className="eyebrow">A little courage. A meaningful connection.</p>
         <h1 id="welcome-title">Begin the conversations that matter most.</h1>
         <p className="intro">
-          Welcome to CallingIn — a space being built to help you find the words,
+          Welcome to CallingIn, a space being built to help you find the words,
           while keeping your voice.
         </p>
         <p className="description">
           Our vision is AI-assisted communication that supports thoughtful
           expression and respects each person’s choice to connect.
         </p>
-        <a className="learn-link" href="#project-status">
-          See where we are <span aria-hidden="true">↓</span>
+        <a className="learn-link" href="#account" onClick={onAccountNavigate}>
+          Go to your account <span aria-hidden="true">↓</span>
         </a>
       </div>
       <img
@@ -76,67 +33,40 @@ function Welcome() {
   );
 }
 
-/** @param {{connection: ConnectionStatus, retry: () => void}} props */
-function ProjectStatus({ connection, retry }) {
-  const messages = {
-    loading: 'Checking the connection…',
-    connected: 'Backend connected. The application foundation is ready.',
-    error: 'Unable to reach the backend. Please try again.',
-  };
-  return (
-    <section
-      className="project-status"
-      id="project-status"
-      aria-labelledby="status-title"
-    >
-      <div>
-        <p className="eyebrow">Sprint 2 · Accounts</p>
-        <h2 id="status-title">Every conversation starts somewhere.</h2>
-        <p>
-          Create an account, sign in, and manage your profile. AI assistance,
-          invitations, and messaging are planned for future sprints.
-        </p>
-      </div>
-      <div className="connection-panel">
-        <h3>Connection status</h3>
-        <p className={`connection ${connection}`} role="status">
-          {messages[connection]}
-        </p>
-        <button
-          type="button"
-          disabled={connection === 'loading'}
-          onClick={retry}
-        >
-          {connection === 'loading' ? 'Checking…' : 'Check again'}
-        </button>
-      </div>
-    </section>
-  );
-}
-
 function App() {
-  const { connection, retry } = useBackendConnection();
+  const navigationRef = useRef(/** @type {(() => void) | null} */ (null));
+  /** @param {import('react').MouseEvent<HTMLAnchorElement>} event */
+  function onAccountNavigate(event) {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    if (navigationRef.current) {
+      event.preventDefault();
+      navigationRef.current();
+    }
+  }
   return (
     <div className="page">
       <header className="header">
         <a className="wordmark" href="/" aria-label="CallingIn home">
           Calling<span>In</span>
         </a>
-        <a className="learn-link" href="#account">
+        <a className="learn-link" href="#account" onClick={onAccountNavigate}>
           Your account
         </a>
       </header>
       <main>
-        <Welcome />
+        <Welcome onAccountNavigate={onAccountNavigate} />
         <div id="account">
-          <Account />
+          <Account navigationRef={navigationRef} />
         </div>
-        <ProjectStatus connection={connection} retry={retry} />
       </main>
-      <footer>
-        CallingIn · CS 8674 · Fall 2026{' '}
-        <span>Thoughtful words. Your choice.</span>
-      </footer>
+      <footer className="site-footer">© 2026 CallingIn</footer>
     </div>
   );
 }

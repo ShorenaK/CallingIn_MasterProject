@@ -1,3 +1,4 @@
+import { hasMessageContent } from '../message-content.js';
 import { useState } from 'react';
 import { ApiError, errorMessage } from '../account/api.js';
 import { createInvitation, lookupRecipient, MESSAGE_MAX } from './api.js';
@@ -91,7 +92,8 @@ function lookupProblem(failure) {
 /** @param {string} message */
 function draftProblem(message) {
   const length = message.trim().length;
-  if (length === 0) return 'Write a message before sending.';
+  if (!hasMessageContent(message))
+    return 'Write a message with visible content before sending.';
   if (length > MESSAGE_MAX)
     return `Shorten your message to ${MESSAGE_MAX.toLocaleString()} characters or fewer.`;
   return '';

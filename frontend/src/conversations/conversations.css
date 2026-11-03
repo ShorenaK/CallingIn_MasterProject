@@ -1,0 +1,55 @@
+.conversation-panel {
+  max-width: 800px;
+  margin: 24px auto;
+}
+.conversation-context,
+.message-history,
+.reply-composer {
+  margin-top: 24px;
+}
+.conversation-context summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.conversation-messages {
+  display: grid;
+  gap: 16px;
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+}
+.conversation-message {
+  max-width: 90%;
+  min-width: 0;
+  padding: 14px 18px;
+  border: 1px solid #d9e4df;
+  border-radius: 16px;
+  background: #fffaf4;
+  overflow-wrap: anywhere;
+}
+.message-own {
+  margin-left: auto;
+  background: #e6f3ef;
+}
+.message-author {
+  margin: 0;
+  color: #46646a;
+  font-size: 14px;
+}
+.conversation-message p:last-child {
+  margin-bottom: 0;
+}
+.message-history > button + button {
+  margin-left: 12px;
+}
+@media (max-width: 700px) {
+  .conversation-message {
+    max-width: 100%;
+  }
+  .message-history > button {
+    width: 100%;
+  }
+  .message-history > button + button {
+    margin-left: 0;
+  }
+}

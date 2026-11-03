@@ -1,3 +1,11 @@
+import {
+  readBattery,
+  saveBattery,
+  readPartnerBattery,
+} from './social-battery.js';
+import { requireConversation } from './conversation-access.js';
+import { sendMessage, listMessages } from './messages.js';
+import { createMessageRateLimiter } from './message-rate-limit.js';
 import express from 'express';
 import { register } from './registration.js';
 import { login, logout, currentUser, updateProfile } from './authentication.js';
@@ -11,9 +19,11 @@ import { createInvitationRateLimiter } from './invitation-rate-limit.js';
 
 import { listInvitations } from './invitation-listing.js';
 
+import { openConversation } from './conversation-opening.js';
+
 import { respondToInvitation } from './invitation-response.js';
 
-const accountRoutes = ['/api/users', '/api/invitations'];
+const accountRoutes = ['/api/users', '/api/invitations', '/api/conversations'];
 
 /**
  * Startup prepares database-backed sessions before handing middleware to this
@@ -58,7 +68,26 @@ export function createApp(db, authentication) {
     app.get('/api/auth/me', currentUser);
     app.patch('/api/auth/me', updateProfile);
     app.use(accountRoutes, authentication.sessionMiddleware, requireAccount);
+    app.get('/api/users/me/social-battery', readBattery);
+    app.patch('/api/users/me/social-battery', saveBattery);
+    app.get(
+      '/api/conversations/:id/social-battery',
+      requireConversation,
+      readPartnerBattery,
+    );
+    app.get(
+      '/api/conversations/:id/messages',
+      requireConversation,
+      listMessages,
+    );
+    app.post(
+      '/api/conversations/:id/messages',
+      createMessageRateLimiter(),
+      requireConversation,
+      sendMessage,
+    );
     app.get('/api/invitations', listInvitations);
+    app.post('/api/invitations/:id/conversation', openConversation);
     app.patch('/api/invitations/:id/response', respondToInvitation);
     app.post('/api/users/lookup', createLookupRateLimiter(), lookupRecipient);
     app.post(

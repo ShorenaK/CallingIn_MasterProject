@@ -1,9 +1,11 @@
+import { prepareMessages } from './message-storage.js';
 import { createApp } from './app.js';
 import { connectDatabase } from './database.js';
 import { prepareUsers } from './registration.js';
 import { createSessionMiddleware } from './session.js';
 import { createRequestProtection } from './request-protection.js';
 import { prepareInvitations } from './invitation-storage.js';
+import { prepareConversations } from './conversation-storage.js';
 
 /**
  * @param {import('express').Express} app
@@ -94,6 +96,8 @@ const defaults = {
   connect: connectDatabase,
   prepare: prepareUsers,
   prepareInvitations,
+  prepareConversations,
+  prepareMessages,
   makeApp: createApp,
   prepareAuthentication,
   env: process.env,
@@ -109,6 +113,8 @@ export async function startBackend(options = {}) {
     connect,
     prepare,
     prepareInvitations,
+    prepareConversations,
+    prepareMessages,
     makeApp,
     prepareAuthentication,
     env,
@@ -127,6 +133,12 @@ export async function startBackend(options = {}) {
     stage =
       'Invitation storage setup failed. Check database access and validation; schema differences require an administrator update.';
     await prepareInvitations(database.db);
+    stage =
+      'Conversation storage setup failed. Check database access and validation; schema differences require an administrator update.';
+    await prepareConversations(database.db);
+    stage =
+      'Message storage setup failed. Check database access and validation; schema differences require an administrator update.';
+    await prepareMessages(database.db);
     stage =
       'Authentication setup failed. Check SESSION_SECRET, APP_ORIGIN, and session storage permissions.';
     const authentication = await prepareAuthentication(database.db, env);

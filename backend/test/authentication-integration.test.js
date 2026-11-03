@@ -21,6 +21,13 @@ before(async () => {
   };
 });
 
+const indexOnlyStorage = { createIndex: async () => {} };
+const startupCollections = new Set([
+  'invitations',
+  'conversations',
+  'messages',
+]);
+
 function simulatedDatabase() {
   const records = new Map();
   // Real Express/session/store modules operate against this narrow MongoDB fake.
@@ -66,10 +73,11 @@ function simulatedDatabase() {
   const db = {
     databaseName: 'auth_integration_test',
     listCollections: () => ({ next: async () => null }),
-    createCollection: async (name) => assert.equal(name, 'invitations'),
+    createCollection: async (name) =>
+      assert.ok(['invitations', 'conversations', 'messages'].includes(name)),
     collection(name) {
       if (name === 'users') return users;
-      if (name === 'invitations') return { createIndex: async () => {} };
+      if (startupCollections.has(name)) return indexOnlyStorage;
       assert.equal(name, 'sessions');
       return sessions;
     },

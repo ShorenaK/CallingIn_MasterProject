@@ -1,0 +1,91 @@
+.account-card.social-battery {
+  max-width: 960px;
+}
+.social-battery button[type='submit'] {
+  width: 100%;
+  min-height: 48px;
+}
+.battery-choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+.battery-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 18px;
+  text-align: center;
+  border: 1px solid #e8e1d9;
+  border-radius: 18px;
+  cursor: pointer;
+  color: #153b50;
+  background: white;
+}
+.battery-choice:has(input:checked) {
+  border-color: #007d89;
+  box-shadow: 0 0 0 1px #007d89;
+}
+.battery-choice:focus-within {
+  outline: 3px solid #ac420f;
+  outline-offset: 5px;
+}
+.battery-choice input {
+  margin-top: auto;
+  width: 22px;
+  height: 22px;
+  accent-color: #007d89;
+}
+.battery-icon {
+  width: 112px;
+  max-width: 100%;
+  height: 52px;
+  flex-shrink: 0;
+}
+.battery-choice .battery-icon {
+  width: 132px;
+  height: auto;
+}
+.battery-shell {
+  fill: white;
+  stroke: #076573;
+  stroke-width: 2;
+}
+.battery-terminal {
+  fill: #076573;
+}
+.battery-empty {
+  fill: #d4d9d9;
+}
+.battery-filled {
+  stroke: #076573;
+  stroke-width: 0.5;
+}
+.battery-open .battery-filled {
+  fill: #00ad45;
+}
+.battery-busy .battery-filled {
+  fill: #ffad00;
+}
+.battery-space .battery-filled {
+  fill: #ff9b93;
+}
+.partner-battery {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid #b8d6cf;
+  border-radius: 12px;
+}
+.battery-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+@media (max-width: 650px) {
+  .battery-choices {
+    grid-template-columns: 1fr;
+  }
+}
