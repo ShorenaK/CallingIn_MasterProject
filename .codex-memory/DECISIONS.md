@@ -94,3 +94,40 @@ history. Revalidate version-compatibility findings when they are revisited.
   practical explanations and life analogies are the user's preference. No full
   transcript or measured research benefits are claimed. This save is not submission
   approval; local memory needs a separately approved commit/push for durable sharing.
+
+## November 3, 2026 — Sprint 4 implementation and verification superseding notes
+
+- Session 004 supersedes pre-implementation Sprint 4 notes: conversations,
+  private messages, UI, Social Battery and permanent regression tests exist on
+  Sprint 4 at 589032c; not yet merged into main at 1db8bd9.
+- Accepted invitations authorize one shared room, opened separately with an
+  idempotent upsert/unique index. Each message/history/battery request verifies
+  account and participant authorization. Sender/IDs/time derive from server.
+- Message history cursor default 20/max 50; sending 60 attempts/account/minute
+  across rooms, process-local. Visible trimmed text 1–5,000 UTF-16 units plus
+  independent 16 KB JSON limit. Invisible-only input rejected without removing
+  multilingual/joiner/emoji content. No blind migration/validator weakening.
+- Social Battery earlier undecided status is superseded: owner-saved open/busy/
+  space, absent Not set, optional users field, private room-partner visibility,
+  manual refresh, no contact blocking/diagnosis/automatic expiry/people count.
+  Approved final SVG design: full green, half amber, low coral; horizontal cards,
+  full-width Save Status; native radios and labels accompany color.
+- Conversation replies are page-memory only; errors/expiry preserve copyable
+  text, sign-in is explicit. Both account links require confirmation for written
+  replies and block during sending; Keep writing focuses the reply. Invitation
+  drafts remain separate/preserved. No new routing package or dependency.
+- Claude reviewed fd0b855 with no blockers; later fixes/navigation need focused
+  follow-up. Preserve distinction among simulated tests, mocked browser tests,
+  user reports, independent live batch, and human accessibility evidence.
+- Current report checkpoint: 267 backend tests, 79 mocked Chromium tests, 101 live
+  assertions; historical checks, not rerun by Save. Live test records remain;
+  do not automatically clean up accounts or data. No test passwords retained.
+- The user's duplicate concern was corrected, not a confirmed defect; no
+  duplicate policy/data change made. Permanent invitation pair blocking remains;
+  30-day retry still deferred. Card/font alignment and optional refactors deferred.
+- User intends review then merge. This is not final authorization to merge with
+  outstanding checks or to skip acceptance of limitations. Explain readiness,
+  finish/accept remaining checks, and obtain explicit final merge approval.
+- Latest Save authorizes memory only. Canonical main memory plus matching Desktop
+  copy are local until separately approved commit/push. No branch change, review
+  invocation, cleanup, merge or full-transcript archive is included.
