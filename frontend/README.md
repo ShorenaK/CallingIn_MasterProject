@@ -28,13 +28,19 @@ npm ci
 npm start
 ```
 
-Open http://127.0.0.1:5173/. The welcome page checks `/api/health` through
-Vite’s development proxy, which forwards `/api` requests to Express at
-http://127.0.0.1:3001. Use the default backend port for this configuration.
-Stop each server with Ctrl+C in its terminal.
+Open http://127.0.0.1:5173/. Vite’s development proxy forwards `/api` requests
+to Express at http://127.0.0.1:3001. Use the default backend port for this
+configuration. The welcome page no longer makes a health request; the health
+endpoint remains available for an explicit check. Stop each server with Ctrl+C.
 
-The page uses the existing logo at `../public/images/logo1.png`.
-Accounts, AI assistance, invitations, and messaging are not implemented.
+The app uses the logo at `../public/images/logo1.png`. Accounts, invitations,
+private conversations, and Social Battery are implemented. Accepted invitations
+offer Open conversation; messages and partner availability refresh manually.
+Social Battery is saved by its owner and does not block communication. AI
+assistance remains future work.
+
+Configure the backend using the project README before starting it; runtime
+startup needs MongoDB and the account-session/origin settings.
 
 ## Verification commands
 
@@ -52,7 +58,12 @@ From `frontend/`, create a production build:
 npm run build
 ```
 
-The build writes to `frontend/dist/`.
+The build writes to `frontend/dist/`. For review, use a scratch directory to
+preserve the tracked build output, for example from the repository root:
+
+```bash
+npm --prefix frontend run build -- --outDir /private/tmp/callingin-review-build
+```
 
 ## Code quality
 
@@ -74,12 +85,24 @@ From `backend/`, run the HTTP endpoint tests:
 npm test
 ```
 
-Tests use Node’s built-in test runner and temporary localhost ports.
-They verify the health endpoint’s HTTP status, JSON content type and body,
-and that an unknown API route returns 404. No database or AI service is needed.
+Backend tests use Node’s built-in test runner and temporary localhost ports.
+They cover accounts, sessions, invitations, conversations, messages, Social Battery,
+and failure paths using simulated database methods. No live Atlas or AI service
+is needed for these tests.
 
-Lint, formatting checks, both backend tests, and the frontend production
-build should pass before review.
+From the repository root, also run:
+
+```bash
+npm run typecheck
+npm run test:coverage
+npm run test:e2e
+```
+
+Playwright uses Chromium with mocked APIs and includes accessibility scans.
+Record those results separately from real backend/database and human checks.
+Lint, formatting, type checks, relevant test suites, and a scratch production
+build should pass before review. Current evidence and remaining live/manual
+checks are in the [Sprint 4 progress notes](../doc/sprint-04/sprint-04-progress.md).
 
 ## Pre-commit checks
 

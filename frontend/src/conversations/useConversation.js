@@ -13,10 +13,12 @@ export function useConversation(invitationId, userId, onExpired) {
     /** @type {import('./api.js').Conversation | null} */ (null),
   );
   const [error, setError] = useState('');
+  const [canRetry, setCanRetry] = useState(true);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let active = true;
     setError('');
+    setCanRetry(true);
     openConversation(invitationId, userId)
       .then((value) => {
         if (active) setRoom(value);
@@ -24,13 +26,25 @@ export function useConversation(invitationId, userId, onExpired) {
       .catch((failure) => {
         if (!active) return;
         if (sessionExpired(failure)) onExpired();
-        else setError(errorMessage(failure));
+        else {
+          setCanRetry(
+            !(
+              failure instanceof ApiError && [404, 409].includes(failure.status)
+            ),
+          );
+          setError(errorMessage(failure));
+        }
       });
     return () => {
       active = false;
     };
   }, [invitationId, userId, onExpired, attempt]);
-  return { room, error, retry: () => setAttempt((value) => value + 1) };
+  return {
+    room,
+    error,
+    canRetry,
+    retry: () => setAttempt((value) => value + 1),
+  };
 }
 
 /** @typedef {{status: 'loading' | 'ready' | 'error' | 'expired', messages: import('./api.js').Message[], nextCursor: string | null, error: string, moreError: string, busy: boolean, notice: string, focusId: string | null}} HistoryState */
@@ -52,8 +66,9 @@ export function useMessageHistory(roomId, onExpired) {
   const [attempt, setAttempt] = useState(0);
   const generation = useRef(0);
   const morePending = useRef(false);
+  const loading = useRef(true);
   useEffect(
-    () => startHistory({ roomId, onExpired, setState, generation }),
+    () => startHistory({ roomId, onExpired, setState, generation, loading }),
     [roomId, onExpired, attempt],
   );
   async function loadOlder() {
@@ -99,6 +114,8 @@ export function useMessageHistory(roomId, onExpired) {
     }));
   }
   function refresh() {
+    if (loading.current) return;
+    loading.current = true;
     morePending.current = false;
     generation.current += 1;
     setAttempt((value) => value + 1);
@@ -118,15 +135,21 @@ function mergeMessages(current, incoming) {
   );
 }
 
-/** @param {{roomId?: string, onExpired: () => void, setState: import('react').Dispatch<import('react').SetStateAction<HistoryState>>, generation: import('react').RefObject<number>}} options */
-function startHistory({ roomId, onExpired, setState, generation }) {
+/** @param {{roomId?: string, onExpired: () => void, setState: import('react').Dispatch<import('react').SetStateAction<HistoryState>>, generation: import('react').RefObject<number>, loading: import('react').RefObject<boolean>}} options */
+function startHistory({ roomId, onExpired, setState, generation, loading }) {
   const version = ++generation.current;
+  loading.current = true;
   setState(initial);
   if (roomId)
     listMessages(roomId)
       .then((page) => {
         if (version === generation.current)
-          setState({ ...initial, ...page, status: 'ready' });
+          setState({
+            ...initial,
+            ...page,
+            status: 'ready',
+            notice: 'Messages updated.',
+          });
       })
       .catch((failure) => {
         if (version !== generation.current) return;
@@ -143,6 +166,9 @@ function startHistory({ roomId, onExpired, setState, generation }) {
             status: 'error',
             error: errorMessage(failure),
           });
+      })
+      .finally(() => {
+        if (version === generation.current) loading.current = false;
       });
   return () => {
     generation.current += 1;

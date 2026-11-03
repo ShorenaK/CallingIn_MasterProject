@@ -4,8 +4,11 @@
 
 **Branch:** `sprint-04-conversations`
 
-**Current work:** User-guided live/manual testing is in progress. Claude reviewed
-`fd0b855`; later approved fixes were checked locally. Sprint closeout remains pending.
+**Current work:** Claude reviewed `fd0b855`, then the complete Sprint 4 source at
+`589032c`. Approved follow-up fixes and 13 new browser regressions are complete
+locally; the full combined suite passed 92 Chromium tests. Live/manual limits and
+Sprint closeout remain pending. See the
+[latest review](quality-review-2026-11-03-589032c.md).
 
 See [Sprint 4 progress notes](sprint-04-progress.md) for implementation history,
 commits, verification evidence, and the planned testing/editing/review sequence.
@@ -68,21 +71,25 @@ the corrected smoke run passed. No Atlas, human keyboard-only, Safari,
 VoiceOver, or actual phone check was performed during this UI work.
 
 These conversation UI changes were committed and pushed as `ccce3c4`. Dedicated
-messaging browser regression tests have now been added locally on November 3.
-Live/manual checks, Claude review, and GitHub Quality verification remain pending.
+messaging regression tests were subsequently committed. Claude reviewed the later
+source at `589032c`; the 101-assertion live report records completed live work and
+its remaining limits. Current submitted-commit GitHub Quality is still pending.
 
-**Social Battery is implemented locally with Shorena's November 3 approval.**
-Three SVG battery choices (teal/full, golden yellow/partly filled, aqua/low) are
+**Social Battery is implemented with Shorena's November 3 approval.** The older
+review request saying it was undecided was stale; no product-scope reversal is
+needed. Final SVG choices (green/full, amber/half-filled, soft-coral/low) are
 saved explicitly and visible only to accepted conversation partners. Existing
 accounts start Not set. Status does not restrict invitations or messages.
 See the [behavior and API reference](social-battery.md).
 
 ## 2. Browser tests
 
-**November 3 local result:** 64 Chromium tests passed with mocked APIs, including
-axe scans. Backend coverage: 241 tests passed, 100% lines/functions, 98.34%
-branches, using simulated storage. Lint/type checks and a scratch production build
-passed. See the [progress record](sprint-04-progress.md) for scope and limitations.
+**Reviewed checkpoint `589032c`:** 79 Chromium tests passed with mocked APIs,
+including axe scans; 267 backend tests passed, 100% lines/functions, 98.35%
+branches, using simulated storage. Claude independently reran those checks.
+Earlier 64-browser/241-backend results describe the initial Social Battery
+checkpoint, not the current total. See the [progress record](sprint-04-progress.md)
+for scope, subsequent follow-up results, and remaining limitations.
 
 - [x] Add browser tests for opening an accepted conversation, sending replies,
       reading history, and loading older messages using the new screens.
@@ -164,8 +171,15 @@ passed. See the [progress record](sprint-04-progress.md) for scope and limitatio
       [quality-review skill](../../.claude/skills/quality-review/SKILL.md)
       against the Sprint 4 changes. This is an independent review, not merely
       another test run; record the reviewed commit and checks actually run.
-      Reviewed `fd0b855`; later changes still need focused follow-up.
+      Reviewed `fd0b855`, then full Sprint 4 source at `589032c` in the
+      [latest report](quality-review-2026-11-03-589032c.md). Approved follow-up
+      changes are subsequent work, not part of that review verdict.
 - [x] Record findings and obtain approval for fixes, then verify those fixes.
+      Latest local follow-up: refresh/older-history focus, completion announcement,
+      consistent Keep writing focus, permanent opening-error handling, docs, and
+      13 new regressions; all 92 mocked Chromium tests passed. Lint, type checks,
+      formatting, whitespace and scratch build passed. No new live/hosted result
+      or independent review of these subsequent edits is implied.
 - [ ] Run final relevant backend/browser checks, lint, formatting, type checks,
       and a scratch frontend build without modifying tracked dist output.
 - [ ] Ask before new network audits/checks; verify Sprint 4 GitHub Quality and

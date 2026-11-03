@@ -204,10 +204,11 @@ behavior. Completion depends on actual evidence, not the planned date.
 
 ### Independent review and closeout
 
-- [ ] Have Claude manually run the repository's
-      [quality-review skill](../../.claude/skills/quality-review/SKILL.md) after
-      testing and approved edits. Record the exact reviewed commit/scope and
-      checks actually completed. Claude has not reviewed Sprint 4 yet.
+- [x] Have Claude manually run the repository's
+      [quality-review skill](../../.claude/skills/quality-review/SKILL.md).
+      Reviews cover `fd0b855` and subsequently the complete Sprint 4 source at
+      `589032c`; see the dated review records. New follow-up changes are not
+      automatically covered by an earlier review.
 - [ ] Review findings with Shorena; approve fixes, implement, and verify them.
 - [ ] Finish API/setup/current-state documentation, including stale future-feature
       wording in shared documentation as appropriate to the approved workflow.
@@ -321,7 +322,10 @@ no routing package, backend permission change, or database migration was added.
 Claude's [November 3 review](quality-review-2026-11-03.md) found no blockers at
 `fd0b855`. Approved fixes and invisible-only validation were implemented afterward.
 The optional query reuse and shared storage-preparation refactors remain deferred.
-Claude has not independently reviewed every later change or this navigation fix.
+This was the review status at the navigation checkpoint. Claude subsequently
+reviewed the complete `589032c` source, including navigation, in
+[the later report](quality-review-2026-11-03-589032c.md). Its approved follow-ups
+are recorded below.
 
 ### Verification performed after the latest source changes
 
@@ -381,10 +385,69 @@ open test used an already created room, not an initial creation race.
 - Human keyboard-only walkthrough, VoiceOver, Safari, 200% zoom, and an actual phone.
 - Card/font alignment remains deferred. AI Coach/Freemium/Premium remain future
   planning; no subscription or payment implementation is included.
-- Focused independent review of later fixes/navigation, current submitted-commit
-  GitHub Quality verification, final documentation cleanup, and explicit merge
-  approval. The shared README still needs implementation-status updates when the
+- Complete the approved findings from Claude's later `589032c` review, verify
+  current submitted-commit GitHub Quality, finish documentation cleanup, and obtain
+  explicit merge approval. The shared README still needs implementation-status updates when the
   approved merge brings Sprint 4 onto main.
 
 User-reported, automated simulated/mocked, and independently measured live results
 remain distinct. Neither coverage nor a green live batch proves every scenario.
+
+## November 3 — Approved follow-up to Claude's `589032c` review
+
+Shorena approved the recommended fixes after Codex read
+[Claude's complete Sprint 4 review](quality-review-2026-11-03-589032c.md).
+The reviewed application source is `589032c`; subsequent `1304763` added only
+memory/journey documentation. Claude's report is preserved as its independent
+assessment, not rewritten to claim the follow-up changes were reviewed.
+
+### Implemented follow-ups
+
+- Refresh messages and Load older messages remain focusable during their own
+  requests, using `aria-disabled` plus request guards rather than disabling the
+  focused button. Repeated refresh activation is ignored while the request is
+  pending. A completed history fetch announces **Messages updated.** Failed
+  older-page loads retain keyboard focus; successful older pages focus the first
+  newly loaded message as before.
+- Keep writing now returns focus to the reply for both Back to invitations and
+  account navigation. Existing draft/discard behavior remains intact.
+- Opening errors 404/409 offer the server explanation and Back to invitations,
+  without a Try again action that cannot fix that response. Recoverable opening
+  errors still support retry; 401 retains the explicit sign-in flow.
+- Added 13 permanent browser regressions for refresh focus/completion/repeated
+  activation, failed older loads, 401/404/409 opening, malformed/mismatched room
+  responses, late opening results after navigation, 400/404 send failures, and
+  Tab/Shift+Tab traversal including confirmation controls.
+- Updated the frontend README's obsolete health-panel/feature descriptions and
+  test instructions. Corrected current battery colors, historical test-count
+  labels, and stale review-pending language in the sprint records.
+
+The request used for Claude's review said Social Battery was unimplemented;
+that was an outdated Codex prompt. Actual source and the recorded November 3
+approval show it is implemented. The latest review limited its battery reading
+to conversation integration because of that prompt; the earlier `fd0b855` review
+and existing battery tests remain separate evidence. No product-scope reversal
+or additional Social Battery implementation was needed to reconcile this.
+
+### Verification
+
+The two new focus regressions failed before the fixes, reproducing loss of focus
+after refresh and a failed older-page load. After the changes, **49 targeted
+Chromium tests passed**, including existing conversation/navigation cases and all
+13 new review regressions. The subsequent **full combined suite passed all 92
+Chromium tests**. These use mocked APIs and include axe scans.
+
+Repository lint, frontend/backend type checks, whole-repository formatting,
+whitespace checks, and the scratch production build passed. Output was isolated
+at `/private/tmp/callingin-review-fixes-build`; tracked dist was unchanged.
+Backend runtime code was not changed, so its latest 267-test result remains the
+previous independently recorded review evidence, not a suite rerun for these
+frontend/documentation fixes.
+
+No live database check, network audit, hosted GitHub check, human accessibility
+walkthrough, new browser engine, or Claude re-review was performed during this
+follow-up. Raw-database/startup/backup, remaining login/expiry/clipboard and human
+keyboard/VoiceOver/Safari/zoom/actual-phone gaps remain open. Main README cleanup
+is still planned with the approved merge workflow; optional database-query reuse
+and shared storage-preparation refactors remain deferred. No Git submission or
+merge is included in this implementation approval.

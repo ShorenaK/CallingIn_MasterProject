@@ -81,7 +81,8 @@ function MessageHistory({ history, userId, otherName, expired, sending }) {
         type="button"
         className="secondary-button"
         onClick={history.refresh}
-        disabled={expired || sending || history.status === 'loading'}
+        disabled={expired || sending}
+        aria-disabled={history.status === 'loading' || undefined}
       >
         Refresh messages
       </button>
@@ -194,7 +195,6 @@ function LeaveConfirmation({ onKeep, onLeave, destination }) {
 /** @param {ConversationProps & {reply: ReturnType<typeof useReply>, leave: ReturnType<typeof useConversationLeave>}} props */
 function ConversationHeading({ invitation, expired, onSignIn, reply, leave }) {
   const title = useRef(/** @type {HTMLHeadingElement | null} */ (null));
-  const back = useRef(/** @type {HTMLButtonElement | null} */ (null));
   const previous = useRef(
     /** @type {import('./useConversationLeave.js').LeaveDestination | null} */ (
       null
@@ -205,9 +205,7 @@ function ConversationHeading({ invitation, expired, onSignIn, reply, leave }) {
   }, []);
   useEffect(() => {
     if (previous.current && !leave.destination) {
-      if (previous.current === 'account')
-        document.getElementById('conversation-reply')?.focus();
-      else back.current?.focus();
+      document.getElementById('conversation-reply')?.focus();
     }
     previous.current = leave.destination;
   }, [leave.destination]);
@@ -220,7 +218,6 @@ function ConversationHeading({ invitation, expired, onSignIn, reply, leave }) {
       <button
         type="button"
         className="secondary-button"
-        ref={back}
         disabled={reply.busy}
         onClick={leave.requestBack}
       >
@@ -249,7 +246,10 @@ function ConversationHeading({ invitation, expired, onSignIn, reply, leave }) {
 function OpeningStatus({ opening, expired }) {
   if (expired || opening.room) return null;
   return opening.error ? (
-    <Problem message={opening.error} onRetry={opening.retry} />
+    <Problem
+      message={opening.error}
+      onRetry={opening.canRetry ? opening.retry : undefined}
+    />
   ) : (
     <p role="status">Opening conversation…</p>
   );
@@ -264,7 +264,8 @@ function HistoryContent({ history, userId, otherName, expired }) {
           type="button"
           className="secondary-button"
           onClick={() => void history.loadOlder()}
-          disabled={expired || history.busy}
+          disabled={expired}
+          aria-disabled={history.busy || undefined}
         >
           {history.busy ? 'Loading…' : 'Load older messages'}
         </button>

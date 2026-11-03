@@ -144,7 +144,7 @@ test('keep/discard confirmation preserves reply and returns focus', async ({
   await expectAccessible(page);
   await panel.getByRole('button', { name: 'Keep writing' }).click();
   await expect(
-    panel.getByRole('button', { name: 'Back to invitations' }),
+    panel.getByRole('textbox', { name: 'Your reply', exact: true }),
   ).toBeFocused();
   await expect(
     panel.getByRole('textbox', { name: 'Your reply', exact: true }),
