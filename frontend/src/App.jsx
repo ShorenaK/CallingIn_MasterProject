@@ -1,51 +1,6 @@
-import { useEffect, useState } from 'react';
 import logo from '../../public/images/logo1.png';
 import './App.css';
 import { Account } from './account/Account.jsx';
-
-/** @typedef {'loading' | 'connected' | 'error'} ConnectionStatus */
-
-function useBackendConnection() {
-  const [connection, setConnection] = useState(
-    /** @type {ConnectionStatus} */ ('loading'),
-  );
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    let active = true;
-
-    async function checkHealth() {
-      try {
-        const response = await fetch('/api/health', {
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error('Health request failed');
-        const data = await response.json();
-        if (data.status !== 'ok') throw new Error('Unexpected health response');
-        if (active) setConnection('connected');
-      } catch {
-        if (active) setConnection('error');
-      } finally {
-        clearTimeout(timeout);
-      }
-    }
-
-    checkHealth();
-    return () => {
-      active = false;
-      clearTimeout(timeout);
-      controller.abort();
-    };
-  }, [attempt]);
-
-  function retry() {
-    setConnection('loading');
-    setAttempt((value) => value + 1);
-  }
-  return { connection, retry };
-}
 
 function Welcome() {
   return (
@@ -61,8 +16,8 @@ function Welcome() {
           Our vision is AI-assisted communication that supports thoughtful
           expression and respects each person’s choice to connect.
         </p>
-        <a className="learn-link" href="#project-status">
-          See where we are <span aria-hidden="true">↓</span>
+        <a className="learn-link" href="#account">
+          Go to your account <span aria-hidden="true">↓</span>
         </a>
       </div>
       <img
@@ -76,46 +31,7 @@ function Welcome() {
   );
 }
 
-/** @param {{connection: ConnectionStatus, retry: () => void}} props */
-function ProjectStatus({ connection, retry }) {
-  const messages = {
-    loading: 'Checking the connection…',
-    connected: 'Backend connected. The application foundation is ready.',
-    error: 'Unable to reach the backend. Please try again.',
-  };
-  return (
-    <section
-      className="project-status"
-      id="project-status"
-      aria-labelledby="status-title"
-    >
-      <div>
-        <p className="eyebrow">Sprint 2 · Accounts</p>
-        <h2 id="status-title">Every conversation starts somewhere.</h2>
-        <p>
-          Create an account, sign in, and manage your profile. AI assistance,
-          invitations, and messaging are planned for future sprints.
-        </p>
-      </div>
-      <div className="connection-panel">
-        <h3>Connection status</h3>
-        <p className={`connection ${connection}`} role="status">
-          {messages[connection]}
-        </p>
-        <button
-          type="button"
-          disabled={connection === 'loading'}
-          onClick={retry}
-        >
-          {connection === 'loading' ? 'Checking…' : 'Check again'}
-        </button>
-      </div>
-    </section>
-  );
-}
-
 function App() {
-  const { connection, retry } = useBackendConnection();
   return (
     <div className="page">
       <header className="header">
@@ -131,7 +47,6 @@ function App() {
         <div id="account">
           <Account />
         </div>
-        <ProjectStatus connection={connection} retry={retry} />
       </main>
       <footer>
         CallingIn · CS 8674 · Fall 2026{' '}

@@ -14,8 +14,6 @@ export async function mockApi(page, handler, { user } = {}) {
       route.request().method() === 'GET'
     )
       return route.fulfill({ json: { status: null } });
-    if (path === '/api/health')
-      return route.fulfill({ json: { status: 'ok' } });
     if (path === '/api/auth/me')
       return user
         ? route.fulfill({ json: { user } })

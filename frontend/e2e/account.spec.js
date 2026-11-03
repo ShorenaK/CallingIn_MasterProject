@@ -19,9 +19,6 @@ test('sign-in and registration expose labeled controls and pass axe scans', asyn
   await expect(
     page.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
-  await expect(
-    page.getByText('Backend connected. The application foundation is ready.'),
-  ).toBeVisible();
   await expectAccessible(page);
   await openRegistration(page);
   for (const rule of [
