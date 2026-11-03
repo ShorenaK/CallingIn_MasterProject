@@ -33,7 +33,7 @@ export function useConversation(invitationId, userId, onExpired) {
   return { room, error, retry: () => setAttempt((value) => value + 1) };
 }
 
-/** @typedef {{status: 'loading' | 'ready' | 'error', messages: import('./api.js').Message[], nextCursor: string | null, error: string, moreError: string, busy: boolean, notice: string, focusId: string | null}} HistoryState */
+/** @typedef {{status: 'loading' | 'ready' | 'error' | 'expired', messages: import('./api.js').Message[], nextCursor: string | null, error: string, moreError: string, busy: boolean, notice: string, focusId: string | null}} HistoryState */
 /** @type {HistoryState} */
 const initial = {
   status: 'loading',
@@ -130,8 +130,14 @@ function startHistory({ roomId, onExpired, setState, generation }) {
       })
       .catch((failure) => {
         if (version !== generation.current) return;
-        if (sessionExpired(failure)) onExpired();
-        else
+        if (sessionExpired(failure)) {
+          setState((current) => ({
+            ...current,
+            status: 'expired',
+            busy: false,
+          }));
+          onExpired();
+        } else
           setState({
             ...initial,
             status: 'error',

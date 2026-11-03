@@ -207,6 +207,13 @@ test('availability error does not block messaging; expiry retains the reply', as
   await expect(
     panel.getByRole('textbox', { name: 'Your unsent reply' }),
   ).toBeFocused();
+  await expect(panel.getByRole('alert')).toHaveCount(1);
+  await expect(panel.getByRole('alert')).toContainText(
+    'Your session has ended. Copy any unsent reply',
+  );
+  await expect(
+    panel.getByRole('region', { name: 'Sarah’s Social Battery' }),
+  ).toHaveCount(0);
   await expectAccessible(page);
 });
 
@@ -323,4 +330,67 @@ test('a delayed own-status expiry never discards an open reply', async ({
   await expect(
     panel.getByRole('textbox', { name: 'Your reply', exact: true }),
   ).toHaveValue('My reply stays');
+});
+
+for (const availabilityExpires of [false, true]) {
+  test(`first history load expiry stops loading with one notice; availability expiry=${availabilityExpires}`, async ({
+    page,
+  }) => {
+    const state = await mockConversation(page);
+    state.historyHandler = (route) => route.fulfill(failure(401));
+    if (availabilityExpires) state.batteryFailure = failure(401);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Open conversation' }).click();
+    const panel = page.getByRole('region', {
+      name: 'Conversation with Sarah',
+      exact: true,
+    });
+    await expect(panel.getByRole('alert')).toHaveCount(1);
+    await expect(panel.getByRole('alert')).toContainText(
+      'Your session has ended. Copy any unsent reply',
+    );
+    await expect(
+      panel.getByText('Loading messages…', { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByText('Loading availability…', { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByText('No messages yet.', { exact: false }),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByRole('textbox', { name: 'Your unsent reply' }),
+    ).toBeFocused();
+    await expect(
+      panel.getByRole('button', { name: 'Send reply' }),
+    ).toBeDisabled();
+    await expectAccessible(page);
+    await panel.getByRole('button', { name: 'Sign in again' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Welcome back' }),
+    ).toBeFocused();
+  });
+}
+
+test('history refresh expiry stops loading and keeps the unsent reply', async ({
+  page,
+}) => {
+  const state = await mockConversation(page);
+  const panel = await openRoom(page);
+  await expect(panel).toContainText('No messages yet.');
+  await panel
+    .getByRole('textbox', { name: 'Your reply', exact: true })
+    .fill('Keep this draft');
+  state.historyHandler = (route) => route.fulfill(failure(401));
+  await panel.getByRole('button', { name: 'Refresh messages' }).click();
+  await expect(
+    panel.getByRole('textbox', { name: 'Your unsent reply' }),
+  ).toHaveValue('Keep this draft');
+  await expect(
+    panel.getByRole('textbox', { name: 'Your unsent reply' }),
+  ).toBeFocused();
+  await expect(
+    panel.getByText('Loading messages…', { exact: true }),
+  ).toHaveCount(0);
+  await expect(panel.getByRole('alert')).toHaveCount(1);
 });

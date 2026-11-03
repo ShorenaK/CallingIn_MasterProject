@@ -13,6 +13,7 @@ export function PartnerBattery({ roomId, name, expired, onExpired }) {
   useEffect(() => {
     if (battery.expired) onExpired();
   }, [battery.expired, onExpired]);
+  if (expired || battery.expired) return null;
   return (
     <section
       className="partner-battery"
