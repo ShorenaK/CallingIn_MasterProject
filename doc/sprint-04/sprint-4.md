@@ -4,10 +4,16 @@
 
 **Branch:** `sprint-04-conversations`
 
-**Current work:** November 3 implementation and local automated testing; live/manual verification and independent review remain.
+**Current work:** User-guided live/manual testing is in progress. Claude reviewed
+`fd0b855`; later approved fixes were checked locally. Sprint closeout remains pending.
 
 See [Sprint 4 progress notes](sprint-04-progress.md) for implementation history,
 commits, verification evidence, and the planned testing/editing/review sequence.
+
+See the [November 3 live/manual test record](live-manual-testing-2026-11-03.md)
+for Shorena’s reported passes, the corrected duplicate-invitation report, and
+remaining checks. Broad live checklist items below stay open where only part of
+their scope has been confirmed.
 
 ## Completed backend work
 

@@ -7,11 +7,13 @@
 **Implementation checkpoint:** `ccce3c4`, pushed; clean working tree before
 this documentation update. This update itself is local until separately submitted.
 
-**Current status (November 3):** Conversation/messaging and Social Battery are
-implemented. Dedicated messaging and Social Battery regression tests pass locally.
-The November 3 battery/test/documentation changes are uncommitted. Live/manual
-verification and independent review remain; Sprint 4 is not complete or merged.
-The original November 2 implementation checkpoint below is historical.
+**Current status (November 3, live-testing update):** Implementation and approved
+follow-up fixes are pushed through `251ffbc`. Claude's independent review covered
+`fd0b855`; later fixes were checked locally. User-guided live testing is in progress.
+See the [live/manual test record](live-manual-testing-2026-11-03.md) for reported
+passes and the corrected duplicate-invitation observation. This new test record
+and its documentation links are local until separately submitted. Sprint 4 is not
+complete or merged. Earlier checkpoints below are historical.
 
 ## Working agreement
 

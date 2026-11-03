@@ -48,10 +48,7 @@ function App() {
           <Account />
         </div>
       </main>
-      <footer>
-        CallingIn · CS 8674 · Fall 2026{' '}
-        <span>Thoughtful words. Your choice.</span>
-      </footer>
+      <footer className="site-footer">© 2026 CallingIn</footer>
     </div>
   );
 }

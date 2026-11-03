@@ -91,11 +91,9 @@ button:disabled {
   opacity: 0.65;
   cursor: wait;
 }
-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 32px 0;
+.site-footer {
+  padding: 24px 0;
+  text-align: center;
   font-size: 13px;
   color: #46646a;
 }
@@ -114,10 +112,6 @@ footer {
   .brand-image {
     max-width: 320px;
     margin: auto;
-  }
-  footer {
-    flex-direction: column;
-    gap: 4px;
   }
 }
 
