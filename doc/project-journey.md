@@ -452,6 +452,90 @@ step is to define Sprint 4 from the actual plan and explicitly include its
 carried checks, rather than treating every deferred idea as a new sprint commitment.
 No branch deletion or production deployment is part of this closeout.
 
+## November 3, 2026 — Sprint 4: From a private room to a working conversation
+
+I asked to continue with Sprint 4 and to leave the completed Sprint 3 work alone.
+We restored the saved handoff and checked the actual branch and files before
+starting. My preference stayed the same: explain one step in everyday language,
+let me approve it, then implement it. I separately delegated each Git flow rather
+than giving standing permission to submit or merge future work.
+
+We built the conversation backend in stages: first a private room shared by the
+two people on an accepted invitation, then sending and reading messages. The room
+analogy helped explain the order: acceptance permits entry, participant checks
+provide the lock, and messaging lets the people inside exchange text. I later
+asked whether the conversation screens were part of testing or still needed to
+be built. The backend was ready, but there was no screen for reading and replying.
+After that distinction was explained, I approved building the screens. This was
+a concrete example of why I want progress described in terms of what I can use,
+not just which technical pieces exist.
+
+The screens now open from accepted invitations and support replies, older history,
+and manual refresh. Draft handling became an important part of the work. A failed
+request or expired session should not immediately remove text someone has written.
+The interface keeps the reply available to copy, asks before discarding it, and
+handles account navigation while a reply is being written or sent. These small
+interactions needed their own implementation and verification alongside the
+main messaging path.
+
+I initially said I was unsure about Social Battery, so it stayed undecided while
+messaging was built. The November 3 implementation record now documents the
+approved behavior and design: I choose and save my availability, and an accepted
+conversation partner can see it. It does not automatically decide how I feel or
+prevent communication. The final visual direction uses green, amber, and soft
+coral segmented batteries, with words and keyboard controls alongside the colors.
+The design went through separate approved adjustments, including a half-filled
+Busy icon, wider cards, and invitation-button alignment. This records an evolving
+choice, not approval inferred from the original semester plan.
+
+I asked for a progress record and a checklist so unfinished testing would stay
+visible. I also requested the November 3 meeting agenda, copied all five question
+sections from Meeting 4, and planned to add more questions. The questions remain
+questions; no advisor answers or meeting outcomes have been invented.
+
+Claude independently reviewed Sprint 4 at `fd0b855` and reported no blockers in
+that checkpoint. Its report also identified improvements, and the committed
+progress record documents approved fixes afterward. Later work added invisible-
+only text validation, visual cleanup, and guarded account navigation. The original
+review does not automatically cover every subsequent change. A focused follow-up
+is still needed before treating the latest implementation as independently reviewed.
+
+The latest committed progress record at `589032c` reports 267 backend tests using
+simulated storage, 79 Chromium tests using mocked APIs, and a separate independent
+live run with 101 assertions against the running application and configured
+MongoDB. The live report used isolated test accounts and recorded two-way messaging,
+availability updates, page-reload persistence, outsider rejection, and other actual
+outcomes. My reported checks and this independent run remain separate evidence.
+Neither the test counts nor the coverage figures establish that every scenario
+works. These are recorded implementation results, not checks repeated for this
+journey entry.
+
+Important limits remain visible: a page reload is not a backend restart, revoked
+sessions are not natural idle expiry, and an automated narrow viewport is not an
+actual phone check. Human keyboard-only use, VoiceOver, Safari, zoom, real clipboard
+copying, remaining database/startup/backup evidence, and some rate-limit boundaries
+still need completion or an explicit decision about their limits. A temporary extra
+smoke run was also blocked when automatic approval review could not complete under
+an account usage limit; it was not recorded as a successful check. This reinforced
+the need to record what actually ran, rather than what we intended to run.
+
+I asked to save the session again so a new chat could read what we did. Session
+004 now records the current code checkpoint, decisions, evidence, remaining tasks,
+and approval boundaries. Checking the repository during that save found newer
+November 3 work than the earlier chat summary, so the handoff was updated from
+current source and committed reports. Canonical memory is on main, with a matching
+copy on Sprint 4 for access from the Desktop checkout. It is a curated handoff;
+no full transcript was exported. I have not measured whether this process saves
+time or tokens or reduces incorrect assumptions.
+
+My intended next stage is to finish the remaining testing and requested corrections,
+obtain focused Claude review, and assess readiness for merging. Saying that I want
+to merge after review is not the final merge command. We still need to review the
+remaining evidence and obtain explicit approval. Sprint 4 remains separate from
+main. This journey entry and the latest memory save are local documentation
+changes awaiting their own Git approval; no merge was performed while recording
+this experience.
+
 ## Weekly entry template
 
 Copy this section for each update and replace the placeholders.
