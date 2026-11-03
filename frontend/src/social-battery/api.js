@@ -6,13 +6,13 @@ export const choices = [
     value: 'open',
     label: 'Open to Conversations',
     description: 'I’m open to meaningful conversations.',
-    segments: 4,
+    segments: 3,
   },
   {
     value: 'busy',
     label: 'Busy',
     description: 'I’m focused on other things right now.',
-    segments: 2,
+    segments: 1.5,
   },
   {
     value: 'space',

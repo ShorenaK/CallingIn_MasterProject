@@ -303,7 +303,7 @@ fieldset {
   color: white;
 }
 .status-declined {
-  background: #e2f4f2;
+  background: #feecea;
   color: #153b50;
 }
 .secondary-button {
@@ -352,12 +352,12 @@ fieldset {
   color: #153b50;
 }
 .response-declined {
-  background: #e2f4f2;
+  background: #feecea;
   color: #153b50;
   border: 1px solid #b9dcda;
 }
 .response-declined:hover:enabled {
-  background: #cfe9e6;
+  background: #ffe3dc;
   color: #153b50;
 }
 .invitation-confirm {

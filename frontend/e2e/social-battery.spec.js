@@ -96,6 +96,9 @@ test('all three choices save and low battery leaves invitation controls availabl
     await expectAccessible(page);
   }
   await expect(page.getByRole('button', { name: 'Find person' })).toBeEnabled();
+  await panel.screenshot({
+    path: '/tmp/callingin-battery-reference-desktop.png',
+  });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(
     panel.getByRole('radio', { name: /Taking Personal Space/ }),
@@ -107,9 +110,8 @@ test('all three choices save and low battery leaves invitation controls availabl
         globalThis.innerWidth,
     ),
   ).toBe(true);
-  await page.screenshot({
-    path: '/tmp/callingin-social-battery-phone.png',
-    fullPage: true,
+  await panel.screenshot({
+    path: '/tmp/callingin-battery-reference-phone.png',
   });
 });
 
