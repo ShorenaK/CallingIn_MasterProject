@@ -295,16 +295,16 @@ fieldset {
   color: #1f4e79;
 }
 .status-deferred {
-  background: #efe4ec;
-  color: #5c3d55;
+  background: #ffe8b8;
+  color: #153b50;
 }
 .status-accepted {
-  background: #d5ece5;
-  color: #064c59;
+  background: #007d89;
+  color: white;
 }
 .status-declined {
-  background: #fff6cc;
-  color: #5a4300;
+  background: #e2f4f2;
+  color: #153b50;
 }
 .secondary-button {
   margin-top: 16px;
@@ -335,23 +335,30 @@ fieldset {
   flex-wrap: wrap;
   gap: 10px;
 }
+.response-accepted {
+  background: #007d89;
+  color: white;
+}
+.response-accepted:hover:enabled {
+  background: #006874;
+}
 .response-deferred {
-  background: #efe4ec;
-  color: #5c3d55;
-  border: 1px solid #8e6a86;
+  background: #ffe8b8;
+  color: #153b50;
+  border: 1px solid #ffe8b8;
 }
 .response-deferred:hover:enabled {
-  background: #e6d5e1;
-  color: #5c3d55;
+  background: #f8d99b;
+  color: #153b50;
 }
 .response-declined {
-  background: #fff6cc;
-  color: #5a4300;
-  border: 1px solid #a87412;
+  background: #e2f4f2;
+  color: #153b50;
+  border: 1px solid #b9dcda;
 }
 .response-declined:hover:enabled {
-  background: #fbeaa6;
-  color: #5a4300;
+  background: #cfe9e6;
+  color: #153b50;
 }
 .invitation-confirm {
   padding: 14px;
