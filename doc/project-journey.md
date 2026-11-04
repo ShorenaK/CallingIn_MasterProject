@@ -536,6 +536,60 @@ main. This journey entry and the latest memory save are local documentation
 changes awaiting their own Git approval; no merge was performed while recording
 this experience.
 
+## November 4, 2026 — Sprint 5: A special final feature stage
+
+AI Coach feels like a special step for me because it is the final major feature
+stage of the planned CallingIn MVP. Accounts, invitations, conversations, and
+Social Battery provide the foundation; now I am considering how AI can help
+someone find their own words while keeping the decision to send in their hands.
+This is not the end of the whole project: the semester plan still includes
+Sprint 6 evaluation, corrections, writing, and final preparation.
+
+The earlier November 3 entry describes its checkpoint, not today's status.
+Sprint 4 was subsequently reviewed at `589032c` and `a4bc652`, followed by polish
+at `61184fc`, and merged into main as `0017bbf`. The recorded pre-merge checks
+passed 267 backend tests and 92 mocked Chromium tests, plus static checks and a
+scratch build. These are historical results, not tests repeated for this entry.
+Remaining live, database, and human accessibility checks are carried into Sprint
+5; the merge did not make them completed checks.
+
+I read the AI Coach design and stopped to ask about terms I did not understand:
+what “provider-specific” means, what a controlled provider double does, whether
+my monthly personal ChatGPT subscription can be connected, and when API credits
+are needed. The rehearsal analogy helped explain the proposed testing order:
+a test substitute can return a prepared answer or error before we call a real
+AI service. It lets us check whether CallingIn protects my draft, but it cannot
+show whether a real model writes a good suggestion.
+
+My priority at this point is to spend as little as possible because this is for
+class and testing. We discussed working locally first, checking my exact ChatGPT
+plan and credit eligibility, and claiming eligible credits near the first real
+API test rather than buying anything during planning. My plan and eligibility
+have not been confirmed. I also asked about Amazon products. OpenAI and Amazon
+Bedrock remain alternatives to compare; no provider or model has been selected.
+
+Render was discussed as a possible low-cost class-demo host. The recommendation
+is to consider one service for the built frontend and backend, while checking
+HTTPS cookies, routing, secrets, database access, usage limits, and the delay
+when a free service wakes up. I learned that hosting and AI calls are separate
+costs: free hosting does not automatically mean free AI generation. No deployment,
+API call, credit activation, purchase, or subscription upgrade happened here.
+
+I approved a design document and then asked to record the explanations, proposed
+steps, cost considerations, and deployment preparation. I separately delegated
+the Git flows: the initial design was committed and pushed as `4aebeab`, and the
+follow-up records as `a089cd4` on `sprint-05-ai-coach`. This journey update is a
+new local documentation edit on main, not another authorized submission or merge.
+The detailed proposals are in the Sprint 5 branch's `doc/sprint-05/` records;
+they are not yet merged into main.
+
+My next step is to continue discussing the design and supply questions for
+Professor Lionelle for the planned November 10 meeting. No questions or advisor
+answers have been invented. AI Coach is still planning only, and I want to keep
+working one explained and approved step at a time. I have not measured research
+benefits, time savings, or token savings from this process. This reflection is a
+curated account of the discussion, not a full transcript archive.
+
 ## Weekly entry template
 
 Copy this section for each update and replace the placeholders.
