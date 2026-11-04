@@ -51,6 +51,12 @@ follow-ups above, as requested by Shorena.
 
 ### 1. Revisit the color palette
 
+- [x] Implement the approved Sprint 4 invitation palette and green/amber/coral
+      battery SVG adjustments (`69c3fbe`, `44ef40b`); selected contrast fixes and
+      automated checks are recorded in Sprint 4 progress.
+
+Broader optional palette work below remains separate from those completed edits.
+
 - [ ] Review the overall palette and invitation status colors with Shorena.
 - [ ] Agree on a visual preview before changing application styles.
 - [ ] Check text contrast and keep readable status words alongside colors.
@@ -75,6 +81,10 @@ separate from this report. No emoji set or icon replacement has been approved.
 
 ### 3. Improve displayed messages
 
+- [x] Implement approved sender Maybe Later wording, welcome/footer cleanup,
+      and conversation loading/completion announcements; regression assertions
+      updated through `61184fc`. Broad copy review below is not all completed.
+
 - [ ] Review invitation, account, success, error, and empty-state wording together.
 - [ ] Agree on clear, friendly wording that matches actual application behavior.
 - [ ] Update affected browser assertions when approved wording changes.
@@ -89,6 +99,10 @@ remains pending. Review it alongside the 30-day feature so it does not suggest
 that another invitation is currently available when the backend prevents it.
 
 ### 4. Clean up unnecessary hyphens and general design text
+
+- [x] Complete the specifically approved welcome punctuation, footer, and
+      conversation wording cleanup in Sprint 4. Remaining broad text review
+      below has no blanket implementation approval.
 
 - [ ] Identify unnecessary hyphens and dashes in user-facing text.
 - [ ] Rewrite awkward phrases and review headings, labels, punctuation, and spacing.
@@ -154,11 +168,12 @@ checklist. Completed Sprint 4 work and current priorities are summarized above.
 Detailed later live-report limits remain evidence gaps unless separately verified
 or explicitly accepted; old unchecked boxes are not all current assignments.
 
-**Sprint 4 assignment approved November 2:** Shorena carried the remaining
+**Historical Sprint 4 assignment approved November 2:** Shorena carried the remaining
 live/manual login, Cancel draft, message-boundary, and accessibility checks into
-Sprint 4. They remain unverified; automated tests do not replace them.
+Sprint 4. Later recorded passes are summarized above; the original assignment
+does not establish that every remaining human/database check passed.
 
-### Required human keyboard-only check in Sprint 4
+### Required human keyboard-only check — now assigned to Sprint 5
 
 - [ ] Use Tab, Shift+Tab, Enter, and Space without a mouse through account screens,
       recipient lookup, message composition, Cancel/Keep writing/Discard draft,
@@ -172,13 +187,13 @@ Sprint 4. They remain unverified; automated tests do not replace them.
 The retained-draft automated check now covers focus, Tab/Shift+Tab, and Enter;
 this does not complete the human walkthrough or real-session copying check.
 
-### Other remaining evidence and closeout tasks
+### Reconciled evidence and closeout tasks — updated November 4
 
 - [ ] Verify the new login rules with live test accounts after restarting the
       backend: 10 failed attempts per email and 100 total attempts per connection
       in 15 minutes. Successful logins do not consume the email failure allowance.
-- [ ] Verify Cancel draft, Keep writing, Discard draft, and focus behavior in
-      the running application. Automated mocked-browser tests already passed.
+- [x] Verify real UI Cancel/Keep writing/Discard and return focus in the
+      November 3 independent live report. Remaining in-flight cases are separate.
 - [ ] Finish or explicitly record limits for live 5,000/5,001-character checks,
       keyboard-only use, 200% zoom, phone-width layout, Safari, and VoiceOver.
 - [ ] Confirm recorded database-update evidence for `callingin_dev` and
@@ -190,16 +205,17 @@ this does not complete the human walkthrough or real-session copying check.
       reviewing `2f916d6`. It found no blocking defects in that snapshot.
 - [x] Prepare the approved review fixes and obtain Claude's focused confirmation
       that findings 4 and 5 are resolved. The later approved focus-only fix passed
-      targeted tests; all changes still await Git submission.
+      targeted tests; changes were submitted and merged as `0921e62`.
 - [x] Refresh closeout documentation, including the browser accessibility guide.
-- [ ] Save an accurate session handoff when requested. Older memory snapshots
-      predate Sprint 3 and must not override current code or closeout notes.
+- [x] Save requested curated handoffs: sessions 003 and 004 exist. Verify newer
+      source/reports when restoring; no full transcript archived.
 - [x] Verify hosted GitHub Quality before the approved merge: both `2b9912c`
       (Sprint 3) and `1c2c40e` (main) passed, independently read from GitHub's API.
 - [x] Review completion with Shorena and obtain explicit merge approval.
       Implementation scope is closed with live/manual checks carried into Sprint 4.
-- [ ] Confirm the new post-merge GitHub Quality run; parent-commit success is not
-      a claim that the new merge commit has already passed its hosted run.
+- [x] Confirm Sprint 3 merge `0921e62` Quality completed successfully, recorded
+      in session 003 with its run link. Sprint 4 merge `0017bbf` is a separate
+      result and remains unverified here.
 
 **Latest local checkpoint, November 2:** 36 Chromium browser tests passed after
 the approved review fixes, plus lint, type checks, formatting, and a scratch build.
