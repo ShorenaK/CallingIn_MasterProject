@@ -2,14 +2,19 @@ import { useEffect, useRef, useState } from 'react';
 import { MESSAGE_MAX } from './api.js';
 import { Problem } from './Problem.jsx';
 import { useSendInvitation } from './useSendInvitation.js';
+import { Coach } from '../coach/Coach.jsx';
 
 const numbers = new Intl.NumberFormat();
 
 /** @typedef {ReturnType<typeof useSendInvitation>} SendState */
 
-/** @param {{onSent: () => void, onSessionExpired: () => void}} props */
-export function SendInvitation({ onSent, onSessionExpired }) {
+/** @param {{onSent: () => void, onSessionExpired: () => void, active?: boolean}} props */
+export function SendInvitation({ onSent, onSessionExpired, active = true }) {
   const send = useSendInvitation(onSent, onSessionExpired);
+  const cancelGeneration = send.coach.cancel;
+  useEffect(() => {
+    if (!active) cancelGeneration();
+  }, [active, cancelGeneration]);
   return (
     <section
       className="invitation-panel send-panel"
@@ -25,9 +30,12 @@ export function SendInvitation({ onSent, onSessionExpired }) {
         />
       )}
       {send.recipient ? (
-        <ComposeMessage send={send} />
+        <ComposeMessage send={send} onSignIn={onSessionExpired} />
       ) : send.problem?.expired ? (
-        <RetainedDraft message={send.message} />
+        <>
+          <RetainedDraft message={send.message} />
+          <Coach coach={send.coach} onSignIn={onSessionExpired} />
+        </>
       ) : (
         <FindPerson send={send} />
       )}
@@ -110,24 +118,21 @@ function FindPerson({ send }) {
   );
 }
 
-/** @param {{send: SendState}} props */
-function ComposeMessage({ send }) {
-  const [confirming, setConfirming] = useState(false);
-  const cancelButton = useRef(/** @type {HTMLButtonElement | null} */ (null));
-  const previous = useRef(false);
-  const found = useRef(/** @type {HTMLParagraphElement | null} */ (null));
-  useEffect(() => {
-    found.current?.focus();
-  }, []);
-  useEffect(() => {
-    if (previous.current && !confirming) cancelButton.current?.focus();
-    previous.current = confirming;
-  }, [confirming]);
+/** @param {{send: SendState, onSignIn: () => void}} props */
+function ComposeMessage({ send, onSignIn }) {
+  const [confirming, setConfirming] = useState('');
+  const { cancelButton, found } = useComposeFocus(confirming);
+  function changePerson() {
+    if (send.coach.hasText) setConfirming('person');
+    else send.changePerson();
+  }
   if (confirming)
     return (
       <DiscardConfirmation
-        onDiscard={send.cancel}
-        onKeep={() => setConfirming(false)}
+        coachText={send.coach.hasText}
+        changing={confirming === 'person'}
+        onDiscard={confirming === 'person' ? send.changePerson : send.cancel}
+        onKeep={() => setConfirming('')}
       />
     );
   return (
@@ -146,33 +151,60 @@ function ComposeMessage({ send }) {
         type="button"
         className="text-button"
         disabled={send.busy}
-        onClick={send.changePerson}
+        onClick={changePerson}
       >
         Change person
       </button>
       <fieldset disabled={send.busy}>
         <MessageFields send={send} />
+        <Coach coach={send.coach} onSignIn={onSignIn} />
         <ComposeActions
           busy={send.busy}
+          blocked={send.coach.busy || send.coach.expired}
           cancelRef={cancelButton}
           onCancel={() =>
-            send.message.length ? setConfirming(true) : send.cancel()
+            send.message.length || send.coach.hasText
+              ? setConfirming('cancel')
+              : send.cancel()
           }
         />
-        <p className="field-hint">
-          You choose when to connect. They can accept, choose Maybe Later, or
-          say they need some space.
-        </p>
+        <InvitationHint />
       </fieldset>
     </form>
   );
 }
 
-/** @param {{busy: boolean, cancelRef: import('react').RefObject<HTMLButtonElement | null>, onCancel: () => void}} props */
-function ComposeActions({ busy, cancelRef, onCancel }) {
+/** @param {string} confirming */
+function useComposeFocus(confirming) {
+  const cancelButton = useRef(/** @type {HTMLButtonElement | null} */ (null));
+  const previous = useRef('');
+  const found = useRef(/** @type {HTMLParagraphElement | null} */ (null));
+  useEffect(() => {
+    found.current?.focus();
+  }, []);
+  useEffect(() => {
+    if (previous.current && !confirming) cancelButton.current?.focus();
+    previous.current = confirming;
+  }, [confirming]);
+  return { cancelButton, found };
+}
+
+function InvitationHint() {
+  return (
+    <p className="field-hint">
+      You choose when to connect. They can accept, choose Maybe Later, or say
+      they need some space.
+    </p>
+  );
+}
+
+/** @param {{busy: boolean, blocked: boolean, cancelRef: import('react').RefObject<HTMLButtonElement | null>, onCancel: () => void}} props */
+function ComposeActions({ busy, blocked, cancelRef, onCancel }) {
   return (
     <div className="invitation-actions compose-actions">
-      <button type="submit">{busy ? 'Sending…' : 'Send invitation'}</button>
+      <button type="submit" disabled={blocked}>
+        {busy ? 'Sending…' : 'Send invitation'}
+      </button>
       <button
         type="button"
         className="secondary-button"
@@ -210,8 +242,8 @@ function MessageFields({ send }) {
   );
 }
 
-/** @param {{onDiscard: () => void, onKeep: () => void}} props */
-function DiscardConfirmation({ onDiscard, onKeep }) {
+/** @param {{onDiscard: () => void, onKeep: () => void, coachText: boolean, changing: boolean}} props */
+function DiscardConfirmation({ onDiscard, onKeep, coachText, changing }) {
   const question = useRef(/** @type {HTMLParagraphElement | null} */ (null));
   useEffect(() => {
     question.current?.focus();
@@ -219,14 +251,20 @@ function DiscardConfirmation({ onDiscard, onKeep }) {
   return (
     <div className="invitation-confirm">
       <p ref={question} tabIndex={-1}>
-        Discard this invitation draft? Your message will be cleared.
+        {changing
+          ? 'Change person? Your Coach writing will be cleared; your message will be kept.'
+          : coachText
+            ? 'Discard this invitation draft? Your message and Coach writing will be cleared.'
+            : 'Discard this invitation draft? Your message will be cleared.'}
       </p>
       <div className="invitation-actions">
         <button type="button" className="secondary-button" onClick={onKeep}>
           Keep writing
         </button>
         <button type="button" onClick={onDiscard}>
-          Discard draft
+          {changing
+            ? 'Discard Coach writing and change person'
+            : 'Discard draft'}
         </button>
       </div>
     </div>

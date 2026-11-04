@@ -6,8 +6,8 @@
 
 **Starting point:** main at `0017bbf`, the approved Sprint 4 merge.
 
-**Status:** Backend-only Coach foundation implemented locally November 4. Real
-OpenAI integration, frontend controls, and deployment are not implemented.
+**Status:** Backend foundation and invitation Coach controls implemented November 4. Real OpenAI integration and deployment remain unimplemented. Normal startup
+returns Coach unavailable; successful suggestions in tests are mocked.
 
 ## Current summary — November 4
 
@@ -199,3 +199,70 @@ performed. Existing uncommitted deferred/Sprint 4 checklist edits were preserved
 Implementation and documentation remain local for review. Next: review this
 foundation, then separately approve frontend work or the real OpenAI adapter and
 its budget/privacy/configuration details. No full transcript archive was created.
+
+## November 4 — Approved frontend Coach controls
+
+Shorena explicitly approved the proposed frontend implementation and local mocked
+browser testing. The checkout began clean at `b136587`, matching its local origin
+tracking reference. The backend foundation and checklist changes had been
+separately committed/pushed; earlier uncommitted statements are historical.
+
+Added an optional Coach section after recipient lookup. Draft from my intent
+and Refine my message use Natural/Warm/Direct tone choices and explicit Generate
+suggestion. The API client sends only action, text, and tone. It validates returned
+text and renders it in a separate editable textarea, never HTML. The original
+invitation remains unchanged until Use suggestion. Sending is a separate action.
+
+Original-message edits made since generation require replacement confirmation.
+The previous message can be restored; restoration also confirms before replacing
+later edits. Empty/invisible/overlong suggestions remain editable but cannot be
+applied. Keep original dismisses the suggestion and focuses Your message.
+Choose Use suggestion or Keep original before requesting another suggestion,
+so generation cannot overwrite a written suggestion. Successful invitation send
+clears the Coach draft along with the existing invitation draft.
+
+All writing stays in page memory. Cancellation, recipient changes, unmount, and
+opening a conversation abort/invalidate generation; late results cannot apply.
+Changing person confirms discarding Coach writing and retains the original
+invitation message. Cancel also confirms when only Coach text is written.
+Generation has a separate busy state: Your message remains editable, sending is
+blocked, repeat generation is guarded, and Cancel generation remains available.
+An old non-expiry Coach error clears when changing recipients. Session expiry
+keeps written text copyable and requires explicit Sign in again; no automatic
+redirect occurs from a Coach error. Reload and explicit sign-out can still lose
+page-memory drafts; no browser-storage persistence was added.
+
+Native labels/selects, visible focus, live status, and guarded aria-disabled
+generation controls support keyboard use. Apply/restore/Keep original focus Your
+message; Cancel generation focuses Generate suggestion. Current copy states that
+OpenAI live generation is not yet connected, rather than implying mocked results
+are real AI. The backend remains unchanged and normally returns 503.
+
+Files: new `frontend/src/coach/{api.js,useCoach.js,Coach.jsx,coach.css}`;
+invitation component/hook integration; new `frontend/e2e/ai-coach.spec.js`;
+frontend README and Sprint 5 records. A small submission helper keeps existing
+send behavior within the project's function-size rule. No lint rule was weakened.
+
+Verification performed:
+
+- Initial new tests exposed inaccurate exact-label locators after controlled
+  textarea updates; corrected to accessible textbox-role locators. That run was
+  stopped after two locator failures; it is not counted as passing evidence.
+- A subsequent targeted run passed 31 Coach/existing-composer tests.
+- Full combined mocked Chromium checkpoint passed **108 tests** (92 existing
+  plus 16 Coach), with axe scans. Later small feedback cleanup and its additional
+  regression passed a separate final targeted run: **33 tests** (17 Coach and
+  16 existing composer). Do not call this a 109-test combined pass.
+- Whole-project lint and frontend/backend types passed after the final source
+  cleanup. Scratch Vite build passed in
+  `/private/tmp/callingin-sprint05-ui-build.xWXZmv`; tracked dist was preserved.
+- Narrow 390px viewport showed no horizontal overflow, axe scans passed, and the
+  synthetic Coach screenshot was visually inspected. This is not an actual phone,
+  Safari/VoiceOver check, or the pending human keyboard-only walkthrough.
+
+No backend suite rerun for this frontend-only work; the previous 282-test result
+remains separate evidence. No provider call, credential read, installation,
+network audit, database change, deployment, Claude review, or Git submission was
+performed. Changes remain local pending review. Next: independently review the
+controls or separately approve the real OpenAI adapter, privacy disclosure,
+model/configuration, credits, and durable budget controls before live testing.

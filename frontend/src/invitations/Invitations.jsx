@@ -50,6 +50,7 @@ export function Invitations({
           accepted, either participant can open a private conversation.
         </p>
         <SendInvitation
+          active={!selected}
           onSent={() => setSentVersion((value) => value + 1)}
           onSessionExpired={expire}
         />

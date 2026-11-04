@@ -3,6 +3,12 @@
 React with JavaScript and Vite. See the [project README](../README.md)
 for CallingIn’s scope and semester plan.
 
+The invitation composer includes optional AI Coach controls for drafting from
+intent or refining Your message. Suggestions are separately editable and only
+replace the message through Use suggestion; Send invitation remains explicit.
+Current normal startup has no real AI provider connected, so generation returns
+Coach unavailable. Browser tests use mocked suggestions, not OpenAI calls.
+
 ## Install and run
 
 Shared lint and formatting tools are installed at the repository root.

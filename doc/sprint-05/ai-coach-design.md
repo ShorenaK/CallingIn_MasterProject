@@ -31,6 +31,14 @@ timeouts/disconnections release active slots and signal cancellation. These are
 not live spending controls. No daily quota, SDK, key loading, real provider call,
 or frontend control is implemented yet.
 
+**Subsequent approved frontend step:** Invitation Coach controls now implement
+the optional intent/refinement flow, tone choices, separate editable suggestion,
+explicit apply/keep/restore, replacement confirmations, and draft/request lifecycle
+protection. The backend remains unconnected to OpenAI; UI success tests use mocked
+API responses. Current UI disclosure explicitly states this. Review the latest
+[frontend progress entry](sprint-05-progress.md#november-4--approved-frontend-coach-controls)
+for actual verification and limits. Earlier “no frontend” statements are historical.
+
 Related: [Sprint 5 plan](sprint-5.md) and [progress](sprint-05-progress.md).
 
 ## Purpose and first scope

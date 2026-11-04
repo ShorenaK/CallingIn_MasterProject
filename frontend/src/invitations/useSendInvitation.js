@@ -2,6 +2,7 @@ import { hasMessageContent } from '../message-content.js';
 import { useState } from 'react';
 import { ApiError, errorMessage } from '../account/api.js';
 import { createInvitation, lookupRecipient, MESSAGE_MAX } from './api.js';
+import { useCoach } from '../coach/useCoach.js';
 
 /** @typedef {{message: string, expired?: boolean}} SendProblem */
 
@@ -22,6 +23,7 @@ export function useSendInvitation(onSent, onSessionExpired) {
     /** @type {import('./api.js').Recipient | null} */ (null),
   );
   const [message, setMessage] = useState('');
+  const coach = useCoach(message, setMessage);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState(
     /** @type {SendProblem | null} */ (null),
@@ -36,7 +38,8 @@ export function useSendInvitation(onSent, onSessionExpired) {
     try {
       setRecipient(await lookupRecipient(email.trim()));
     } catch (failure) {
-      if (hasStatus(failure, 401) && !message) onSessionExpired();
+      if (hasStatus(failure, 401) && !message && !coach.hasText)
+        onSessionExpired();
       else setProblem(lookupProblem(failure));
     } finally {
       setBusy(false);
@@ -44,38 +47,62 @@ export function useSendInvitation(onSent, onSessionExpired) {
   }
 
   async function send() {
-    if (!recipient) return;
-    const invalid = draftProblem(message);
-    if (invalid) return setProblem({ message: invalid });
-    setBusy(true);
-    setProblem(null);
-    try {
-      await createInvitation(recipient.id, message);
-      setSentTo(recipient.displayName);
-      cancel();
-      setReturning(false);
-      onSent();
-    } catch (failure) {
-      setProblem(sendProblem(failure, recipient.displayName));
-    } finally {
-      setBusy(false);
-    }
+    if (!recipient || busy || coach.busy || coach.expired) return;
+    await submitInvitation({
+      recipient,
+      message,
+      setBusy,
+      setProblem,
+      onSuccess: () => {
+        setSentTo(recipient.displayName);
+        resetDraft(true);
+        setReturning(false);
+        onSent();
+      },
+    });
   }
 
-  function changePerson() {
+  function resetDraft(clear = false) {
+    coach.reset();
     setRecipient(null);
     setProblem(null);
     setReturning(true);
-  }
-  function cancel() {
-    changePerson();
-    setMessage('');
-    setEmail('');
+    if (clear) {
+      setMessage('');
+      setEmail('');
+    }
   }
   return {
-    ...{ email, setEmail, recipient, message, setMessage },
-    ...{ busy, problem, sentTo, returning, find, send, changePerson, cancel },
+    ...{ coach, email, setEmail, recipient, message, setMessage },
+    ...{ busy, problem, sentTo, returning, find, send },
+    changePerson: () => resetDraft(),
+    cancel: () => resetDraft(true),
   };
+}
+
+/** @param {{recipient: import('./api.js').Recipient, message: string,
+ * setBusy: (value: boolean) => void, setProblem: (value: SendProblem | null) => void,
+ * onSuccess: () => void}} options
+ */
+async function submitInvitation({
+  recipient,
+  message,
+  setBusy,
+  setProblem,
+  onSuccess,
+}) {
+  const invalid = draftProblem(message);
+  if (invalid) return setProblem({ message: invalid });
+  setBusy(true);
+  setProblem(null);
+  try {
+    await createInvitation(recipient.id, message);
+    onSuccess();
+  } catch (failure) {
+    setProblem(sendProblem(failure, recipient.displayName));
+  } finally {
+    setBusy(false);
+  }
 }
 
 /** @param {unknown} failure */

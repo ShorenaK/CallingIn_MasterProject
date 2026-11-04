@@ -45,10 +45,12 @@ The items below are planning tasks, not approval of every design detail.
       provider response byte/token bounds, and durable spending controls.
 - [x] Add foundation input/output validation and request protection using the
       project's existing guards and text rules where appropriate.
-- [ ] Add the AI controls to invitation composition without automatic sending.
-- [ ] Preserve user-written text during generating, retry, editing, session expiry,
+- [x] Add the AI controls to invitation composition without automatic sending.
+- [x] Preserve user-written text during generating, retry, editing, session expiry,
       and navigation; agree before replacing a written draft.
-- [ ] Integrate the reviewed suggestion with the existing send/response/chat journey.
+- [x] Apply a chosen suggestion to the existing invitation-send flow; it uses the
+      existing invitation/response/chat path. Mocked regressions cover integration.
+- [ ] Independently review the Coach integration and evaluate real AI output.
 - [ ] Document the implemented API and setup only after those decisions exist.
 
 ## 3. Meaningful verification
@@ -58,9 +60,12 @@ The items below are planning tasks, not approval of every design detail.
       behavior using controlled test doubles.
       November 4: 15 new Coach tests; full backend suite 282 passed. Real provider
       protocol/usage and durable quota behavior still require separate tests.
-- [ ] Browser tests: explicit generation, editable suggestion, keeping original
+- [x] Browser tests: explicit generation, editable suggestion, keeping original
       text, failure/retry, expiry, stale requests, keyboard focus, and no auto-send.
-- [ ] Run existing accounts/invitations/messages/battery tests for regressions.
+- [x] Run existing mocked accounts/invitations/messages/battery browser regressions
+      alongside Coach tests. November 4 combined checkpoint: 108 passed; later
+      focused changes/results are recorded in progress. Backend 282-test result
+      remains the earlier backend checkpoint, not rerun for frontend-only work.
 - [ ] Obtain approval for any live provider/network check and record actual model,
       cost/data boundaries, outcomes, and limitations. Never print secrets.
 - [ ] Prepare evaluation scenarios for authentic intent, tone, and user control.
