@@ -335,3 +335,50 @@ These source/docs fixes remain local on top of `8614173`, pending review and a
 separate Git flow. A new hosted Quality result will need verification after push;
 local Mac success alone does not certify Linux CI. Durable budgets, provider
 byte/token bounds, account credit verification, and live integration remain pending.
+
+## November 4 — Approved 30-day decline timing foundation
+
+Shorena asked to start the wait at decline time and explicitly approved the
+explained backend calculation/tests step. Current source was `c726f4a`, matching
+the local origin tracking reference. The preceding approved Git flow pushed the
+Coach fixes; [hosted Quality 41873406810](https://github.com/ShorenaK/CallingIn_MasterProject/actions/runs/41873406810)
+completed successfully, including browser/accessibility and all three audits.
+That hosted result predates this timing work and was not rechecked here.
+The existing uncommitted deferred-task update was preserved without editing it.
+
+Added `backend/src/invitation-cooldown.js` with `declineRetryAt` and
+`hasDeclineCooldownElapsed`. For a declined invitation, the existing `respondedAt`
+is its server-recorded final decline time. The proposed next-eligible instant is
+that time plus 30 × 24 hours. It does not start at invitation creation or an
+earlier Maybe Later response. The exact deadline qualifies; one millisecond
+before does not. Calendar months and DST do not shorten or extend elapsed days.
+
+Pending/Maybe Later/accepted records, missing or invalid decline dates, date
+overflow, and invalid clocks fail closed. Functions do not mutate stored dates.
+The clock can be supplied by deterministic tests; future enforcement must use
+server time, not browser input. An elapsed cooldown is only a timing result,
+not permission to insert another invitation or a statement about current pair state.
+
+Added eight unit tests in `backend/test/invitation-cooldown.test.js` and one
+HTTP/storage-double regression in `invitation-response.test.js`: repeating a
+decline a day later must leave respondedAt and the calculated deadline unchanged,
+with only the original write. Existing response logic already preserves terminal
+timestamps, so it required no production change.
+
+The helper is deliberately not wired into invitation creation, API serialization,
+or UI. The permanent unique pair index still blocks all repeat invitations,
+including after 30 days. No live schema/index migration, resend endpoint/button,
+eligible-date promise, cleanup, or database access is part of this step.
+
+Verification: eight timing unit tests, whole-project lint, and frontend/backend
+types passed. Full backend coverage/regressions: **292 passed**, zero failures,
+skips, or cancellations (283 prior tests plus nine new). Coverage: **100%
+lines/functions, 98.36% branches** overall; the new cooldown module reports 100%
+lines/branches/functions. These use simulated storage, not a live database.
+Changed-file formatting, local Markdown links, and whitespace checks passed.
+No browser suite/build rerun for this isolated backend helper; no frontend changed.
+No packages, private environment reads, external calls, Git submission, or merge.
+
+Next requires a separate explained approval: design the history-preserving,
+concurrency-safe replacement for permanent pair blocking and a reviewed migration
+plan. Only after enforcement works should the API/UI offer a reliable resend date.

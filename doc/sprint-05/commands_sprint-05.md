@@ -71,6 +71,18 @@ starting duplicate servers or changing connection settings to resolve a port
 conflict without first inspecting what is running. These scripts were not started
 as part of Sprint 5 documentation setup.
 
+## Decline cooldown foundation — approved local verification
+
+```bash
+node --test backend/test/invitation-cooldown.test.js
+```
+
+The new timing tests use a controlled clock and require no server or database.
+The existing `npm run test:coverage` additionally exercises the repeated-decline
+HTTP regression using local ports and simulated storage. These commands do not
+migrate indexes or enable re-invitations. See the dated progress entry for actual
+results; examples do not authorize future commands automatically.
+
 ## Git handoff
 
 Shorena normally owns staging, commits, pushes, and merges, with task-specific

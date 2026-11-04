@@ -82,7 +82,11 @@ implementation of the deferred features.
       Enter, and Space across accounts, invitations, conversations, battery, and
       later AI controls. Check focus, errors, confirmation, and retained-draft copying.
 - [ ] Separately design the 30-day invitation retry after a decline, preserving
-      history and enforcing server timing. It is not implemented or approved to code.
+      history and enforcing server timing. Shorena separately approved the timing
+      foundation below; resend authorization, migration, and UI remain pending.
+- [x] Implement/test the isolated decline-time calculation: 30 elapsed days from
+      the server-recorded final decline, eligible at the exact deadline. This
+      does not enable resending or replace the current permanent pair index.
 - [ ] Review deployment protections and the dependency override: reconsider login
       delays/recovery before deployment, review shared limits/proxy settings, and
       retain the minimatch override until a verified compatible fix exists.

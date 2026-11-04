@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { createApp } from '../src/app.js';
 import { createRequestProtection } from '../src/request-protection.js';
 import { startTestServer } from '../test-support/server.js';
+import { declineRetryAt } from '../src/invitation-cooldown.js';
 
 const sender = new ObjectId();
 const recipient = new ObjectId();
@@ -216,4 +217,23 @@ test('response storage failures hide private content in errors and logs', async 
     );
     assert.equal(f.state.logs[0][1].operation, 'invitation-response');
   }
+});
+
+test('repeating a decline a day later does not restart its thirty-day clock', async (t) => {
+  t.mock.timers.enable({ apis: ['Date'] });
+  const f = await setup(t, 'deferred');
+  const first = await f.patch({ status: 'declined' });
+  assert.equal(first.status, 200);
+  const firstBody = await first.json();
+  const retryAt = declineRetryAt(f.state.record).getTime();
+  t.mock.timers.tick(24 * 60 * 60 * 1000);
+  const repeated = await f.patch({ status: 'declined' });
+  assert.equal(repeated.status, 200);
+  const repeatedBody = await repeated.json();
+  assert.equal(
+    repeatedBody.invitation.respondedAt,
+    firstBody.invitation.respondedAt,
+  );
+  assert.equal(declineRetryAt(f.state.record).getTime(), retryAt);
+  assert.equal(f.state.writes, 1);
 });
