@@ -347,3 +347,81 @@ charges. Open the demo before class to allow a sleeping service to wake.
 Continue reviewing the design and gather Shorena's professor questions. No
 additional questions or advisor answers have been invented or added to the
 meeting agenda. All provider/hosting recommendations above remain proposals.
+
+## November 4 — Provider comparison and recommendation
+
+Shorena approved official-documentation research and this documentation update.
+No provider/model selection, implementation, installation, paid generation,
+account change, or Git submission is authorized by this comparison. Her exact
+subscription, AWS account status, credits, and model access remain unknown.
+The earlier “Next discussion” paragraph predates the separately recorded
+professor questions now in the November 10 meeting agenda.
+
+| Consideration   | OpenAI: GPT-5.6 Terra                                         | Amazon Bedrock: Nova Micro                                                                                              |
+| --------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Documented role | Balances intelligence and cost; roughly the earlier mini tier | Fast text-only model optimized for low cost                                                                             |
+| Potential use   | Short drafting/refinement with explicit instructions          | Cost-focused text-writing evaluation                                                                                    |
+| Integration     | Backend Responses API and server-only project credential      | Regional Bedrock runtime, model access, and backend permissions/credentials                                             |
+| Verified prices | $2 input and $12 output per million tokens                    | Official pricing page did not expose this model's regional rates in the fetched content; no numeric quote verified here |
+| Credits         | Verify existing subscription eligibility                      | Verify new-account/university eligibility and model coverage                                                            |
+| Unverified      | Writing quality, latency, actual cost, account access         | Writing quality, latency, regional rates/access, actual cost                                                            |
+
+Sources read November 4: [GPT-5.6 Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra),
+[Nova Micro](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html),
+and [Bedrock pricing](https://aws.amazon.com/bedrock/pricing/). This is a bounded
+comparison, not a search for the cheapest model across both entire catalogs.
+Recheck availability and prices before live integration.
+
+**Recommendation:** prefer OpenAI for the first integration, with GPT-5.6 Terra
+as the initial evaluation candidate. This is engineering judgment about keeping
+one focused API integration in this small Express application, not evidence that
+OpenAI writes better invitations or costs less than Nova. Reconsider Bedrock if
+verified AWS/university credits materially favor it. Use one provider for the MVP
+and a small replaceable backend boundary; keep the model configurable server-side.
+
+The fetched [GPT-5 Mini](https://developers.openai.com/api/docs/models/gpt-5-mini)
+and [GPT-5.4 nano](https://developers.openai.com/api/docs/models/gpt-5.4-nano)
+pages mark those models deprecated. Their low prices alone are not a suitable
+basis for starting a new integration.
+
+### Illustrative cost and evaluation
+
+At Terra's listed rates, a hypothetical 1,000 input tokens and 300 billed output
+tokens cost $0.0056 per call, or $0.56 for 100 calls, before taxes or other charges.
+Calculation: `(1000 × 2 + 300 × 12) / 1,000,000`. This is arithmetic, not measured
+CallingIn usage or a guaranteed bill. Reasoning can add billed output tokens;
+long inputs, retries, and settings change cost. Propose no reasoning for this
+simple task and bounded output, subject to quality testing. This estimate is
+not a spending cap or the minimum amount needed to fund an API account.
+
+First build against provider doubles after implementation approval. Later, use
+separately approved synthetic live cases to assess preserved intent, appropriate
+tone, invented facts, latency, and actual usage. No quality comparison was run
+during this research. No payment, subscription upgrade, or credit activation is
+needed for the test-double stage.
+
+### Privacy and setup
+
+OpenAI's data-control table lists no training use for Responses API data and
+standard abuse-monitoring retention of up to 30 days. Responses application state
+is stored by default; propose explicit `store: false`, no conversation objects,
+and no tools. This does not remove abuse-monitoring retention or establish Zero
+Data Retention eligibility. Recheck account policy/configuration before live use.
+See [OpenAI data controls](https://developers.openai.com/api/docs/guides/your-data).
+
+AWS documents that external model providers cannot access Bedrock customer
+prompts/completions through its model deployment accounts. That alone does not
+establish zero retention; review model-specific retention, abuse detection, and
+logging settings before choosing it. See [Bedrock data protection](https://docs.aws.amazon.com/bedrock/latest/userguide/data-protection.html).
+
+Both options need server-only secrets, validated inputs/outputs, timeouts, safe
+logs, and agreed cost controls. No private settings or account dashboard were
+read, and no provider calls or packages were used for this research.
+
+### Next approval
+
+Confirm the provider/model direction, then explain a bounded backend step with
+exact files, validation, limits, and tests for approval. Confirming this direction
+does not approve all earlier proposed UI details or limits. Check actual credit
+eligibility, expiry, model access, and budget before the separately approved first
+live call. Real integration can be tested locally before any deployment.
