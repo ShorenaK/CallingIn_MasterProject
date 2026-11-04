@@ -1,18 +1,51 @@
 # CallingIn — Deferred tasks and remaining checks
 
-**Updated:** November 2, 2026 (America/New_York)
+**Updated:** November 4, 2026 (America/New_York)
 
-This is the central follow-up list for work carried forward from Sprint 3.
-Shorena approved creating this document on `main`. Listing a task does not
-authorize its implementation: explain WHAT, WHY, HOW, WHERE, IMPACT, and
-RECOMMENDATION, then obtain approval for each step.
+This is the central follow-up record, maintained on main with a matching copy
+in the active Sprint 5 checkout for planning. Entries do not authorize code,
+installations, migrations, or deployment. Explain each step and obtain approval.
 
-Sprint 3 is closed for its approved implementation scope with the November 2
-merge of `sprint-03-invitations` at `2b9912c` into `main`. Both branches are
-retained. The deferred work and explicitly carried live/manual checks below
-remain unfinished. Consult the latest dated
-[Sprint 3 progress notes](sprint-03/sprint-03-progress.md) for implementation
-and merge-verification evidence; earlier pending-state notes are historical.
+## Current status — November 4
+
+Sprint 3 and Sprint 4 implementation are merged; completed branches are retained.
+Shorena requested a focused list rather than repeating old closeout tasks.
+
+- [x] Conversations, participant-only messaging, and Social Battery implemented;
+      approved review fixes and polish integrated through `61184fc`, merged as
+      `0017bbf`. Final recorded pre-merge checks: 267 backend tests and 92 mocked
+      Chromium tests, static checks and scratch build. These were not rerun here.
+- [x] Claude reviews at `589032c` and follow-up `a4bc652` recorded. Final small
+      polish followed; no claim that it received another independent review.
+- [x] Approved battery/status palette and selected UI/copy cleanup completed in
+      Sprint 4, including controls, welcome/footer, and account-navigation wording.
+      This does not certify every broader palette/copy request below as complete.
+- [x] Independent live report recorded 101 passing assertions, including draft
+      recovery, navigation, messages, battery, and selected text/access boundaries.
+      See the [report](sprint-04/live-verification-2026-11-03.md).
+- [x] Curated session 004 saved; later commits and reports supersede its snapshot.
+      No full transcript archived. Future session saves remain on request.
+- [ ] Complete human keyboard-only testing in Sprint 5, including AI controls
+      after implementation and actual retained-draft selection/copying.
+- [ ] Design the 30-day retry after decline (item 5); current permanent pair
+      blocking remains implemented.
+- [ ] Review deployment protections/login-policy trade-offs and the dependency
+      override (item 7); current limits and override remain in place.
+
+**Evidence boundary:** Shorena reports most prior work complete. This cleanup
+marks source/report-supported implementation as done and removes duplicate
+checklists from the active agenda. It does not independently verify the earlier
+restart/database/backup, initial room race, remaining login/boundary/expiry,
+VoiceOver/Safari/zoom/actual-phone, or hosted merge-Quality gaps. Preserve those
+limits in the reports and historical section below; revisit their acceptance or
+verification before claiming full deployment readiness. No new live checks ran.
+
+## Other deferred ideas — not active Sprint 5 commitments
+
+The detailed items below retain broader palette, icon, copy, and Google sign-in
+ideas. Unchecked items are not proof of defects and do not automatically enter
+the AI Coach sprint. The current focused carry-over is the three unchecked
+follow-ups above, as requested by Shorena.
 
 ## Deferred product and design work
 
@@ -114,10 +147,12 @@ or automatically part of Sprint 4.
 into deployment planning. These are review findings, not newly approved changes
 to the login policy or permission to suppress security checks.
 
-## Remaining verification and closeout work
+## Historical verification and closeout record — November 2 snapshot
 
-These are evidence gaps and closeout tasks, not claims that the application failed.
-Keep them visible until completed or explicitly accepted as limitations.
+The checkboxes below preserve the November 2 snapshot, not the current active
+checklist. Completed Sprint 4 work and current priorities are summarized above.
+Detailed later live-report limits remain evidence gaps unless separately verified
+or explicitly accepted; old unchecked boxes are not all current assignments.
 
 **Sprint 4 assignment approved November 2:** Shorena carried the remaining
 live/manual login, Cancel draft, message-boundary, and accessibility checks into

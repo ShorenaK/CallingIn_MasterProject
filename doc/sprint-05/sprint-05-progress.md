@@ -8,6 +8,30 @@
 
 **Status:** Planning/setup only. AI Coach implementation has not started.
 
+## Current summary — November 4
+
+- Sprint 4 implementation, review fixes, and merge are complete. Recorded final
+  checks: 267 simulated backend and 92 mocked Chromium tests, plus static checks
+  and scratch build; earlier live report: 101 assertions.
+- AI Coach design and provider comparison are documented. Shorena selected
+  OpenAI as the provider direction; model/configuration and implementation still
+  need approval. No AI implementation or paid calls have occurred.
+- Focused carry-over: human keyboard-only testing in Sprint 5, separately designed
+  30-day invitation retry, and deployment/login-policy/dependency-override review.
+  See the [plan](sprint-5.md) and [central deferred list](../deferred-tasks.md).
+- The meeting agenda now includes deployment requirements, Spring 2027 enrollment
+  and daytime meetings, a project-based business-agent proposal, and both HBS links.
+- Latest submitted Sprint 5 checkpoint is `d996d33`, matching the local origin
+  tracking reference when this cleanup began. Current documentation edits remain
+  uncommitted; no fetch, test suite, or hosted check was run for this cleanup.
+
+The dated entries below preserve their original checkpoints. Their earlier
+“uncommitted,” “no provider selected,” and “questions not yet supplied” statements
+are historical and superseded by this summary. Shorena requested removal of
+repeated old checklists from active planning. Older report limitations remain
+recorded, not silently converted into passing results. This documentation request
+authorizes neither runtime changes nor Git submission.
+
 ## November 3 — Branch, documentation, and meeting preparation
 
 Shorena asked to create Sprint 5 with its Markdown records, schedule the meeting

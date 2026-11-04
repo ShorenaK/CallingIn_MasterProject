@@ -20,11 +20,13 @@ The items below are planning tasks, not approval of every design detail.
 
 ## 1. Agree on the design before implementation
 
-- [ ] Inspect the current compose flow and identify where AI assistance belongs.
+- [x] Inspect the current compose flow and identify where AI assistance belongs.
+      Completed during the November 4 design work.
 - [ ] Explain the first backend step using WHAT, WHY, HOW, WHERE, IMPACT, and
       RECOMMENDATION; obtain explicit implementation approval.
-- [ ] Choose the AI provider/model and integration approach after reviewing
-      capabilities, current costs, and configuration needs. No choice is made here.
+- [x] Compare provider options; Shorena chose OpenAI as the provider direction.
+- [ ] Confirm the exact model and integration details after design review; Terra
+      remains the initial evaluation candidate, not an approved live integration.
 - [ ] Agree on the user's intent input, available tone choices, and how original
       text and suggestions remain editable without losing a draft.
 - [ ] Agree on the exact data sent to the provider and the user-facing privacy
@@ -61,45 +63,31 @@ The items below are planning tasks, not approval of every design detail.
       Record observations honestly; do not invent research measurements.
 - [ ] Update the paper draft/evaluation preparation as called for by the plan.
 
-## 4. Outstanding verification carried from the merged implementation
+## 4. Focused carry-over work — updated November 4
 
-Sprint 4 was merged with these items explicitly open. They remain pending until
-actually checked or their limits are explicitly accepted. Earlier passing results
-are in the [Sprint 4 progress notes](../sprint-04/sprint-04-progress.md) and
-[live report](../sprint-04/live-verification-2026-11-03.md).
+Shorena requested a shorter active list because Sprint 4 implementation and
+review work is complete. Keep these follow-ups visible; this does not authorize
+implementation of the deferred features.
 
-### Backend and persistence
+- [ ] Complete the human keyboard-only walkthrough in Sprint 5: Tab, Shift+Tab,
+      Enter, and Space across accounts, invitations, conversations, battery, and
+      later AI controls. Check focus, errors, confirmation, and retained-draft copying.
+- [ ] Separately design the 30-day invitation retry after a decline, preserving
+      history and enforcing server timing. It is not implemented or approved to code.
+- [ ] Review deployment protections and the dependency override: reconsider login
+      delays/recovery before deployment, review shared limits/proxy settings, and
+      retain the minimatch override until a verified compatible fix exists.
 
-- [ ] Backend restart/persistence evidence for real messages and battery status.
-- [ ] Raw collection validator/index/startup checks and backup evidence, including
-      two startup checks for `callingin_dev` and `callingin_sprint03_verify`.
-- [ ] Initial simultaneous room-creation race; the live concurrent test used an
-      already-created room.
-- [ ] Live 5,000-unit invitation acceptance boundary; 5,001 rejection and message
-      boundaries were already checked in the recorded live batch.
-- [ ] Shared-IP 100-request login ceiling, cross-IP email failures, and process-
-      restart/reset behavior. Do not saturate active shared accounts/connections.
+Current login policy remains approved: ten failed credentials can temporarily
+block an email across IPs; the 100-request IP ceiling is shared by people using
+one network. Changes need their own explained design and approval.
 
-### Drafts and accessibility
-
-- [ ] Natural idle expiry and Change person/lookup expiry recovery.
-- [ ] Real OS clipboard selection/copying of retained drafts before explicit sign-in.
-- [ ] Complete any remaining in-flight Cancel/navigation checks against real traffic;
-      existing mocked regression results and live observations stay distinct.
-- [ ] Human keyboard-only walkthrough: Tab, Shift+Tab, Enter, and Space through
-      accounts, invitations, confirmation, pagination, conversations, and battery.
-      Check visible focus, logical order, errors/expiry, and actual copying.
-- [ ] VoiceOver, Safari, 200% zoom, and an actual phone. Existing axe/390px viewport
-      checks do not complete these human/browser checks.
-- [ ] Include the AI Coach controls in the human checks once implemented.
-
-### Final records
-
-- [ ] Check the merge commit `0017bbf` GitHub Quality result if it has not already
-      been verified. The last check in this conversation saw it running; parent
-      `61184fc` and `a8fd2a9` checks passed.
-- [ ] Record any explicit acceptance or rescheduling of remaining evidence gaps.
-      A merge is not a claim every manual check passed.
+Use the [central deferred-task record](../deferred-tasks.md) for completion
+status and detailed follow-ups. The earlier evidence gaps are retained in the
+[Sprint 4 live report](../sprint-04/live-verification-2026-11-03.md#remaining-limits-and-checks)
+and dated progress records rather than repeated here. Removing duplicate bullets
+is not evidence that restart/database/backup, all accessibility/browser checks,
+or the merge's hosted Quality result passed. No new checks were run for this cleanup.
 
 ## 5. Independent review and closeout
 
