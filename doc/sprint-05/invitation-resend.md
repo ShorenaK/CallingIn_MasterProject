@@ -41,6 +41,14 @@ Strict validation allows only these fields. The legacy unique `pairKey` index
 on `invitations` must be replaced with a nonunique `invitation_pair_history`
 index. Participant/time/ID pagination indexes remain unchanged.
 
+**Review correction, November 4:** Claude's B1 describes a same-key unique/basic
+index conflict as an expected blocker, but MongoDB's official documentation
+explicitly permits those indexes together under distinct names. The current
+index design is retained; do not change a test double to enforce the contrary
+assumption. Confirm the actual server version/compatibility and index behavior
+in the separately approved rehearsal. See [MongoDB's basic and unique index guidance](https://www.mongodb.com/docs/manual/core/index-unique/#basic-and-unique-indexes-with-duplicate-key-patterns).
+The original independent report is preserved unchanged.
+
 When enabled, creation uses native MongoDB `withTransaction`, snapshot reads,
 and majority writes. It reads the current pointer and invitation, checks the
 current state/cooldown using server time, updates the pointer, and inserts the new
@@ -62,6 +70,13 @@ set `INVITATION_RESEND_ENABLED=true`. Other values fail startup. Enabled startup
 checks the pair validator, absence of permanent pair uniqueness, and presence of
 the history index. It never automatically drops an index or performs the backfill.
 
+Disabled startup now refuses to create legacy indexes if either `invitationPairs`
+or the migration history index exists, including an empty pair collection or a
+partial migration. This prevents mixed legacy/resend writers before the first
+resend as well as after history grows. Migration failures after creating pair
+storage therefore require reviewed resumption/recovery; restarting in legacy mode
+is not a fallback.
+
 Existing POST creation remains authenticated, origin/JSON protected, rate limited,
 and strict about accepted fields. It returns a new invitation on success. Safe
 409 codes distinguish `INVITATION_COOLDOWN` and `INVITATION_ACTIVE`; the frontend
@@ -74,6 +89,11 @@ are not advertised as another resend opportunity after a new invitation exists.
 Lists fetch current pointers in one bounded batch for the authorized page; pair
 keys are internal and never serialized. Incoming cards do not show the sender
 notice. Default-off mode does not promise resending before activation.
+
+If only the optional notice lookup fails after a response is saved, the API
+returns the successful saved decision without `resendPolicy` and records a safe
+`invitation-response-notice` failure category. It does not misreport the saved
+decline as 503 or promise a resend. A later refresh/retry may recover the notice.
 
 ## Migration procedure — not executed; separate approval required
 
@@ -130,10 +150,13 @@ node --env-file-if-exists=backend/.env backend/scripts/migrate-invitation-resend
 
 ### Rollback limitations
 
-Do not run an old writer or simply unset the flag after activation. The legacy
-startup tries to enforce permanent uniqueness again; after history contains
-multiple invitations for a pair, that index cannot be recreated. No automatic
-rollback deletes history. Prefer a reviewed forward fix with writers stopped.
+Do not run an old writer or simply unset the flag after migration or a partial
+backfill. The reviewed app now refuses disabled-mode startup whenever either
+migration marker exists, before attempting any legacy index recreation. This
+applies even when no resends have occurred. Old application versions do not have
+this safeguard and must stay stopped. With multiple historical records per pair,
+permanent uniqueness would also fail. No automatic rollback deletes history.
+Prefer a reviewed forward fix with writers stopped.
 Restoring a backup or reversing indexes requires separate approval and a plan
 for any new data created since the backup. If activation has not happened yet,
 review database state before deciding how to undo a partial migration.

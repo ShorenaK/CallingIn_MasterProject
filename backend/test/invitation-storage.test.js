@@ -51,6 +51,7 @@ test('storage prepares permanent uniqueness and both pagination indexes', async 
     collection(name) {
       assert.equal(name, 'invitations');
       return {
+        listIndexes: () => ({ toArray: async () => [] }),
         async createIndex(keys, options) {
           indexes.push({ keys, options });
         },
@@ -82,6 +83,7 @@ test('index failure propagates and prevents subsequent index preparation', async
       listCollections: () => ({ next: async () => null }),
       createCollection: async () => {},
       collection: () => ({
+        listIndexes: () => ({ toArray: async () => [] }),
         async createIndex() {
           calls += 1;
           if (calls === failAt) throw failure;
@@ -130,6 +132,7 @@ test('new collection receives strict validation before indexes', async () => {
       prepared = true;
     },
     collection: () => ({
+      listIndexes: () => ({ toArray: async () => [] }),
       createIndex: async () => assert.equal(prepared, true),
     }),
   };
@@ -143,7 +146,10 @@ async function expectedValidation() {
     createCollection: async (_name, settings) => {
       options = settings;
     },
-    collection: () => ({ createIndex: async () => {} }),
+    collection: () => ({
+      listIndexes: () => ({ toArray: async () => [] }),
+      createIndex: async () => {},
+    }),
   });
   return structuredClone(options);
 }
@@ -158,6 +164,8 @@ test('matching collection skips creation and modification, including default set
     let indexes = 0;
     await prepareInvitations({
       listCollections: (filter) => {
+        if (filter.name === 'invitationPairs')
+          return { next: async () => null };
         assert.deepEqual(filter, { name: 'invitations' });
         return { next: async () => ({ options }) };
       },
@@ -165,6 +173,7 @@ test('matching collection skips creation and modification, including default set
         assert.fail('Must not create existing collection'),
       command: () => assert.fail('Must not modify validator'),
       collection: () => ({
+        listIndexes: () => ({ toArray: async () => [] }),
         createIndex: async () => {
           indexes += 1;
         },
@@ -190,7 +199,10 @@ test('mismatched validators or weak settings stop startup before indexes', async
     change(options);
     await assert.rejects(
       prepareInvitations({
-        listCollections: () => ({ next: async () => ({ options }) }),
+        listCollections: (filter) => ({
+          next: async () =>
+            filter.name === 'invitationPairs' ? null : { options },
+        }),
         collection: () => assert.fail('Indexes must wait'),
         command: () => assert.fail('No automatic administrative update'),
       }),
@@ -203,13 +215,21 @@ test('concurrent collection creation verifies the winner without modification', 
   const options = await expectedValidation();
   let reads = 0;
   await prepareInvitations({
-    listCollections: () => ({
-      next: async () => (++reads === 1 ? null : { options }),
+    listCollections: (filter) => ({
+      next: async () =>
+        filter.name === 'invitationPairs'
+          ? null
+          : ++reads === 1
+            ? null
+            : { options },
     }),
     createCollection: async () => {
       throw Object.assign(new Error('exists'), { code: 48 });
     },
-    collection: () => ({ createIndex: async () => {} }),
+    collection: () => ({
+      listIndexes: () => ({ toArray: async () => [] }),
+      createIndex: async () => {},
+    }),
     command: () => assert.fail('Must not modify validator'),
   });
   assert.equal(reads, 2);
@@ -272,7 +292,10 @@ test('existing validator allowing 6000 characters is rejected instead of weakeni
   options.validator.$jsonSchema.properties.message.maxLength = 6000;
   await assert.rejects(
     prepareInvitations({
-      listCollections: () => ({ next: async () => ({ options }) }),
+      listCollections: (filter) => ({
+        next: async () =>
+          filter.name === 'invitationPairs' ? null : { options },
+      }),
       createCollection: () =>
         assert.fail('Must not recreate existing collection'),
       collection: () =>
@@ -289,7 +312,10 @@ test('existing 3000-character validator requires explicit migration to 5000', as
   options.validator.$jsonSchema.properties.message.maxLength = 3000;
   await assert.rejects(
     prepareInvitations({
-      listCollections: () => ({ next: async () => ({ options }) }),
+      listCollections: (filter) => ({
+        next: async () =>
+          filter.name === 'invitationPairs' ? null : { options },
+      }),
       collection: () =>
         assert.fail('Indexes must wait for validator migration'),
       command: () =>
@@ -297,4 +323,34 @@ test('existing 3000-character validator requires explicit migration to 5000', as
     }),
     /administrator must update/,
   );
+});
+
+test('disabled preparation refuses migration markers before recreating legacy uniqueness', async () => {
+  const options = await expectedValidation();
+  for (const marker of ['collection', 'history-index']) {
+    let writes = 0;
+    const db = {
+      listCollections: (filter) => ({
+        next: async () =>
+          filter.name === 'invitations'
+            ? { options }
+            : marker === 'collection'
+              ? { name: 'invitationPairs' }
+              : null,
+      }),
+      collection: () => ({
+        listIndexes: () => ({
+          toArray: async () =>
+            marker === 'history-index'
+              ? [{ name: 'invitation_pair_history', key: { pairKey: 1 } }]
+              : [],
+        }),
+        createIndex: async () => {
+          writes += 1;
+        },
+      }),
+    };
+    await assert.rejects(prepareInvitations(db), /legacy mode cannot start/);
+    assert.equal(writes, 0);
+  }
 });

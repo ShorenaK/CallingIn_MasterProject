@@ -188,13 +188,17 @@ function pairCollection(state, options) {
         ...(current ?? update.$setOnInsert),
         ...update.$set,
       });
+      options.afterPairWrite?.(state);
     },
-    find: (filter) =>
-      cursor(
+    find: (filter) => {
+      if (options.pairReadFailure)
+        throw new Error('synthetic private pair read failure');
+      return cursor(
         [...state.pairs.values()].filter(
           (r) => !filter._id || filter._id.$in.includes(r._id),
         ),
-      ),
+      );
+    },
   };
 }
 

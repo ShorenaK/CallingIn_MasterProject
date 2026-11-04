@@ -1,6 +1,9 @@
 import { isDeepStrictEqual } from 'node:util';
 import { INVITATION_MESSAGE_MAX } from './invitation-policy.js';
-import { verifyResendStorage } from './invitation-pair-storage.js';
+import {
+  verifyResendStorage,
+  verifyLegacyInvitationStorage,
+} from './invitation-pair-storage.js';
 
 const properties = {
   _id: { bsonType: 'objectId' },
@@ -82,11 +85,13 @@ export async function prepareInvitations(db, resendEnabled = false) {
   await prepareValidation(db);
   const invitations = db.collection('invitations');
   if (resendEnabled) await verifyResendStorage(db);
-  else
+  else {
+    await verifyLegacyInvitationStorage(db);
     await invitations.createIndex(
       { pairKey: 1 },
       { unique: true, name: 'invitation_pair_unique' },
     );
+  }
   await invitations.createIndex(
     { recipientId: 1, createdAt: -1, _id: -1 },
     { name: 'invitation_incoming' },

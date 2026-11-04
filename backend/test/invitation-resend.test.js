@@ -281,3 +281,33 @@ test('API notices follow the current pair and history remains participant-scoped
   assert.equal((await replayOld.json()).invitation.resendPolicy, undefined);
   assert.equal(String(f.state.pairs.get(old.pairKey).invitationId), next.id);
 });
+
+test('saved decline remains successful if only the optional pair notice lookup fails', async (t) => {
+  const old = record('pending', null);
+  const options = { pairReadFailure: true };
+  const f = await setup(t, [old], options);
+  const sendDecline = () =>
+    f.request(`/api/invitations/${old._id}/response`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'declined' }),
+      headers: {
+        Origin: origin,
+        'Content-Type': 'application/json',
+        'X-Test-Account': String(second),
+      },
+    });
+  const response = await sendDecline();
+  assert.equal(response.status, 200);
+  const saved = (await response.json()).invitation;
+  assert.equal(saved.status, 'declined');
+  assert.equal(saved.resendPolicy, undefined);
+  assert.equal(f.state.invitations.get(String(old._id)).status, 'declined');
+  assert.equal(f.state.logs[0][1].operation, 'invitation-response-notice');
+  assert.doesNotMatch(JSON.stringify(f.state.logs), /synthetic private/);
+  options.pairReadFailure = false;
+  const retry = await sendDecline();
+  assert.equal(retry.status, 200);
+  const retried = (await retry.json()).invitation;
+  assert.equal(retried.respondedAt, saved.respondedAt);
+  assert.equal(retried.resendPolicy, 'decline-30-days');
+});

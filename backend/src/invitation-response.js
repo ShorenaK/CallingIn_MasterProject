@@ -84,13 +84,20 @@ export async function respondToInvitation(request, response) {
  * @param {import('./invitation-policy.js').Invitation} invitation
  */
 async function serializeResponse(request, invitation) {
-  const current = await currentDeclineIds(
-    request.app.locals.db,
-    [invitation],
-    request.app.locals.invitationResendEnabled === true,
-  );
-  return publicInvitation(
-    invitation,
-    current.has(invitation._id.toHexString()),
-  );
+  try {
+    const current = await currentDeclineIds(
+      request.app.locals.db,
+      [invitation],
+      request.app.locals.invitationResendEnabled === true,
+    );
+    return publicInvitation(
+      invitation,
+      current.has(invitation._id.toHexString()),
+    );
+  } catch (failure) {
+    // The decision was saved (or an idempotent retry read it). Optional notice
+    // metadata must not turn a successful decision into a misleading 503.
+    logAccountFailure(request, 'invitation-response-notice', failure);
+    return publicInvitation(invitation);
+  }
 }

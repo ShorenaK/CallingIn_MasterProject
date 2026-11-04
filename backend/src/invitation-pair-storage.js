@@ -55,6 +55,24 @@ export async function verifyResendStorage(db) {
     );
 }
 
+/** A migrated or partially migrated database must not gain legacy writers again.
+ * Check before creating any index, even if no resend has occurred yet.
+ * @param {import('mongodb').Db} db
+ */
+export async function verifyLegacyInvitationStorage(db) {
+  const pairCollection = await db
+    .listCollections({ name: 'invitationPairs' })
+    .next();
+  const indexes = await db.collection('invitations').listIndexes().toArray();
+  if (
+    pairCollection ||
+    indexes.some((index) => index.name === PAIR_HISTORY_INDEX)
+  )
+    throw new Error(
+      'Invitation storage is migrated or migration is incomplete. A reviewed decision is required; legacy mode cannot start.',
+    );
+}
+
 /** @param {Record<string, unknown> | undefined} options */
 export function matchesPairValidation(options) {
   return Boolean(

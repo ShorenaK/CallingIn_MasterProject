@@ -49,6 +49,7 @@ function invitationStorage() {
     );
   }
   return {
+    listIndexes: () => ({ toArray: async () => [] }),
     createIndex: async () => {},
     async insertOne(record) {
       if ([...invitations.values()].some((r) => r.pairKey === record.pairKey))

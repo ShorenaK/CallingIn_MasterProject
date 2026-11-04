@@ -7,10 +7,12 @@ import {
 } from '../src/invitation-resend-migration.js';
 import {
   verifyResendStorage,
+  verifyLegacyInvitationStorage,
   currentDeclineIds,
   pairValidation,
 } from '../src/invitation-pair-storage.js';
 import { resendDatabase, record } from '../test-support/resend.js';
+import { invitationPairKey } from '../src/invitation-policy.js';
 
 const approval = {
   database: 'resend_test',
@@ -164,4 +166,37 @@ test('resend notice is only marked on the current valid decline, and never when 
   const bad = record('declined', null);
   const g = resendDatabase([bad]);
   assert.deepEqual(await currentDeclineIds(g.db, [bad], true), new Set());
+});
+
+test('legacy startup refuses migrated and partially migrated storage before index writes', async () => {
+  const collectionOnly = legacy();
+  collectionOnly.state.pairOptions = structuredClone(pairValidation);
+  const indexOnly = legacy();
+  indexOnly.state.indexes.push({
+    name: 'invitation_pair_history',
+    key: { pairKey: 1 },
+  });
+  for (const f of [resendDatabase(), collectionOnly, indexOnly]) {
+    await assert.rejects(
+      verifyLegacyInvitationStorage(f.db),
+      /legacy mode cannot start/,
+    );
+    assert.deepEqual(f.state.events, []);
+  }
+  const untouched = legacy();
+  await verifyLegacyInvitationStorage(untouched.db);
+  assert.deepEqual(untouched.state.events, []);
+});
+
+test('a data change between planning and recheck prevents every index change', async () => {
+  const added = { ...record(), recipientId: new ObjectId() };
+  added.pairKey = invitationPairKey(added.senderId, added.recipientId);
+  const f = legacy([record()], {
+    afterPairWrite(state) {
+      state.invitations.set(String(added._id), added);
+    },
+  });
+  await assert.rejects(applyResendMigration(f.db, approval), /data changed/);
+  assert.deepEqual(f.state.events, []);
+  assert.equal(f.state.indexes[0].unique, true);
 });

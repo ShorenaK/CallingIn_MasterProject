@@ -21,7 +21,10 @@ before(async () => {
   };
 });
 
-const indexOnlyStorage = { createIndex: async () => {} };
+const indexOnlyStorage = {
+  listIndexes: () => ({ toArray: async () => [] }),
+  createIndex: async () => {},
+};
 const startupCollections = new Set([
   'invitations',
   'conversations',

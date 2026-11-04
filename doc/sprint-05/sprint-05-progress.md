@@ -444,3 +444,50 @@ serialization, lifecycle configuration, frontend API error handling and sender
 cards. Migration and transaction behavior require focused Claude review and
 separate live verification; passing doubles do not certify them. No full
 transcript export, Git submission, branch change, merge, or deployment occurred.
+
+## November 4 — Approved resend review follow-up
+
+Read [Claude's review of `930f044`](quality-review-2026-11-04-930f044.md).
+It independently records 315 backend passes, five mocked resend browser passes,
+and static/build checks; it did not run the full browser suite, audits, or live
+database checks. `930f044` is committed/pushed, superseding the preceding entry's
+local/uncommitted handoff state. The review report was untracked when this step
+began and is preserved unchanged.
+
+Checked official MongoDB documentation because B1 was explicitly an unverified
+assumption. [The manual permits basic and unique indexes with the same key pattern](https://www.mongodb.com/docs/manual/core/index-unique/#basic-and-unique-indexes-with-duplicate-key-patterns).
+The claimed universal index blocker is therefore not accepted as established.
+Retained the existing index design and did not teach the double a contrary rule.
+This was documentation research, not a live database/version/index check. Actual
+server compatibility and index behavior still require the approved rehearsal.
+
+Shorena approved the remaining focused fixes:
+
+- M1: disabled startup checks for the pair collection or migration history index
+  and refuses to start before recreating permanent uniqueness, even before any
+  resend. Partial-migration markers also block legacy writers. Updated rollback
+  and recovery documentation; old application versions must remain stopped.
+- L1: optional pair notice lookup failure no longer turns a saved decline into 503. The API returns the saved decision without a notice, logs a safe category,
+  and a later idempotent retry can recover metadata without changing decline time.
+- L3: added a mid-migration data-change regression. A changed invitation set
+  between plan and recheck stops before creating or dropping any index.
+- L2: added this current submission note. No historical review verdict was edited.
+
+Added startup-marker helper and preparation-level tests, saved-decline/retry
+coverage, and the data-change test. Updated existing legacy storage/cookie
+fixtures to supply metadata reads required by the guard. An initial targeted run
+found five incomplete fixture failures (`listIndexes` absent); those fixtures
+were corrected, and the next focused run passed all **38 tests** before the
+additional preparation-level regression. Full results are recorded on completion.
+
+Final backend coverage run: **319 passed**, zero failures/skips/cancellations;
+**100% lines/functions, 97.97% branches** overall. Whole-repository formatting,
+local Markdown links and whitespace checks also passed. These results use
+simulated storage, not live MongoDB.
+
+Lint and frontend/backend types passed. No frontend production code changed;
+the previous 122-browser result remains historical, not a fresh run for these
+backend-only fixes. No installation, private environment read, live database
+access, migration, activation, audit, network service check, Git submission,
+or merge was performed. Live rehearsal remains a separate approval step after
+focused review of these fixes.
