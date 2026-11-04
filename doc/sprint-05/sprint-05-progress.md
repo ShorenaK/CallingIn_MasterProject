@@ -6,9 +6,13 @@
 
 **Starting point:** main at `0017bbf`, the approved Sprint 4 merge.
 
-**Status:** Planning/setup only. AI Coach implementation has not started.
+**Status:** Backend-only Coach foundation implemented locally November 4. Real
+OpenAI integration, frontend controls, and deployment are not implemented.
 
 ## Current summary — November 4
+
+Superseded in part by the backend implementation entry below; earlier planning
+statements describe their own checkpoint.
 
 - Sprint 4 implementation, review fixes, and merge are complete. Recorded final
   checks: 267 simulated backend and 92 mocked Chromium tests, plus static checks
@@ -141,3 +145,57 @@ deployment remain undecided and require their explained approvals. Shorena plans
 to supply professor questions next; none were invented. These follow-up edits
 remain local/uncommitted until a separately authorized Git submission. No curated
 memory save or full transcript archive was requested.
+
+## November 4 — Approved first backend implementation
+
+Shorena reported having ChatGPT Pro, chose OpenAI as the provider direction, and
+approved the explained backend-only foundation with local test doubles. Credit
+eligibility/balance has not been verified or activated. This approval excludes
+real API calls, packages, UI integration, database migrations, and deployment.
+
+Implemented `POST /api/ai-coach/suggestions`, protected by the existing exact
+origin/JSON, session, and freshly verified account guards. Input accepts only
+`action` (`draft`/`refine`), `tone` (`natural`/`warm`/`direct`), and visible text
+within 5,000 trimmed UTF-16 units; the separate 16 KB JSON limit still applies.
+Provider output must be plain visible text within that same text limit.
+
+The optional app-factory provider function receives only validated writing input
+and an AbortSignal. Normal startup supplies no provider and returns 503 rather
+than a pretend suggestion. Controlled test doubles exercise the success path.
+No private account data, history, database access, or credential is passed to the
+provider boundary. The endpoint never stores or sends an invitation.
+
+Development guards allow five attempts/account/minute, including invalid and
+failed handler attempts, and one active generation per account per app instance.
+The default deadline is 20 seconds. Timeout/disconnection aborts the signal,
+clears timers/listeners, releases the account slot, and ignores late results.
+Provider cooperation is still required to stop its underlying work. These
+process-local controls reset on restart and are not a durable daily cost budget.
+Daily quotas and real-provider byte/token limits remain for the live integration.
+
+Malformed provider output returns 502; controlled refusal 422; timeout 504;
+missing/unavailable provider or arbitrary failure 503. Public errors are fixed
+application text. Unexpected errors log an allowlisted generic operation without
+inspecting provider errors or logging prompt/output. Responses are no-store.
+
+Changed source: `backend/src/app.js`, `safe-logging.js`, new `ai-coach.js`,
+`ai-coach-policy.js`, and `ai-coach-provider.js`. Added
+`backend/test/ai-coach.test.js`. No frontend or database schema changed.
+
+Verification actually performed:
+
+- Whole-project lint and frontend/backend type checks passed.
+- Initial 13 targeted tests passed after allowing local loopback ports. The
+  first sandboxed attempt failed with listen EPERM, not application assertions.
+- Full backend coverage suite after cancellation/late-result tests: **282 passed,
+  zero failures/skips**, including **15 Coach tests**. Simulated storage and
+  controlled provider doubles; **100% lines/functions, 98.47% branches** overall.
+- Changed-file formatting and whitespace checks passed. No browser suite or
+  frontend build rerun for this backend-only step; no frontend behavior changed.
+
+No OpenAI request, private `.env` read, installation, network audit, database
+connection, credit activation, deployment, Git submission, or Claude review was
+performed. Existing uncommitted deferred/Sprint 4 checklist edits were preserved.
+Implementation and documentation remain local for review. Next: review this
+foundation, then separately approve frontend work or the real OpenAI adapter and
+its budget/privacy/configuration details. No full transcript archive was created.

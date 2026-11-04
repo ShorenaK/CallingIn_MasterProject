@@ -22,8 +22,8 @@ The items below are planning tasks, not approval of every design detail.
 
 - [x] Inspect the current compose flow and identify where AI assistance belongs.
       Completed during the November 4 design work.
-- [ ] Explain the first backend step using WHAT, WHY, HOW, WHERE, IMPACT, and
-      RECOMMENDATION; obtain explicit implementation approval.
+- [x] Explain the first backend-only foundation using all six headings and obtain
+      explicit approval. Implemented November 4 with test doubles; no live calls.
 - [x] Compare provider options; Shorena chose OpenAI as the provider direction.
 - [ ] Confirm the exact model and integration details after design review; Terra
       remains the initial evaluation candidate, not an approved live integration.
@@ -39,9 +39,11 @@ The items below are planning tasks, not approval of every design detail.
 
 ## 2. Implement approved steps
 
-- [ ] Add the agreed authenticated backend drafting/refinement endpoint and
-      provider integration. Keep credentials on the backend.
-- [ ] Add approved input/output validation and request protection using the
+- [x] Add the authenticated backend endpoint, validated provider boundary,
+      deadline/cancellation, and process-local development limits (November 4).
+- [ ] Add the separately approved real OpenAI adapter, server-only credentials,
+      provider response byte/token bounds, and durable spending controls.
+- [x] Add foundation input/output validation and request protection using the
       project's existing guards and text rules where appropriate.
 - [ ] Add the AI controls to invitation composition without automatic sending.
 - [ ] Preserve user-written text during generating, retry, editing, session expiry,
@@ -51,9 +53,11 @@ The items below are planning tasks, not approval of every design detail.
 
 ## 3. Meaningful verification
 
-- [ ] Backend tests: authentication, allowed input, limits, provider timeout/errors,
+- [x] Backend foundation tests: authentication, allowed input, limits, provider timeout/errors,
       malformed/empty/overlong output, safe logs, and approved provider-boundary
       behavior using controlled test doubles.
+      November 4: 15 new Coach tests; full backend suite 282 passed. Real provider
+      protocol/usage and durable quota behavior still require separate tests.
 - [ ] Browser tests: explicit generation, editable suggestion, keeping original
       text, failure/retry, expiry, stale requests, keyboard focus, and no auto-send.
 - [ ] Run existing accounts/invitations/messages/battery tests for regressions.

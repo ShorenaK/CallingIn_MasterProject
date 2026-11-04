@@ -8,6 +8,29 @@ The initial document was separately committed/pushed as `4aebeab`. No applicatio
 implementation, provider, model, SDK, installation, deployment, or further Git
 submission is approved by these documentation updates.
 
+**November 4 implementation update:** Shorena subsequently approved the first
+backend-only foundation; it is implemented locally. OpenAI is the chosen provider
+direction; Terra remains the initial evaluation candidate. Earlier proposal and
+no-implementation statements below describe the design checkpoint. See the
+[latest progress entry](sprint-05-progress.md#november-4--approved-first-backend-implementation)
+for actual scope and verification. No real provider is connected.
+
+### Implemented foundation contract
+
+The authenticated `POST /api/ai-coach/suggestions` now accepts exactly the
+proposed action/text/tone fields. A configured test provider returns a validated
+`{ "suggestion": "plain text" }` response. Normal application startup has no
+provider and returns 503. Fixed error categories and no-store responses protect
+user content; the endpoint does not create invitations or write drafts to MongoDB.
+
+The app factory's optional third argument accepts a provider function for tests
+and a deadline (default 20 seconds). Provider calls receive only validated input
+and an AbortSignal. Five attempts/account/minute and one active call/account are
+process-local development guards. Invalid requests count toward the minute limit;
+timeouts/disconnections release active slots and signal cancellation. These are
+not live spending controls. No daily quota, SDK, key loading, real provider call,
+or frontend control is implemented yet.
+
 Related: [Sprint 5 plan](sprint-5.md) and [progress](sprint-05-progress.md).
 
 ## Purpose and first scope

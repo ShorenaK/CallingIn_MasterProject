@@ -7,6 +7,7 @@ import { requireConversation } from './conversation-access.js';
 import { sendMessage, listMessages } from './messages.js';
 import { createMessageRateLimiter } from './message-rate-limit.js';
 import express from 'express';
+import { createCoachRouter } from './ai-coach.js';
 import { register } from './registration.js';
 import { login, logout, currentUser, updateProfile } from './authentication.js';
 import { createLoginRateLimiter } from './login-rate-limit.js';
@@ -23,7 +24,12 @@ import { openConversation } from './conversation-opening.js';
 
 import { respondToInvitation } from './invitation-response.js';
 
-const accountRoutes = ['/api/users', '/api/invitations', '/api/conversations'];
+const accountRoutes = [
+  '/api/users',
+  '/api/invitations',
+  '/api/conversations',
+  '/api/ai-coach',
+];
 
 /**
  * Startup prepares database-backed sessions before handing middleware to this
@@ -33,8 +39,9 @@ const accountRoutes = ['/api/users', '/api/invitations', '/api/conversations'];
  * for isolated use. Production startup supplies both.
  * @param {import('mongodb').Db} [db]
  * @param {{sessionMiddleware: import('express').RequestHandler, requestProtection: import('express').RequestHandler}} [authentication]
+ * @param {import('./ai-coach-provider.js').CoachOptions} [coach]
  */
-export function createApp(db, authentication) {
+export function createApp(db, authentication, coach) {
   if (
     authentication &&
     (typeof authentication.sessionMiddleware !== 'function' ||
@@ -68,6 +75,7 @@ export function createApp(db, authentication) {
     app.get('/api/auth/me', currentUser);
     app.patch('/api/auth/me', updateProfile);
     app.use(accountRoutes, authentication.sessionMiddleware, requireAccount);
+    app.use('/api/ai-coach', createCoachRouter(coach));
     app.get('/api/users/me/social-battery', readBattery);
     app.patch('/api/users/me/social-battery', saveBattery);
     app.get(
