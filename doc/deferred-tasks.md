@@ -134,7 +134,7 @@ No cooldown or next-permitted date is implemented. The earlier decision remains
 final; a future invitation would be a new record. Back up and review the database
 before any separately approved migration; no index change is authorized here.
 
-### 6. Google sign-in
+### 6. Future implementation: Google sign-in with safe account linking
 
 - [ ] Plan Google sign-in as a separately approved future feature.
 - [ ] Design secure account linking, provider configuration, user feedback,
@@ -143,6 +143,43 @@ before any separately approved migration; no index change is authorized here.
 **Purpose:** Offer a convenient sign-in option without requiring a new password.
 This was previously recorded as future work. It is not part of Sprint 3 closeout
 or automatically part of Sprint 4.
+
+**November 4 clarification:** Shorena explicitly retained this as future work,
+separate from the current AI Coach implementation. Plan identity verification,
+safe linking to existing CallingIn accounts, session creation, failure/cancel
+handling, and tests before implementation. No Google configuration, package,
+account linking, or live authentication test is approved by this record.
+
+### 6a. Future implementation and testing: password reset
+
+**Requested November 4:** Record password reset with secure email delivery and
+session handling for future implementation/testing. This is a planning record,
+not approval to build it or send email. It is separate from Google sign-in.
+
+- [ ] Design a Forgot password flow available without requiring three failed
+      attempts. Returning generic responses should avoid disclosing account existence.
+- [ ] Choose and separately approve an email-delivery approach, configuration,
+      privacy, and any cost. Start with a controlled email double/local test inbox;
+      obtain separate approval for real delivery. Never log reset links or tokens.
+- [ ] Design unpredictable, expiring, single-use reset tokens with protected
+      server-side storage and atomic consumption. Do not email passwords.
+- [ ] Define new-password validation, password hashing, and invalidation of old
+      sessions/reset tokens after a successful reset. Require explicit sign-in
+      afterward rather than silently authenticating the reset request.
+- [ ] Protect reset requests and token attempts against abuse while allowing a
+      legitimate recovery path when ordinary login attempts are limited.
+- [ ] Test unknown emails, generic responses, delivery failures, expired/invalid
+      links, reuse, concurrent token consumption, password validation, session
+      invalidation, safe logs, and accessible browser feedback using test doubles.
+- [ ] Separately approve a small end-to-end delivery check using a dedicated test
+      account/inbox before declaring real email recovery verified.
+
+Recovering or changing the account email is a separate identity-verification
+feature; password reset does not authorize it. The current login code permits
+ten credential failures per normalized email per 15 minutes, plus 100 total
+requests per IP. Shorena clarified that her reported three-attempt lockout may
+predate that change; she has not retested the current limit. Do not record this
+as a confirmed current three-attempt defect or as a passed live-limit check.
 
 ### 7. Review deployment protections and the dependency override
 
