@@ -72,3 +72,48 @@ This branch is local and has not been pushed. These documents are uncommitted;
 setup is not a Git submission or final implementation approval. The curated
 memory still describes its earlier snapshot: inspect this record and current Git
 when restoring. No new Save Session or full transcript archive was requested here.
+
+## November 4 — Design proposal and low-cost testing discussion
+
+This dated entry supersedes the earlier setup's local/unpushed status. At the
+start of this documentation update, Desktop was clean on `sprint-05-ai-coach` at
+`4aebeab`, matching its local origin tracking reference. No new fetch was run.
+Setup was submitted as `8c37a03`; the separately approved design-only Git flow
+committed and pushed `4aebeab` with the normal formatting hook passing.
+
+Shorena approved creating the [AI Coach design proposal](ai-coach-design.md),
+then asked questions about provider-specific behavior, controlled test doubles,
+using her personal ChatGPT subscription, when to claim credits, Render hosting,
+and Amazon alternatives. Her stated priority is minimal spending for class and
+testing. She then explicitly requested recording this discussion in Markdown.
+
+The design now explains:
+
+- Prepared provider responses let backend tests rehearse success, delays, and
+  failures without paid AI calls; they do not evaluate real model quality.
+- The proposed sequence from design approval through local mocked tests,
+  credit checks, approved live calls, deployment, review, and closeout.
+- Her exact personal ChatGPT plan remains unknown. Check eligibility now and
+  claim eligible API credits near the first real test, considering expiry.
+  No subscription upgrade, credit purchase, or activation is recommended now.
+- OpenAI and Amazon Bedrock are candidates, not selections. Current official
+  credit/pricing documentation was consulted during the questions; account
+  eligibility and actual balances were not inspected.
+- One free Render service serving React and Express is a demo proposal, with
+  deployment preparation covering routing, Node/build/start, HTTPS origin,
+  proxy/secure cookies, secrets, Atlas access, budgets, and deployed verification.
+  Free hosting and AI usage are separate; cold starts and usage limits apply.
+
+Only Markdown records were updated for this request: the design, this progress
+file, and a dated handoff pointer in Sprint 4 progress on the active Sprint 5
+branch. No completed sprint branch was checked out or altered. No application
+code, package, schema, account setting, deployment, or private `.env` was changed.
+No provider calls, installations, application test suites, credit applications,
+or hosted Quality checks were performed. Documentation formatting, local links,
+and whitespace were checked; this is not runtime verification.
+
+Provider/model/SDK, dollar budget, final UI/API design, quota persistence, and
+deployment remain undecided and require their explained approvals. Shorena plans
+to supply professor questions next; none were invented. These follow-up edits
+remain local/uncommitted until a separately authorized Git submission. No curated
+memory save or full transcript archive was requested.

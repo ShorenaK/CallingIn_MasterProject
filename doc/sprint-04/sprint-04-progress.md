@@ -510,3 +510,16 @@ remaining live/human/database checks stay in this sprint's checklist. No new
 live verification or manual accessibility certification is claimed by the merge.
 The new post-merge hosted run needs its own result; passing parents do not
 establish that a future merge run passed.
+
+## November 4 — Sprint 5 discussion handoff
+
+Added on the active Sprint 5 branch at Shorena's request; Sprint 4's completed
+implementation and retained branch are unchanged. AI Coach planning, plain-language
+test-double explanations, credit timing, OpenAI/Bedrock alternatives, and proposed
+Render deployment preparation are recorded in the
+[Sprint 5 design](../sprint-05/ai-coach-design.md) and
+[Sprint 5 progress](../sprint-05/sprint-05-progress.md).
+These are proposals, not implemented AI/deployment or completed live checks.
+The outstanding Sprint 4 checks remain carried in the
+[Sprint 5 checklist](../sprint-05/sprint-5.md). Professor questions will be added
+when supplied; no answers or new verification outcomes are inferred here.

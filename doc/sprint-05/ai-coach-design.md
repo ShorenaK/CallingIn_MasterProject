@@ -2,9 +2,11 @@
 
 **Prepared:** November 4, 2026 (America/New_York).
 
-**Status:** Proposal for review. Shorena approved creating this document only.
-No application implementation, provider, model, SDK, installation, network check,
-or Git submission is approved by this document.
+**Status:** Proposal for review. Shorena approved creating this document and,
+on November 4, recording the follow-up testing, credit, and deployment discussion.
+The initial document was separately committed/pushed as `4aebeab`. No application
+implementation, provider, model, SDK, installation, deployment, or further Git
+submission is approved by these documentation updates.
 
 Related: [Sprint 5 plan](sprint-5.md) and [progress](sprint-05-progress.md).
 
@@ -219,3 +221,129 @@ not include live generation or account purchases.
 After selecting a provider and agreeing on limits, explain and approve the first
 backend implementation step. A tested handler/provider boundary should precede
 UI integration. No production endpoint should return a pretend AI suggestion.
+
+## November 4 — Plain-language explanation and low-cost sequence
+
+Shorena's priority is to spend as little as possible while testing for class.
+The following sequence is a recommendation, not implementation approval.
+
+**Provider-specific** means details belonging to the selected AI company or
+service: its API format, privacy terms, prices, models, and error responses.
+OpenAI is one candidate; Amazon Bedrock is another. Neither is selected yet.
+
+**Controlled provider doubles** are test substitutes for the external AI call.
+For example, a backend test supplies a prepared suggestion, a delayed response,
+or an error. This is like rehearsing a phone call before calling the real person.
+Tests can check validation, retained drafts, timeouts, and helpful errors without
+an API key or paid generation. They do not prove real model quality or actual
+provider behavior. Browser tests may also mock CallingIn's API; those are a
+separate test boundary from replacing the provider inside backend tests.
+
+| Step | Proposed activity                                                                 | Spending and approval boundary                                                |
+| ---- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1    | Discuss and approve the user flow, privacy boundary, and limits                   | Design remains under discussion                                               |
+| 2    | Compare current provider capabilities, costs, credits, and terms                  | Documentation research only; no purchase or live generation                   |
+| 3    | Approve and build the backend handler with controlled provider doubles            | Local tests make no paid AI calls                                             |
+| 4    | Approve and build editable UI suggestions and draft protection                    | Local/mocked integration; no automatic sending                                |
+| 5    | Check credit eligibility and expiry; select a small live-test budget              | Claim eligible credits near the first real test, not merely to begin planning |
+| 6    | Approve real provider integration and a small synthetic-data test from the laptop | Server-only credentials; inspect real output, errors, and usage               |
+| 7    | Approve deployment preparation and then a public class demo                       | Hosting is separate from AI usage; deployment needs its own approval          |
+| 8    | Record actual results, obtain independent review, and finish closeout             | Separate approval for fixes, Git submission, and merge                        |
+
+The provider adapter and UI steps can be adjusted after design approval. A
+public deployment is not required to call a real AI API from the local backend.
+
+### ChatGPT account and when to claim credits
+
+CallingIn cannot use a personal ChatGPT login or monthly chat allowance directly.
+If OpenAI is selected, its backend would use an OpenAI API project credential.
+The intended path is browser → CallingIn backend → OpenAI API. Never expose the
+key in frontend code or commit it to Git.
+
+The plan to check is Shorena's existing personal ChatGPT subscription: its exact
+name, such as Plus or Pro. Her plan and eligibility have not been confirmed.
+Official documentation consulted November 4 lists an API credit benefit for
+eligible Pro and Business subscriptions; Plus is not listed for that benefit.
+It requires activation, and credits expire with the applicable billing cycle.
+Do not assume a paid chat subscription automatically funds API requests.
+
+Recommendation: check eligibility and the renewal date now, then claim eligible
+credits when ready for the first real API test. Recheck terms at that point.
+Do not upgrade a subscription or buy credits just for the mocked development
+stage. No credit application, activation, account inspection, or purchase was
+performed in this discussion. See [OpenAI credit terms](https://developers.openai.com/api/docs/guides/chatgpt-api-credits)
+and [API authentication](https://developers.openai.com/api/reference/overview).
+
+### Amazon alternatives
+
+Amazon Bedrock could supply AI suggestions using an available Amazon Nova or
+other supported model. Bedrock usage is priced by the selected model/service;
+it is not automatically free. It can be called from a backend hosted on Render,
+so choosing Bedrock would not require migrating all of CallingIn to AWS.
+
+AWS's advertised new-customer offer at the time of discussion includes $100
+initial credits and up to $200 total, with a Free Plan lasting up to six months.
+Shorena's AWS account age, eligibility, selected model access, and credit coverage
+are unverified. Check those details before relying on the offer. AWS Educate
+provides free learning resources/labs without a credit card, but that alone does
+not establish funding for CallingIn's deployment or Bedrock calls. Ask the
+professor whether university project credits are available when Shorena supplies
+her meeting questions. See [AWS Free Tier](https://aws.amazon.com/free/),
+[Bedrock pricing](https://aws.amazon.com/bedrock/pricing/), and
+[AWS Educate](https://aws.amazon.com/education/awseducate/).
+
+Recommendation: use existing eligible credits first. Compare setup effort as
+well as token prices; adding AWS solely for a small saving may not help this
+semester's scope. No AWS resource or permission change is authorized.
+
+### Render demo proposal and deployment preparation
+
+Render is a proposed class-demo host, not a selected or configured deployment.
+The simplest proposed arrangement is one Express web service serving the built
+React frontend and `/api`, using the existing Atlas database if its tier and
+access configuration are suitable. One browser origin simplifies the current
+cookie and exact-origin protections. The inspected Vite `/api` proxy is for
+development only; it does not provide production routing.
+
+Before implementation, inspect and explain these deployment changes:
+
+- Serve Vite's built assets from Express with correct API/static routing and
+  safe missing-route handling. Preserve the frontend/backend source layout.
+- Set the supported Node version, reproducible build/start commands, Render
+  host/port binding, and health check. Avoid writing review builds into tracked
+  dist files or silently deploying an unfinished branch.
+- Configure the exact public HTTPS `APP_ORIGIN`, production mode, session secret,
+  database connection, and eventually provider settings in host-managed secrets.
+  Review Render proxy behavior before configuring narrowly scoped proxy trust
+  so secure session cookies work; do not enable blind proxy trust or broad CORS.
+- Review Atlas network access for the chosen Render region and preserve existing
+  database validators/indexes and test data. Confirm the actual database tier;
+  its current cost was not checked.
+- Decide which branch/commit may deploy and whether automatic deployment is
+  appropriate. Deploying does not authorize a merge or branch change.
+- Protect live AI usage with the approved quotas/budget and generation-off
+  control. Render sleeping/restarting resets process-local counters; those
+  counters alone cannot enforce a durable spending limit.
+- Verify deployed login/logout, cookies, invitations, messages, battery, and
+  approved AI behavior, including expiry and cold starts. Carry forward unfinished
+  human/database checks rather than declaring them passed by deployment.
+
+Render documentation checked November 4 describes free web services with 750
+workspace instance hours per month. They sleep after 15 idle minutes and take
+about a minute to wake. Bandwidth/build allowances also apply; without a payment
+method, the documented over-limit behavior is suspension or blocked builds
+rather than supplementary usage charges. High service-initiated external traffic
+can also trigger suspension. Recheck terms before deploying. Use the provided
+Render address initially rather than buying a domain. See [Render free limits](https://render.com/docs/free)
+and [web service setup](https://render.com/docs/web-services).
+
+Hosting, database, and AI usage are separate costs. Free Render hosting does not
+make OpenAI or Bedrock requests free. Local development with doubles requires no
+new hosting purchase or paid AI calls; no claim is made about existing account
+charges. Open the demo before class to allow a sleeping service to wake.
+
+### Next discussion
+
+Continue reviewing the design and gather Shorena's professor questions. No
+additional questions or advisor answers have been invented or added to the
+meeting agenda. All provider/hosting recommendations above remain proposals.
