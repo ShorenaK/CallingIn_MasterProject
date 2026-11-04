@@ -1,6 +1,6 @@
 # Sprint 4 — Conversations
 
-**Updated:** November 3, 2026 (America/New_York)
+**Updated:** November 4, 2026 (America/New_York)
 
 **Branch:** `sprint-04-conversations`
 
@@ -75,7 +75,7 @@ VoiceOver, or actual phone check was performed during this UI work.
 These conversation UI changes were committed and pushed as `ccce3c4`. Dedicated
 messaging regression tests were subsequently committed. Claude reviewed the later
 source at `589032c`; the 101-assertion live report records completed live work and
-its remaining limits. Current submitted-commit GitHub Quality is still pending.
+its remaining limits. Merge-parent Quality later passed; merge-commit Quality remains unverified here.
 
 **Social Battery is implemented with Shorena's November 3 approval.** The older
 review request saying it was undecided was stale; no product-scope reversal is
@@ -106,9 +106,10 @@ for scope, subsequent follow-up results, and remaining limitations.
 
 ### Messaging and database
 
-- [ ] With separate browser profiles for separate accounts, verify acceptance,
-      opening the same room, sending both ways, reading history, and persistence
-      after reload/restart against the running backend and Atlas.
+- [x] Verify acceptance, the same shared room, two-way sending/history, and
+      page-reload persistence with isolated live browser contexts. Evidence:
+      November 3 independent live report, 101 assertions.
+- [ ] Verify persistence after a backend restart; page reload is not a restart.
 - [x] Verify outsiders and logged-out accounts cannot read or send messages.
       Independent live run: 404 for C and 401 for logged-out clients.
 - [x] Verify message history pagination and live 5,000/5,001 UTF-16-unit boundaries;
@@ -126,12 +127,15 @@ for scope, subsequent follow-up results, and remaining limitations.
       failures per normalized email across IPs and 100 total requests per IP,
       each within 15 minutes. Successful logins do not consume the email failure
       allowance or erase previous credential failures.
-- [ ] Verify Cancel, Keep writing, and Discard draft in the running application,
-      including focus behavior and cancellation while a send is in progress.
-- [ ] Verify retained-draft recovery after real session expiry, including the
-      Change person/lookup path, text selection/copying, and explicit sign-in.
-- [ ] Finish live invitation 5,000/5,001 UTF-16-unit boundary checks and record
-      any independent JSON body-size rejection.
+- [x] Verify real UI Cancel → Keep writing retains the invitation; Cancel →
+      Discard clears it and focuses recipient email (November 3 live report).
+- [ ] Verify remaining cancellation/navigation cases during real in-flight sending.
+- [x] Verify retained reply/focus and explicit sign-in after server-revoked session
+      (November 3 live report).
+- [ ] Verify natural idle expiry, Change person/lookup expiry, and actual OS copying.
+- [x] Verify live rejection of a 5,001-unit invitation; independently distinguish
+      the 413 JSON size limit in message tests (November 3 live report).
+- [ ] Verify live acceptance of the exact 5,000-unit invitation boundary.
 
 ### Required human keyboard-only walkthrough
 
@@ -150,22 +154,26 @@ for scope, subsequent follow-up results, and remaining limitations.
 - [ ] VoiceOver: names, announcements, reading order, and controls.
 - [ ] Safari: account, invitation, and messaging journeys.
 - [ ] 200% zoom: readable content and usable controls.
-- [ ] Phone-width layout and an actual phone check; record which was performed.
+- [x] Automated live 390px viewport: no horizontal overflow (November 3 report).
+- [ ] Actual phone check; a narrow desktop viewport does not complete it.
 
 ## Social Battery and requested edits
 
 - [x] Implement and locally test the approved Social Battery: explicit save,
       persistent account field, partner-only visibility, no communication blocking,
       keyboard controls, responsive SVG icons, error/expiry handling.
-- [ ] Verify Social Battery using real accounts: save/reload/restart, partner
-      visibility, outsider rejection, and compatibility with Atlas user validators.
+- [x] Verify real-account battery saves, page reload, partner visibility, invalid
+      writes, and outsider rejection (November 3 independent live report).
+- [ ] Verify backend-restart persistence and raw Atlas validator metadata.
 
 - [x] Discuss Social Battery behavior and visibility, explain the implementation,
       and obtain approval before building it.
-- [ ] Gather Shorena's other requested changes and make approved corrections.
-- [ ] Add more questions to the November 3 meeting agenda.
-- [ ] Complete affected tests before Claude's independent review; approve and
-      verify any fixes identified by that review.
+- [x] Implement approved Sprint 4 corrections, review fixes, and final polish
+      through `61184fc`; unrelated deferred ideas are not included.
+- [x] Prepare the rescheduled November 10 Meeting 5 agenda with all five Meeting 4
+      sections and Shorena's supplied November 4 questions (on Sprint 5).
+- [x] Complete affected tests and approved review fixes; Claude reviewed `589032c`
+      and `a4bc652`. Final small polish at `61184fc` passed targeted regressions.
 
 ## 4. Independent review and closeout
 
@@ -182,13 +190,16 @@ for scope, subsequent follow-up results, and remaining limitations.
       13 new regressions; all 92 mocked Chromium tests passed. Lint, type checks,
       formatting, whitespace and scratch build passed. No new live/hosted result
       or independent review of these subsequent edits is implied.
-- [ ] Run final relevant backend/browser checks, lint, formatting, type checks,
+- [x] Run final relevant backend/browser checks, lint, formatting, type checks,
       and a scratch frontend build without modifying tracked dist output.
-- [ ] Ask before new network audits/checks; verify Sprint 4 GitHub Quality and
-      record the exact commit and result rather than assuming push means pass.
-- [ ] Update Sprint 4/API/setup documentation and distinguish automated,
+      November 3 pre-merge: 267 backend and 92 mocked Chromium tests passed.
+- [x] Verify merge-parent Quality success for `61184fc` and main `a8fd2a9`
+      before the approved merge (November 3 progress record).
+- [ ] Confirm hosted Quality for the merge commit `0017bbf`; not checked here.
+- [x] Update Sprint 4/API/setup documentation and distinguish automated,
       simulated, live, user-reported, and human verification evidence.
-- [ ] Review any unresolved checks or limitations with Shorena.
+- [x] Review outstanding limitations with Shorena for the approved merge; carry
+      them forward without marking unperformed checks passed.
 - [x] Obtain separate approval for Git submissions and the final Sprint 4 merge.
       Shorena explicitly requested the merge on November 3; remaining checks stay open.
 
@@ -199,3 +210,12 @@ The carried verification items are drawn from the existing
 [unfinished-checks record](../deferred-tasks.md); original historical records
 remain intact. Palette, icons, wording changes, re-invitation policy, and Google
 sign-in remain outside this checklist's implementation scope.
+
+## November 4 — Checklist reconciliation
+
+Completed broad items were split so recorded live passes are checked separately
+from restart, metadata, boundary, and human-test gaps. Final test/review/docs and
+merge-readiness work is marked complete from the November 3 reports. No tests or
+network checks were rerun for this documentation update. Human keyboard testing
+is assigned to Sprint 5; see the central deferred-task record. Historical evidence
+above remains checkpoint-specific. The retained Sprint 4 branch is untouched.
