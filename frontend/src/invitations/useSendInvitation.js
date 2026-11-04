@@ -132,6 +132,16 @@ function draftProblem(message) {
  * @returns {SendProblem}
  */
 function sendProblem(failure, name) {
+  if (failure instanceof ApiError && failure.code === 'INVITATION_COOLDOWN')
+    return {
+      message:
+        'They need some space. Please wait 30 days after their decline before sending another invitation.',
+    };
+  if (failure instanceof ApiError && failure.code === 'INVITATION_ACTIVE')
+    return {
+      message:
+        'You already have an open or accepted invitation with this person. Another invitation cannot be sent.',
+    };
   if (hasStatus(failure, 401))
     return {
       message:

@@ -46,6 +46,7 @@ export function InvitationCard({
       >
         <span aria-hidden="true">{label.symbol}</span> {label.text}
       </p>
+      <ResendNotice direction={direction} invitation={invitation} />
       <p className="invitation-message">{invitation.message}</p>
       <p className="invitation-date">
         Sent{' '}
@@ -84,5 +85,17 @@ function ConversationAction({ invitation, onOpen }) {
     >
       Open conversation
     </button>
+  );
+}
+
+/** @param {{direction: import('./api.js').Direction, invitation: import('./api.js').Invitation}} props */
+function ResendNotice({ direction, invitation }) {
+  if (direction !== 'outgoing' || invitation.resendPolicy !== 'decline-30-days')
+    return null;
+  return (
+    <p className="field-hint">
+      They need some space. You can send another invitation 30 days after they
+      decline.
+    </p>
   );
 }

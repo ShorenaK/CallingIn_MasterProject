@@ -21,6 +21,7 @@ const invitationProjection = {
  */
 export async function listInvitations(request, response) {
   response.set('Cache-Control', 'no-store');
+  const resendEnabled = request.app.locals.invitationResendEnabled === true;
   const query = parseInvitationQuery(request.query);
   if (!query) {
     response.status(400).json({
@@ -49,7 +50,9 @@ export async function listInvitations(request, response) {
         db.collection('invitations')
       );
     const records = await collection
-      .find(filter, { projection: invitationProjection })
+      .find(filter, {
+        projection: listProjection(resendEnabled),
+      })
       .sort({ createdAt: -1, _id: -1 })
       .limit(query.pageSize + 1)
       .toArray();
@@ -59,7 +62,12 @@ export async function listInvitations(request, response) {
       );
     const hasMore = records.length > query.pageSize;
     response.json({
-      invitations: await invitationsWithNames(db, invitations, query.direction),
+      invitations: await invitationsWithNames(
+        db,
+        invitations,
+        query.direction,
+        resendEnabled,
+      ),
       nextCursor: hasMore
         ? invitationCursor(invitations[invitations.length - 1])
         : null,
@@ -70,4 +78,11 @@ export async function listInvitations(request, response) {
       .status(503)
       .json({ error: 'Invitation lists are temporarily unavailable.' });
   }
+}
+
+/** Pair keys are fetched internally only for the enabled current-pair lookup.
+ * @param {boolean} resendEnabled
+ */
+function listProjection(resendEnabled) {
+  return { ...invitationProjection, ...(resendEnabled ? { pairKey: 1 } : {}) };
 }

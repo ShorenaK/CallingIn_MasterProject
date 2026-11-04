@@ -1,4 +1,5 @@
 import { publicInvitation } from './invitation-creation.js';
+import { currentDeclineIds } from './invitation-pair-storage.js';
 
 /**
  * Fetch only counterpart names for this authorized page, never a user directory.
@@ -6,8 +7,14 @@ import { publicInvitation } from './invitation-creation.js';
  * @param {import('./invitation-policy.js').Invitation[]} invitations
  * @param {string} direction
  */
-export async function invitationsWithNames(db, invitations, direction) {
+export async function invitationsWithNames(
+  db,
+  invitations,
+  direction,
+  resendEnabled = false,
+) {
   if (invitations.length === 0) return [];
+  const current = await currentDeclineIds(db, invitations, resendEnabled);
   const counterpart = direction === 'incoming' ? 'senderId' : 'recipientId';
   const ids = new Map(
     invitations.map((invitation) => {
@@ -28,7 +35,10 @@ export async function invitationsWithNames(db, invitations, direction) {
   return invitations.map((invitation) => {
     const name = names.get(invitation[counterpart].toHexString());
     return {
-      ...publicInvitation(invitation),
+      ...publicInvitation(
+        invitation,
+        current.has(invitation._id.toHexString()),
+      ),
       otherPerson: typeof name === 'string' ? { displayName: name } : null,
     };
   });

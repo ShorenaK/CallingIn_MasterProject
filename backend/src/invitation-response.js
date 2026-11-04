@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { publicInvitation } from './invitation-creation.js';
 import { logAccountFailure } from './safe-logging.js';
+import { currentDeclineIds } from './invitation-pair-storage.js';
 
 /** @param {unknown} body @returns {body is {status: 'accepted' | 'deferred' | 'declined'}} */
 function validResponse(body) {
@@ -55,7 +56,7 @@ export async function respondToInvitation(request, response) {
       { returnDocument: 'after' },
     );
     if (updated) {
-      response.json({ invitation: publicInvitation(updated) });
+      response.json({ invitation: await serializeResponse(request, updated) });
       return;
     }
     const current = await collection.findOne(identity);
@@ -64,7 +65,7 @@ export async function respondToInvitation(request, response) {
       return;
     }
     if (current.status === status) {
-      response.json({ invitation: publicInvitation(current) });
+      response.json({ invitation: await serializeResponse(request, current) });
       return;
     }
     response
@@ -76,4 +77,20 @@ export async function respondToInvitation(request, response) {
       .status(503)
       .json({ error: 'Invitation responses are temporarily unavailable.' });
   }
+}
+
+/** Only the current declined invitation advertises the active resend policy.
+ * @param {import('express').Request} request
+ * @param {import('./invitation-policy.js').Invitation} invitation
+ */
+async function serializeResponse(request, invitation) {
+  const current = await currentDeclineIds(
+    request.app.locals.db,
+    [invitation],
+    request.app.locals.invitationResendEnabled === true,
+  );
+  return publicInvitation(
+    invitation,
+    current.has(invitation._id.toHexString()),
+  );
 }

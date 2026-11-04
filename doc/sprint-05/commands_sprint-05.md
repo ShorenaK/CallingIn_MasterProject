@@ -83,6 +83,17 @@ HTTP regression using local ports and simulated storage. These commands do not
 migrate indexes or enable re-invitations. See the dated progress entry for actual
 results; examples do not authorize future commands automatically.
 
+## Resend feature preparation — no live migration executed
+
+Local verification uses `backend/test/invitation-resend.test.js`,
+`backend/test/invitation-resend-migration.test.js`, and the new mocked browser
+`frontend/e2e/invitation-resend.spec.js`. These run against doubles, not Atlas.
+
+The operator commands, exact acknowledgments, prerequisites, and rollback limits
+are in the [resend migration guide](invitation-resend.md). Do not execute them or
+set `INVITATION_RESEND_ENABLED=true` without separate approval. Startup never
+automatically removes the permanent index. Default-off preserves current behavior.
+
 ## Git handoff
 
 Shorena normally owns staging, commits, pushes, and merges, with task-specific

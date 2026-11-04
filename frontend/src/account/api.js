@@ -1,11 +1,14 @@
 /** @typedef {{id: string, displayName: string, email: string}} User */
 
 export class ApiError extends Error {
-  /** @param {string} message @param {number} status @param {number | null} [retryAfter] */
-  constructor(message, status, retryAfter = null) {
+  /** @param {string} message @param {number} status @param {number | null} [retryAfter]
+   * @param {string} [code] Allowlisted application error code, not a driver error.
+   */
+  constructor(message, status, retryAfter = null, code = '') {
     super(message);
     this.status = status;
     this.retryAfter = retryAfter;
+    this.code = code;
   }
 }
 
@@ -41,6 +44,10 @@ export async function apiRequest(url, options = {}) {
         : 'Something went wrong. Please try again.',
       response.status,
       retryDelay(response.headers.get('Retry-After')),
+      typeof data?.code === 'string' &&
+        ['INVITATION_COOLDOWN', 'INVITATION_ACTIVE'].includes(data.code)
+        ? data.code
+        : '',
     );
   }
   return data;

@@ -4,6 +4,7 @@ import {
   invitationPairKey,
 } from './invitation-policy.js';
 import { logAccountFailure } from './safe-logging.js';
+import { InvitationConflict, storeInvitation } from './invitation-resend.js';
 
 /** @param {unknown} body @returns {body is {recipientId: string, message: string}} */
 function validCreation(body) {
@@ -24,7 +25,7 @@ function validCreation(body) {
 /** Serialize explicitly: internal pair keys never belong in API responses.
  * @param {import('./invitation-policy.js').Invitation} invitation
  */
-export function publicInvitation(invitation) {
+export function publicInvitation(invitation, resendEnabled = false) {
   return {
     id: invitation._id.toHexString(),
     senderId: invitation.senderId.toHexString(),
@@ -34,6 +35,9 @@ export function publicInvitation(invitation) {
     createdAt: invitation.createdAt.toISOString(),
     updatedAt: invitation.updatedAt.toISOString(),
     respondedAt: invitation.respondedAt?.toISOString() ?? null,
+    ...(resendEnabled && invitation.status === 'declined'
+      ? { resendPolicy: 'decline-30-days' }
+      : {}),
   };
 }
 
@@ -79,22 +83,34 @@ export async function createInvitation(request, response) {
       updatedAt: now,
       respondedAt: null,
     };
-    await db.collection('invitations').insertOne(invitation);
+    await storeInvitation(
+      db,
+      invitation,
+      request.app.locals.invitationResendEnabled === true,
+    );
     response.status(201).json({ invitation: publicInvitation(invitation) });
   } catch (failure) {
-    if (
-      failure instanceof Error &&
-      'code' in failure &&
-      failure.code === 11000
-    ) {
-      response.status(409).json({
-        error: 'An invitation already exists between these accounts.',
-      });
-      return;
-    }
-    logAccountFailure(request, 'invitation-create', failure);
-    response
-      .status(503)
-      .json({ error: 'Invitation creation is temporarily unavailable.' });
+    handleCreationFailure(request, response, failure);
   }
+}
+
+/** @param {import('express').Request} request @param {import('express').Response} response @param {unknown} failure */
+function handleCreationFailure(request, response, failure) {
+  if (failure instanceof InvitationConflict) {
+    response.status(409).json({ error: failure.message, code: failure.code });
+    return;
+  }
+  if (failure instanceof Error && 'code' in failure && failure.code === 11000) {
+    response.status(409).json({
+      error: 'An invitation already exists between these accounts.',
+      ...(request.app.locals.invitationResendEnabled === true
+        ? { code: 'INVITATION_ACTIVE' }
+        : {}),
+    });
+    return;
+  }
+  logAccountFailure(request, 'invitation-create', failure);
+  response
+    .status(503)
+    .json({ error: 'Invitation creation is temporarily unavailable.' });
 }

@@ -81,12 +81,19 @@ implementation of the deferred features.
 - [ ] Complete the human keyboard-only walkthrough in Sprint 5: Tab, Shift+Tab,
       Enter, and Space across accounts, invitations, conversations, battery, and
       later AI controls. Check focus, errors, confirmation, and retained-draft copying.
-- [ ] Separately design the 30-day invitation retry after a decline, preserving
-      history and enforcing server timing. Shorena separately approved the timing
-      foundation below; resend authorization, migration, and UI remain pending.
+- [x] Separately design the 30-day invitation retry after a decline, preserving
+      history and enforcing server timing. Local code/UI/migration preparation
+      approved and completed; live migration and activation remain pending.
 - [x] Implement/test the isolated decline-time calculation: 30 elapsed days from
       the server-recorded final decline, eligible at the exact deadline. This
       does not enable resending or replace the current permanent pair index.
+- [x] Implement the gated resend transaction, history-preserving current-pair
+      pointer, safe API conflicts, simple sender notice, and simulated tests.
+      See [resend design/migration](invitation-resend.md). Default remains off.
+- [x] Prepare migration code, read-only plan mode, safeguards, and an operator guide.
+- [ ] Obtain independent review of resend code and migration preparation.
+- [ ] Separately approve live inspection, verified backup, stopped writers,
+      migration, activation, and actual database/transaction acceptance checks.
 - [ ] Review deployment protections and the dependency override: reconsider login
       delays/recovery before deployment, review shared limits/proxy settings, and
       retain the minimatch override until a verified compatible fix exists.

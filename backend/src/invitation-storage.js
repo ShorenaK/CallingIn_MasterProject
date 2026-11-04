@@ -1,5 +1,6 @@
 import { isDeepStrictEqual } from 'node:util';
 import { INVITATION_MESSAGE_MAX } from './invitation-policy.js';
+import { verifyResendStorage } from './invitation-pair-storage.js';
 
 const properties = {
   _id: { bsonType: 'objectId' },
@@ -71,18 +72,21 @@ async function prepareValidation(db) {
 }
 
 /**
- * Permanent pair uniqueness enforces the approved Sprint 3 contact policy.
+ * Default-off rollout preserves permanent uniqueness until explicit migration.
+ * Enabled mode verifies migrated storage and never drops/changes the old index.
  * Participant/time/ID indexes support stable newest-first cursor pagination.
  * No TTL index: invitations must not silently expire or lose consent history.
  * @param {import('mongodb').Db} db
  */
-export async function prepareInvitations(db) {
+export async function prepareInvitations(db, resendEnabled = false) {
   await prepareValidation(db);
   const invitations = db.collection('invitations');
-  await invitations.createIndex(
-    { pairKey: 1 },
-    { unique: true, name: 'invitation_pair_unique' },
-  );
+  if (resendEnabled) await verifyResendStorage(db);
+  else
+    await invitations.createIndex(
+      { pairKey: 1 },
+      { unique: true, name: 'invitation_pair_unique' },
+    );
   await invitations.createIndex(
     { recipientId: 1, createdAt: -1, _id: -1 },
     { name: 'invitation_incoming' },

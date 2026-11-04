@@ -382,3 +382,65 @@ No packages, private environment reads, external calls, Git submission, or merge
 Next requires a separate explained approval: design the history-preserving,
 concurrency-safe replacement for permanent pair blocking and a reviewed migration
 plan. Only after enforcement works should the API/UI offer a reliable resend date.
+
+## November 4 — Approved resend implementation and migration preparation
+
+After the timing review, Shorena clarified that the UI should say “30 days after
+decline,” without a calculated date/countdown. She then explicitly approved the
+explained code, UI, tests, and migration preparation, excluding live database
+changes. Source started at `8cdfddd`; the timing review report was untracked and
+has been preserved without rewriting its findings. Earlier “design next” notes
+are historical; this is the approved continuation.
+
+Implemented the [resend design and operator migration guide](invitation-resend.md):
+
+- Default-off `INVITATION_RESEND_ENABLED` preserves the legacy permanent policy.
+  Invalid settings fail startup. Enabled startup verifies migrated storage, never
+  automatically drops indexes or backfills a live database.
+- `invitationPairs` tracks one current invitation per canonical unordered pair.
+  Native transactions read current state, enforce the server's decline cooldown,
+  update the pair pointer, and insert a new invitation atomically. Snapshot reads
+  and majority writes are requested; no nontransactional fallback is permitted.
+- Either participant can initiate the next invitation after the exact deadline.
+  Pending/Maybe Later/accepted current states still block repeats. All old records
+  and existing conversation references remain intact. Missing/corrupt pair state
+  or decline dates fail closed, and repeated old responses cannot redirect a pair.
+- Gated list/response metadata advertises the simple policy only on the current
+  valid decline. Superseded historical declines do not keep offering a new resend.
+  Pair queries are batched for the authorized list page and internal keys are not
+  serialized. Existing pagination and counterpart privacy rules remain.
+- Sender cards display the agreed message only when the server policy is active.
+  Cooldown/active-pair conflict codes explain rejected sends while retaining text.
+  The original Find person/compose/Send flow creates the new invitation; no
+  automatic resend or new date/countdown UI was added.
+- Prepared a read-only migration planner and explicit operator apply script.
+  It checks transaction-capable topology and legacy data, requires exact target,
+  stopped-writer and backup acknowledgments, backfills/validates pair pointers,
+  creates a nonunique history index, and removes the old unique index last.
+  No invitation/message/account records are deleted. Conflicting data stops
+  migration; partial pre-index-removal backfills can resume after review.
+
+An acknowledgment is not proof of a backup or stopped writers. The procedure
+requires independent review, actual backup/maintenance evidence, separately
+approved live access, and a real transaction/index test before activation.
+No migration script or `.env` was executed/read. No database, configuration,
+provider, or network state was changed. This work remains local/uncommitted.
+
+Verification checkpoints:
+
+- Initial 43 focused backend tests passed; later full checkpoint: 314 passed.
+- Final backend suite after the enabled API/history regression: **315 passed**,
+  zero failures/skips; **99.93% lines, 100% functions, 97.83% branches**.
+  Tests use local HTTP and simulated transactions/storage, not real MongoDB.
+- Targeted mocked Chromium: **21 passed** (five new resend and 16 composer tests).
+  Full combined mocked Chromium suite: **122 passed** in one run (117 existing
+  and five new). These are mocked APIs, not live database timing tests.
+- Final whole-project lint, frontend/backend types, repository formatting,
+  local Markdown links and whitespace checks passed. Scratch Vite build passed
+  at `/private/tmp/callingin-resend-build.UvRn9R`; tracked dist was unchanged.
+
+The source/tests span invitation creation, storage/rollout, listing/response
+serialization, lifecycle configuration, frontend API error handling and sender
+cards. Migration and transaction behavior require focused Claude review and
+separate live verification; passing doubles do not certify them. No full
+transcript export, Git submission, branch change, merge, or deployment occurred.

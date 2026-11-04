@@ -16,6 +16,8 @@ AI provider, model, SDK, pricing plan, or data-retention policy.
   limitations, and Git handoff status.
 - [Command guide](commands_sprint-05.md): existing project commands and safe
   verification workflow; examples are not commands automatically executed.
+- [Decline resend implementation and migration plan](invitation-resend.md):
+  separately approved 30-day feature, default-off rollout, and unexecuted migration.
 - [Meeting 5 — Tuesday, November 10](../meetings/meeting-5_2026-11-10.md): agenda,
   all five Meeting 4 question sections, and space for actual advisor responses.
 

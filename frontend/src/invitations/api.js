@@ -8,6 +8,7 @@ import { apiRequest } from '../account/api.js';
  * @property {string} message
  * @property {InvitationStatus} status
  * @property {string} createdAt
+ * @property {'decline-30-days'} [resendPolicy] Only a current decline with the active server policy.
  * @property {{displayName: string} | null} [otherPerson] Lists only.
  */
 /** @typedef {{invitations: Invitation[], nextCursor: string | null}} InvitationPage */
@@ -94,6 +95,9 @@ function validInvitation(value) {
     typeof item.message === 'string' &&
     validDate(item.createdAt) &&
     STATUSES.includes(String(item.status)) &&
+    (item.resendPolicy === undefined ||
+      (item.resendPolicy === 'decline-30-days' &&
+        item.status === 'declined')) &&
     validPerson(item.otherPerson)
   );
 }

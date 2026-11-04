@@ -5,6 +5,7 @@ import { prepareUsers } from './registration.js';
 import { createSessionMiddleware } from './session.js';
 import { createRequestProtection } from './request-protection.js';
 import { prepareInvitations } from './invitation-storage.js';
+import { invitationResendEnabled } from './invitation-resend.js';
 import { prepareConversations } from './conversation-storage.js';
 
 /**
@@ -132,7 +133,8 @@ export async function startBackend(options = {}) {
     await prepare(database.db);
     stage =
       'Invitation storage setup failed. Check database access and validation; schema differences require an administrator update.';
-    await prepareInvitations(database.db);
+    const resendEnabled = invitationResendEnabled(env);
+    await prepareInvitations(database.db, resendEnabled);
     stage =
       'Conversation storage setup failed. Check database access and validation; schema differences require an administrator update.';
     await prepareConversations(database.db);
@@ -143,7 +145,9 @@ export async function startBackend(options = {}) {
       'Authentication setup failed. Check SESSION_SECRET, APP_ORIGIN, and session storage permissions.';
     const authentication = await prepareAuthentication(database.db, env);
     stage = 'CallingIn backend failed to listen. Check the port configuration.';
-    server = await listen(makeApp(database.db, authentication), port);
+    const app = makeApp(database.db, authentication);
+    app.locals.invitationResendEnabled = resendEnabled;
+    server = await listen(app, port);
   } catch {
     // Session storage borrows this database's MongoClient. Closing the shared
     // connection once releases account and session resources, including failures
