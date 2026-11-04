@@ -1,4 +1,4 @@
-import { hasMessageContent } from './message-content.js';
+import { validInvitationMessage } from './invitation-policy.js';
 
 /** @typedef {{action: 'draft' | 'refine', text: string, tone: 'natural' | 'warm' | 'direct'}} CoachInput */
 
@@ -7,11 +7,7 @@ import { hasMessageContent } from './message-content.js';
  * @returns {text is string}
  */
 export function validCoachText(text) {
-  return (
-    typeof text === 'string' &&
-    text.trim().length <= 5000 &&
-    hasMessageContent(text)
-  );
+  return validInvitationMessage(text);
 }
 
 /** @param {unknown} body @returns {body is CoachInput} */

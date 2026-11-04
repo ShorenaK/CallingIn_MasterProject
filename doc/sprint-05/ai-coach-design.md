@@ -9,7 +9,7 @@ implementation, provider, model, SDK, installation, deployment, or further Git
 submission is approved by these documentation updates.
 
 **November 4 implementation update:** Shorena subsequently approved the first
-backend-only foundation; it is implemented locally. OpenAI is the chosen provider
+backend-only foundation; it was committed/pushed as `b136587`. OpenAI is the chosen provider
 direction; Terra remains the initial evaluation candidate. Earlier proposal and
 no-implementation statements below describe the design checkpoint. See the
 [latest progress entry](sprint-05-progress.md#november-4--approved-first-backend-implementation)
@@ -38,6 +38,22 @@ protection. The backend remains unconnected to OpenAI; UI success tests use mock
 API responses. Current UI disclosure explicitly states this. Review the latest
 [frontend progress entry](sprint-05-progress.md#november-4--approved-frontend-coach-controls)
 for actual verification and limits. Earlier “no frontend” statements are historical.
+
+**November 4 review follow-up:** The frontend was committed/pushed as `8614173`.
+Claude independently reviewed that commit. Shorena approved the subsequent fixes
+and the decision to keep the first pre-Coach message across repeated applications
+until restored or the draft is explicitly discarded/sent. The button now says
+Restore original message; replacing later edits still requires confirmation.
+Cancel generation stays rendered with guarded aria-disabled behavior after a
+request ends, preserving its focus. Expired lookup recovery shows the retained
+message without active Coach controls. Unavailable and rate-limit messages are
+distinct; numeric Retry-After delays are bounded before display. The provider
+boundary checks for an already-disconnected client before dispatch.
+
+These review fixes are local/uncommitted until separately submitted. See the
+[progress follow-up](sprint-05-progress.md#november-4--approved-claude-review-fixes)
+for measured checks. Claude's original report is preserved unchanged and does not
+constitute independent review of the fixes.
 
 Related: [Sprint 5 plan](sprint-5.md) and [progress](sprint-05-progress.md).
 

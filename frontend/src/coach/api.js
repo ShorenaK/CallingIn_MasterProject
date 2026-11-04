@@ -1,11 +1,12 @@
 import { apiRequest } from '../account/api.js';
 import { hasMessageContent } from '../message-content.js';
+import { MESSAGE_MAX } from '../invitations/api.js';
 
 /** @typedef {{action: 'draft' | 'refine', text: string, tone: 'natural' | 'warm' | 'direct'}} CoachInput */
 
 /** @param {string} text */
 export function validCoachText(text) {
-  return hasMessageContent(text) && text.trim().length <= 5000;
+  return hasMessageContent(text) && text.trim().length <= MESSAGE_MAX;
 }
 
 /** @param {CoachInput} input @param {AbortSignal} signal */

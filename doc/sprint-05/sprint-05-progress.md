@@ -14,6 +14,10 @@ returns Coach unavailable; successful suggestions in tests are mocked.
 Superseded in part by the backend implementation entry below; earlier planning
 statements describe their own checkpoint.
 
+Latest submitted source is `8614173` (frontend) following `b136587` (backend).
+Both were committed/pushed; earlier local-only statements are historical. Claude's
+independent review and the approved local fix work are recorded at the end.
+
 - Sprint 4 implementation, review fixes, and merge are complete. Recorded final
   checks: 267 simulated backend and 92 mocked Chromium tests, plus static checks
   and scratch build; earlier live report: 101 assertions.
@@ -266,3 +270,68 @@ network audit, database change, deployment, Claude review, or Git submission was
 performed. Changes remain local pending review. Next: independently review the
 controls or separately approve the real OpenAI adapter, privacy disclosure,
 model/configuration, credits, and durable budget controls before live testing.
+
+## November 4 — Approved Claude review fixes
+
+Read Claude's [independent review of `8614173`](quality-review-2026-11-04-8614173.md).
+Claude recorded 282 backend tests and **109 mocked Chromium tests in one run**,
+plus lint/types/formatting/scratch build. These are Claude's measured checkpoint,
+separate from the earlier 108 combined / 33 focused implementation results.
+The supplied report was untracked when this fix step began and is preserved
+unchanged. It does not independently review the subsequent fixes.
+
+Read-only public GitHub API inspection confirmed [Quality run 41863511358](https://github.com/ShorenaK/CallingIn_MasterProject/actions/runs/41863511358)
+failed at Browser and accessibility tests. Lint/format/types/backend/build and
+Chromium installation passed; audits were skipped. Existing gh credentials returned
+401; anonymous metadata succeeded but log download returned 403. The exact hosted
+test error was therefore not confirmed. The macOS-only screenshot path is a
+source-supported portability problem, not an observed log diagnosis.
+
+Shorena approved the recommended focused fixes. Implemented:
+
+1. Screenshot output uses Playwright's `test.info().outputPath`, removing the
+   hard-coded `/private/tmp` dependency from the permanent browser test.
+2. Cancel generation remains rendered and focusable, guarded with aria-disabled
+   when idle; a late success or error no longer removes the focused control.
+3. Repeated Use suggestion preserves the first pre-Coach text. Restore original
+   message restores that baseline; confirmation still protects subsequent edits.
+4. Backend checks response/socket disconnection before dispatch and again at
+   the queued dispatch boundary. A test disconnects during held account lookup
+   and confirms no provider call. No real provider was used.
+5. Expired lookup recovery renders only the retained invitation message, without
+   active Coach controls. Normal Coach-request 401 retains its copyable writing.
+6. Unavailable and rate-limit messages differ. Shared ApiError now optionally
+   carries validated Retry-After delta-seconds (positive integer, at most 86,400);
+   other callers retain their existing error behavior. Arbitrary/date header text
+   is not displayed. This is guidance, not a client-side quota bypass or timer.
+7. Change person → Keep writing returns focus to Change person; ordinary Cancel
+   confirmation still returns focus to Cancel.
+8. Backend Coach validation reuses `validInvitationMessage`; frontend uses the
+   existing invitation `MESSAGE_MAX`, avoiding independently hard-coded limits.
+9. Added current submission/review notes; historical dated records are retained.
+
+Added regressions for held-response focus on success/error, two applies/direct
+restore, confirmation opener focus, lookup expiry, safe retry headers, and opening
+a conversation while generating. The last test confirms late results are ignored
+while invitation/intent text remains when returning.
+
+Verification actually run for this fix step:
+
+- Targeted backend: **16 passed**; full backend coverage: **283 passed**, zero
+  failures/skips, **100% lines/functions, 98.33% branches**. Simulated storage and
+  provider doubles; new guard branches change the percentage, not the pass count.
+- Targeted mocked Chromium: **41 passed** (25 Coach and 16 existing composer).
+- Final full combined mocked Chromium suite: **117 passed** in one run (92
+  existing and 25 Coach), including axe scans. This is actual local evidence for
+  the fixes; Linux hosted Quality has not yet been rerun on them.
+- Lint, frontend/backend types, whole-repository formatting passed. Scratch build
+  passed at `/private/tmp/callingin-sprint05-review-build.HyFkhT`; tracked dist
+  was preserved. Local Markdown links and whitespace checks passed.
+
+No OpenAI call, package installation, private environment read, live database
+check, audit, deployment, or Git submission is included. No colors were changed;
+Shorena's word “cotorl” was queried to distinguish controls from colors.
+These source/docs fixes remain local on top of `8614173`, pending review and a
+separate Git flow. A new hosted Quality result will need verification after push;
+local Mac success alone does not certify Linux CI. Durable budgets, provider
+byte/token bounds, account credit verification, and live integration remain pending.

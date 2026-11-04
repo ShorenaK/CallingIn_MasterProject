@@ -21,6 +21,7 @@ export class CoachFailure extends Error {
  * @param {number} timeoutMs
  */
 export async function requestSuggestion(generate, input, response, timeoutMs) {
+  if (clientGone(response)) throw new CoachFailure('cancelled');
   const controller = new AbortController();
   /** @type {(reason: CoachFailure) => void} */
   let rejectPending;
@@ -37,11 +38,20 @@ export async function requestSuggestion(generate, input, response, timeoutMs) {
   response.once('close', onClose);
   try {
     return await Promise.race([
-      Promise.resolve().then(() => generate(input, controller.signal)),
+      Promise.resolve().then(() => {
+        if (controller.signal.aborted || clientGone(response))
+          throw new CoachFailure('cancelled');
+        return generate(input, controller.signal);
+      }),
       stopped,
     ]);
   } finally {
     clearTimeout(timer);
     response.off('close', onClose);
   }
+}
+
+/** @param {import('express').Response} response */
+function clientGone(response) {
+  return response.destroyed || response.req.socket.destroyed;
 }

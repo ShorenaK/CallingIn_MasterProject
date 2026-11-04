@@ -170,7 +170,7 @@ test('edits during generation require replacement confirmation; restore also pro
   await expect(f.message).toHaveValue('Suggested tea');
   await f.message.fill('Another edit');
   await f.coach
-    .getByRole('button', { name: 'Restore previous message' })
+    .getByRole('button', { name: 'Restore original message' })
     .click();
   await expect(question).toBeVisible();
   await f.coach
@@ -356,7 +356,7 @@ test('Coach controls fit a narrow viewport and support keyboard apply', async ({
   );
   expect(overflow).toBe(false);
   await f.coach.screenshot({
-    path: '/private/tmp/callingin-sprint05-coach-mobile.png',
+    path: test.info().outputPath('coach-mobile.png'),
   });
   await f.coach
     .getByRole('button', { name: 'Use suggestion', exact: true })
@@ -385,4 +385,153 @@ test('changing person clears old Coach errors without clearing the invitation', 
   await f.panel.getByRole('button', { name: 'Find person' }).click();
   await expect(f.message).toHaveValue('Keep my words');
   await expect(f.coach.getByRole('alert')).toHaveCount(0);
+});
+
+for (const status of [200, 503]) {
+  test(`Cancel generation retains focus when a held response ends with ${status}`, async ({
+    page,
+  }) => {
+    const pending = held();
+    const f = await setup(page, async () => {
+      await pending.ready;
+      return status === 200
+        ? { json: { suggestion: 'Tea?' } }
+        : { status, json: { error: 'Unavailable' } };
+    });
+    await f.intent.fill('Tea');
+    await f.generate.click();
+    const cancel = f.coach.getByRole('button', { name: 'Cancel generation' });
+    await cancel.focus();
+    pending.release();
+    await expect(cancel).toHaveAttribute('aria-disabled', 'true');
+    await expect(cancel).toBeFocused();
+    if (status === 200) await expect(f.suggestion).toHaveValue('Tea?');
+    else
+      await expect(f.coach.getByRole('alert')).toContainText(
+        'AI Coach is unavailable',
+      );
+    await expectAccessible(page);
+  });
+}
+
+test('two applications preserve the first original and allow direct restoration', async ({
+  page,
+}) => {
+  let version = 0;
+  const f = await setup(page, async () => ({
+    json: { suggestion: `Suggestion ${++version}` },
+  }));
+  await f.message.fill('My first original');
+  await f.intent.fill('Tea');
+  for (const number of [1, 2]) {
+    await f.generate.click();
+    await expect(f.suggestion).toHaveValue(`Suggestion ${number}`);
+    await f.coach
+      .getByRole('button', { name: 'Use suggestion', exact: true })
+      .click();
+  }
+  await f.coach
+    .getByRole('button', { name: 'Restore original message' })
+    .click();
+  await expect(f.message).toHaveValue('My first original');
+  await expect(f.message).toBeFocused();
+  expect(f.sent).toHaveLength(0);
+});
+
+test('Change person confirmation returns Keep writing to its opener', async ({
+  page,
+}) => {
+  const f = await setup(page);
+  await f.intent.fill('Keep intent');
+  const opener = f.panel.getByRole('button', { name: 'Change person' });
+  await opener.click();
+  await f.panel.getByRole('button', { name: 'Keep writing' }).click();
+  await expect(opener).toBeFocused();
+  await expect(f.intent).toHaveValue('Keep intent');
+});
+
+test('lookup expiry shows only a retained message without active Coach controls', async ({
+  page,
+}) => {
+  const f = await setup(page);
+  await f.message.fill('Copy me');
+  await f.panel.getByRole('button', { name: 'Change person' }).click();
+  await page.route('**/api/users/lookup', (route) =>
+    route.fulfill({ status: 401, json: { error: 'Expired' } }),
+  );
+  await f.panel.getByRole('button', { name: 'Find person' }).click();
+  await expect(
+    f.panel.getByRole('textbox', { name: 'Your unsent message' }),
+  ).toHaveValue('Copy me');
+  await expect(f.coach).toHaveCount(0);
+  expect(f.calls).toHaveLength(0);
+});
+
+for (const delay of ['12', 'untrusted-header']) {
+  test(`429 displays only a safe retry delay: ${delay}`, async ({ page }) => {
+    const f = await setup(page, async () => ({
+      status: 429,
+      headers: { 'Retry-After': delay },
+      json: { error: 'Limited' },
+    }));
+    await f.intent.fill('Tea');
+    await f.generate.click();
+    await expect(f.coach.getByRole('alert')).toContainText(
+      delay === '12' ? 'try again in 12 seconds' : 'please try again later',
+    );
+    await expect(f.coach.getByRole('alert')).not.toContainText(
+      'untrusted-header',
+    );
+    await expect(f.intent).toHaveValue('Tea');
+  });
+}
+
+test('opening a conversation invalidates generation and preserves writing on return', async ({
+  page,
+}) => {
+  const pending = held();
+  const f = await setup(page, async () => {
+    await pending.ready;
+    return { json: { suggestion: 'Late result' } };
+  });
+  await page.route('**/api/invitations?*', async (route) => {
+    const incoming =
+      new URL(route.request().url()).searchParams.get('direction') ===
+      'incoming';
+    await route.fulfill({
+      json: {
+        invitations: incoming
+          ? [
+              {
+                ...created('Accepted'),
+                status: 'accepted',
+                otherPerson: person,
+              },
+            ]
+          : [],
+        nextCursor: null,
+      },
+    });
+  });
+  await page.route('**/api/invitations/*/conversation', (route) =>
+    route.fulfill({
+      status: 503,
+      json: { error: 'Synthetic unavailable room' },
+    }),
+  );
+  await page.reload();
+  await f.panel
+    .getByLabel('Their email address', { exact: true })
+    .fill('sarah@example.com');
+  await f.panel.getByRole('button', { name: 'Find person' }).click();
+  await f.message.fill('My invitation');
+  await f.intent.fill('Tea');
+  await f.generate.click();
+  await page.getByRole('button', { name: 'Open conversation' }).click();
+  pending.release();
+  await page.getByRole('button', { name: 'Back to invitations' }).click();
+  await expect(f.message).toHaveValue('My invitation');
+  await expect(f.intent).toHaveValue('Tea');
+  await expect(f.suggestion).toHaveCount(0);
+  await expect(f.generate).toHaveAttribute('aria-disabled', 'false');
 });

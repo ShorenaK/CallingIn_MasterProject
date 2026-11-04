@@ -1,10 +1,11 @@
 /** @typedef {{id: string, displayName: string, email: string}} User */
 
 export class ApiError extends Error {
-  /** @param {string} message @param {number} status */
-  constructor(message, status) {
+  /** @param {string} message @param {number} status @param {number | null} [retryAfter] */
+  constructor(message, status, retryAfter = null) {
     super(message);
     this.status = status;
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -39,9 +40,19 @@ export async function apiRequest(url, options = {}) {
         ? data.error
         : 'Something went wrong. Please try again.',
       response.status,
+      retryDelay(response.headers.get('Retry-After')),
     );
   }
   return data;
+}
+
+/** Accept only bounded delta-seconds; never display an arbitrary header value.
+ * @param {string | null} value
+ */
+function retryDelay(value) {
+  if (!value || !/^\d{1,5}$/.test(value)) return null;
+  const seconds = Number(value);
+  return seconds > 0 && seconds <= 86400 ? seconds : null;
 }
 
 /** @param {unknown} error */

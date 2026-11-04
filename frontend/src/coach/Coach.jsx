@@ -27,18 +27,18 @@ export function Coach({ coach, onSignIn }) {
         >
           Generate suggestion
         </button>
-        {coach.busy && (
-          <button
-            type="button"
-            className="text-button"
-            onClick={() => {
-              coach.cancel();
-              document.getElementById('coach-generate')?.focus();
-            }}
-          >
-            Cancel generation
-          </button>
-        )}
+        <button
+          type="button"
+          className="text-button"
+          aria-disabled={!coach.busy}
+          onClick={() => {
+            if (!coach.busy) return;
+            coach.cancel();
+            document.getElementById('coach-generate')?.focus();
+          }}
+        >
+          Cancel generation
+        </button>
       </div>
       <p role="status">{coach.notice}</p>
       {coach.suggestion !== null && (
@@ -169,7 +169,7 @@ function CoachSuggestion({ coach }) {
           disabled={coach.busy || coach.expired}
           onClick={restore}
         >
-          Restore previous message
+          Restore original message
         </button>
       )}
       {confirming && (

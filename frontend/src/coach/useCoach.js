@@ -38,7 +38,10 @@ export function useCoach(message, setMessage) {
   function apply() {
     if (suggestion === null || !validCoachText(suggestion)) return;
     request.cancel();
-    setPrevious({ text: message, applied: suggestion });
+    setPrevious((current) => ({
+      text: current?.text ?? message,
+      applied: suggestion,
+    }));
     setMessage(suggestion);
     setSuggestion(null);
   }
@@ -127,6 +130,19 @@ function coachFailure(failure) {
     expired,
     message: expired
       ? 'Your session has ended. Copy your message, intent, and suggestion before signing in again.'
-      : 'AI Coach could not generate a suggestion. Your writing is kept; try again or write your own message.',
+      : coachErrorMessage(failure),
   };
+}
+
+/** @param {unknown} failure */
+function coachErrorMessage(failure) {
+  if (failure instanceof ApiError && failure.status === 503)
+    return 'AI Coach is unavailable. Your writing is kept; you can write and send your own invitation.';
+  if (failure instanceof ApiError && failure.status === 429) {
+    const delay = failure.retryAfter;
+    return delay === null
+      ? 'Too many Coach requests. Your writing is kept; please try again later.'
+      : `Too many Coach requests. Your writing is kept; try again in ${delay} ${delay === 1 ? 'second' : 'seconds'}.`;
+  }
+  return 'AI Coach could not generate a suggestion. Your writing is kept; try again or write your own message.';
 }

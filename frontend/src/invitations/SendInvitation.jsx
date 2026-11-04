@@ -32,10 +32,7 @@ export function SendInvitation({ onSent, onSessionExpired, active = true }) {
       {send.recipient ? (
         <ComposeMessage send={send} onSignIn={onSessionExpired} />
       ) : send.problem?.expired ? (
-        <>
-          <RetainedDraft message={send.message} />
-          <Coach coach={send.coach} onSignIn={onSessionExpired} />
-        </>
+        <RetainedDraft message={send.message} />
       ) : (
         <FindPerson send={send} />
       )}
@@ -121,7 +118,7 @@ function FindPerson({ send }) {
 /** @param {{send: SendState, onSignIn: () => void}} props */
 function ComposeMessage({ send, onSignIn }) {
   const [confirming, setConfirming] = useState('');
-  const { cancelButton, found } = useComposeFocus(confirming);
+  const { cancelButton, personButton, found } = useComposeFocus(confirming);
   function changePerson() {
     if (send.coach.hasText) setConfirming('person');
     else send.changePerson();
@@ -148,6 +145,7 @@ function ComposeMessage({ send, onSignIn }) {
         <strong>{send.recipient?.displayName}</strong>
       </p>
       <button
+        ref={personButton}
         type="button"
         className="text-button"
         disabled={send.busy}
@@ -177,16 +175,21 @@ function ComposeMessage({ send, onSignIn }) {
 /** @param {string} confirming */
 function useComposeFocus(confirming) {
   const cancelButton = useRef(/** @type {HTMLButtonElement | null} */ (null));
+  const personButton = useRef(/** @type {HTMLButtonElement | null} */ (null));
   const previous = useRef('');
   const found = useRef(/** @type {HTMLParagraphElement | null} */ (null));
   useEffect(() => {
     found.current?.focus();
   }, []);
   useEffect(() => {
-    if (previous.current && !confirming) cancelButton.current?.focus();
+    if (previous.current && !confirming) {
+      const target =
+        previous.current === 'person' ? personButton : cancelButton;
+      target.current?.focus();
+    }
     previous.current = confirming;
   }, [confirming]);
-  return { cancelButton, found };
+  return { cancelButton, personButton, found };
 }
 
 function InvitationHint() {

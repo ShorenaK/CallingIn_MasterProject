@@ -14,20 +14,25 @@ const valid = {
   tone: 'warm',
 };
 
-async function setup(t, options = {}) {
-  const state = { calls: [], logs: [], reads: 0 };
-  const db = {
+function accountDatabase(state, options) {
+  return {
     collection(name) {
       assert.equal(name, 'users');
       return {
         async findOne() {
           state.reads += 1;
+          await options.beforeAccountRead?.();
           if (options.dbFailure) throw new Error('private database error');
           return options.deleted ? null : {};
         },
       };
     },
   };
+}
+
+async function setup(t, options = {}) {
+  const state = { calls: [], logs: [], reads: 0 };
+  const db = accountDatabase(state, options);
   const generate = async (input, signal) => {
     state.calls.push({ input, signal });
     return options.generate
@@ -39,6 +44,7 @@ async function setup(t, options = {}) {
     {
       requestProtection: createRequestProtection({ APP_ORIGIN: origin }),
       sessionMiddleware(req, _res, next) {
+        options.onResponse?.(_res);
         req.session = {
           userId: req.get('X-Test-Account'),
           destroy: (done) => done(),
@@ -320,4 +326,37 @@ test('invalid deadline configuration fails setup', () => {
         ),
       /Coach timeout/,
     );
+});
+
+test('disconnect during account verification prevents any provider dispatch', async (t) => {
+  let entered;
+  let release;
+  let closed;
+  const reading = new Promise((resolve) => {
+    entered = resolve;
+  });
+  const held = new Promise((resolve) => {
+    release = resolve;
+  });
+  const disconnected = new Promise((resolve) => {
+    closed = resolve;
+  });
+  const f = await setup(t, {
+    beforeAccountRead: async () => {
+      entered();
+      await held;
+    },
+    onResponse: (response) => response.once('close', closed),
+  });
+  const controller = new AbortController();
+  const request = f.request({ signal: controller.signal });
+  const rejected = assert.rejects(request, { name: 'AbortError' });
+  await reading;
+  controller.abort();
+  await rejected;
+  await disconnected;
+  release();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(f.state.calls.length, 0);
+  assert.equal(f.state.logs.length, 0);
 });
