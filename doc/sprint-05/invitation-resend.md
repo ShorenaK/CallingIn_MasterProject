@@ -43,7 +43,8 @@ index. Participant/time/ID pagination indexes remain unchanged.
 
 **Review correction, November 4:** Claude's B1 describes a same-key unique/basic
 index conflict as an expected blocker, but MongoDB's official documentation
-explicitly permits those indexes together under distinct names. The current
+permits those indexes together under distinct names in its documented examples.
+Support on our actual server still needs testing. The current
 index design is retained; do not change a test double to enforce the contrary
 assumption. Confirm the actual server version/compatibility and index behavior
 in the separately approved rehearsal. See [MongoDB's basic and unique index guidance](https://www.mongodb.com/docs/manual/core/index-unique/#basic-and-unique-indexes-with-duplicate-key-patterns).
@@ -105,6 +106,11 @@ Preparation code:
 Before any database access or changes, review this procedure and obtain separate
 approval for the exact database/environment. Then:
 
+First rehearse on a disposable replica set. Record the exact MongoDB version
+and whether the history index can be created while the old unique index exists.
+If that fails, stop and review a different history index key pattern before
+changing the code or trying the real database.
+
 1. Identify the target database and all application writers. Inspect the existing
    validator/indexes and transaction-capable topology with authorized read-only
    checks. Confirm permissions and the tested application version.
@@ -127,6 +133,8 @@ approval for the exact database/environment. Then:
 6. If interrupted before dropping the old index, keep writers stopped, inspect
    the failure, and review resumption. Correct partial pointer backfills can be
    resumed; conflicting/extra pointers or weak validators stop the operation.
+   If pair storage already exists, the app refuses to restart in legacy mode.
+   Follow the recovery steps here and the rollback limitations below.
    Once the old index has been removed, the legacy-only migration refuses an
    automatic rerun. Inspect and repair forward under separate approval instead.
 7. Configure the reviewed app with the flag true and verify startup, transaction

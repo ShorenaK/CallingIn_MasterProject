@@ -491,3 +491,21 @@ backend-only fixes. No installation, private environment read, live database
 access, migration, activation, audit, network service check, Git submission,
 or merge was performed. Live rehearsal remains a separate approval step after
 focused review of these fixes.
+
+## November 12 — Focused review and next database check
+
+[Claude's review of `1974bf9`](quality-review-2026-11-12-1974bf9.md) confirms
+that the earlier fixes look correct within simulated-storage testing. It records
+319 passing backend tests and a successful scratch build. Real database behavior
+still needs testing.
+
+Updated the resend guide with two short instructions: record the MongoDB version
+and test both indexes during a disposable rehearsal; if migration stops after
+pair storage exists, keep writers stopped and follow the recovery steps because
+legacy startup is blocked. A different history index would need review if the
+rehearsal rejects the current design.
+
+The report's statement that automated accessibility checks are absent is
+incorrect: the existing Playwright suite includes axe scans. The independent
+report is preserved. Optional extra tests and test-helper cleanup remain deferred.
+No migration, activation, or live database check was performed for this update.
